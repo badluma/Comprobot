@@ -1,2 +1,3 @@
 prefix = "!"
 money_symbol   = "€"
+bot_admins = ["badluma"]

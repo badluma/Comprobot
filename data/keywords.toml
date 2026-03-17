@@ -19,7 +19,6 @@ settings         = ["config", "set", "settings"]
 profile_picture  = ["pfp", "picture", "pic"]
 banner           = ["banner"]
 change_name      = ["name", "nickname"]
-change_bio       = ["bio", "biography"]
 
 change_keywords  = ["keywords", "key"]
 error_messages   = ["error"]

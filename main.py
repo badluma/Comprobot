@@ -1,14 +1,18 @@
-import os
+# import os
+import sys
+import platform
 
-import commands
-import moderation
+# import commands
+# import moderation
 from functions import *
-import functions
+
+# import functions
 import process
 import dotenv
+import templates
 
 import discord
-import ollama
+# import ollama
 
 from bot import client
 
@@ -17,6 +21,12 @@ dotenv.load_dotenv()
 from data.data import *
 
 response = None
+if sys.platform.startswith("win"):
+    print("Running on Windows (cmd)")
+elif platform.system() in ["Linux", "Darwin"]:
+    pass
+else:
+    print("Unknown OS")
 
 
 @client.event
@@ -49,7 +59,7 @@ async def on_message(message):
         except discord.NotFound:
             pass
 
-    if f"<@{client.user.id}>" in message.content or is_reply_to_bot:
+    if (f"<@{client.user.id}>" in message.content or is_reply_to_bot) and ai["activate_ai"]:
         async with message.channel.typing():
             response = chat(message)
 

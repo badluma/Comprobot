@@ -1,14 +1,14 @@
 from typing import Any
 from bot import client
 
-import discord
+# import discord
 
 import api
-import moderation
-import commands
+# import moderation
+# import commands
 import money_system
-import discord
-import ollama
+# import discord
+# import ollama
 
 from data.data import *
 
@@ -56,7 +56,7 @@ async def process(message) -> str | None | Any:
                 return f"No username given."
         elif (
             command in keywords["add_money"]
-            and message.author.guild_permissions.administrator
+            and (message.author.guild_permissions.administrator or config["bot_admins"])
         ):
             if len(args) >= 2:
                 try:
@@ -68,7 +68,7 @@ async def process(message) -> str | None | Any:
                 return "No amount given."
         elif (
             command in keywords["remove_money"]
-            and message.author.guild_permissions.administrator
+            and (message.author.guild_permissions.administrator or config["bot_admins"])
         ):
             if len(args) >= 2:
                 try:
@@ -81,7 +81,7 @@ async def process(message) -> str | None | Any:
 
         elif (
             command in keywords["settings"]
-            and message.author.guild_permissions.administrator
+            and (message.author.guild_permissions.administrator or message.author.name in config["bot_admins"])
         ):
             if not args:
                 return f"No arguments given."

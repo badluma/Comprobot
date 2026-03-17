@@ -1,5 +1,6 @@
 import os
 import re
+import appdirs
 import discord
 import ollama
 from bot import client
@@ -73,8 +74,10 @@ def chat(message):
         {"role": "assistant", "content": response.message.content}
     )
 
-    if len(history["messages"]) > ai["max_messages_context"]:
-        history["messages"].pop(0)
+    # Keep system prompt (index 0) + max 5 messages (total 6)
+    max_total = 1 + ai["max_messages_context"]
+    while len(history["messages"]) > max_total:
+        history["messages"].pop(1)  # Remove from index 1 to keep system prompt
 
     if ai["remove_emojis"]:
         response = demoji(response.message.content)
@@ -82,3 +85,20 @@ def chat(message):
         response = response.lower()
 
     return response
+
+
+def create(path, content, is_dir=False):
+    base_dir = appdirs.user_data_dir(appname="Comprobot", appauthor=False)
+
+    if not os.path.isdir(base_dir):
+        os.makedirs(base_dir, exist_ok=True)
+
+    final_path = os.path.join(base_dir, path)
+
+    if is_dir:
+        os.makedirs(final_path, exist_ok=True)
+    else:
+        os.makedirs(os.path.dirname(final_path), exist_ok=True)
+        if not os.path.isfile(final_path):
+            with open(final_path, "w") as file:
+                file.write(content)

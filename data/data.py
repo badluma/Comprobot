@@ -1,21 +1,56 @@
 import tomlkit
+import os
+import appdirs
 
-with open("data/error-messages.toml", "rb") as f:
-    error_messages = tomlkit.load(f)
-with open("data/success_messages.toml", "rb") as f:
-    success_messages = tomlkit.load(f)
-with open("data/config.toml", "rb") as f:
-    config = tomlkit.load(f)
-with open("data/keywords.toml", "rb") as f:
-    keywords = tomlkit.load(f)
-with open("data/ai.toml", "rb") as f:
-    ai = tomlkit.load(f)
-with open("data/.do_not_touch/money.toml", "rb") as f:
-    money = tomlkit.load(f)
-with open("data/.do_not_touch/conversation_history.toml", "rb") as f:
-    history = tomlkit.load(f)
 
-history["messages"][0]["content"] = ai["system_prompt"]
+def _get_data_path(filename):
+    base_dir = appdirs.user_data_dir(appname="Comprobot", appauthor=False)
+    return os.path.join(base_dir, filename)
+
+
+def _ensure_file(path, content):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    if not os.path.isfile(path):
+        with open(path, "w") as f:
+            f.write(content)
+
+
+def _load_or_create(path, template_content):
+    try:
+        with open(path, "rb") as f:
+            return tomlkit.load(f)
+    except FileNotFoundError:
+        _ensure_file(path, template_content)
+        with open(path, "rb") as f:
+            return tomlkit.load(f)
+
+
+import templates
+
+ai_str = templates.ai
+
+error_messages = _load_or_create(
+    _get_data_path("error-messages.toml"), templates.error_messages
+)
+success_messages = _load_or_create(
+    _get_data_path("success_messages.toml"), templates.success_messages
+)
+config = _load_or_create(_get_data_path("config.toml"), templates.config)
+keywords = _load_or_create(_get_data_path("keywords.toml"), templates.keywords)
+ai = _load_or_create(_get_data_path("ai.toml"), ai_str)
+money = _load_or_create(_get_data_path("money.toml"), r"""balances = {}""")
+
+ai_parsed = tomlkit.loads(ai_str)
+system_prompt_text = ai_parsed["system_prompt"]
+
+conversation_history_template = templates.conversation_history.replace(
+    "SYSTEM_PROMPT_PLACEHOLDER", system_prompt_text
+)
+history = _load_or_create(
+    _get_data_path("conversation_history.toml"), conversation_history_template
+)
+
+history["messages"][0]["content"] = system_prompt_text
 
 
 def save_toml(data, path):
