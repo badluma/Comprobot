@@ -44,7 +44,7 @@ ai_parsed = tomlkit.loads(ai_str)
 system_prompt_text = ai_parsed["system_prompt"]
 
 conversation_history_template = templates.conversation_history.replace(
-    "SYSTEM_PROMPT_PLACEHOLDER", system_prompt_text
+    "You are a helpful assistant.", system_prompt_text
 )
 history = _load_or_create(
     _get_data_path("conversation_history.toml"), conversation_history_template
