@@ -1,0 +1,6 @@
+discord.py
+python-dotenv
+requests
+tomlkit
+appdirs
+ollama
