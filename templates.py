@@ -1,4 +1,6 @@
-ai = r'''model = "sam860/lfm2:1.2b"
+ai = r'''activate_ai = false
+
+model = "sam860/lfm2:1.2b"
 max_messages_context = 5
 remove_emojis = true
 lower_response = true
@@ -64,9 +66,9 @@ banner_applied          = "Banner applied successfully."
 nickname_applied        = "Name applied successfully."
 bio_applied             = "Bio applied successfully."'''
 
-conversation_history = r"""messages = [
-    { role = "system", content = "SYSTEM_PROMPT_PLACEHOLDER" },
-]"""
+conversation_history = r'''messages = [
+    { role = "system", content = """You are a helpful assistant.""" },
+]'''
 
 create_commands = r"""create("config.toml", config)
 create("error-messages.toml", error_messages)
