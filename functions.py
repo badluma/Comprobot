@@ -1,10 +1,13 @@
 import os
 import re
+from typing import Dict, List, cast
+
 import appdirs
 import discord
 import ollama
+
 from bot import client
-from data.data import *
+from data import ai, history
 
 
 def para(count=1):
@@ -19,15 +22,13 @@ def clear():
         os.system("clear")
 
 
-# Discord-related
-
-
 async def direct_msg(message, author_message):
     user = await client.fetch_user(author_message.author.id)
-    if user.dm_channel is None:
-        await user.create_dm()
+    dm_channel = user.dm_channel
+    if dm_channel is None:
+        dm_channel = await user.create_dm()
     try:
-        await user.dm_channel.send(message)
+        await dm_channel.send(message)
     except (discord.Forbidden, discord.HTTPException):
         print(f"Couldn't DM {author_message.author.name}.")
 
@@ -58,33 +59,32 @@ def demoji(text):
 
 
 def chat(message):
-    # Add user message
-    history["messages"].append(
+    messages: List[Dict[str, str]] = cast(List[Dict[str, str]], history["messages"])
+    user_id = client.user.id if client.user else ""
+
+    messages.append(
         {
             "role": "user",
-            "content": message.content.replace(f"<@{client.user.id}>", ""),
+            "content": message.content.replace(f"<@{user_id}>", ""),
         }
     )
 
-    # Get response
-    response = ollama.chat(model=ai["model"], messages=history["messages"])
+    response = ollama.chat(model=cast(str, ai["model"]), messages=messages)
 
-    # Add assistant response to history
-    history["messages"].append(
-        {"role": "assistant", "content": response.message.content}
-    )
+    content: str = response.message.content or ""
 
-    # Keep system prompt (index 0) + max 5 messages (total 6)
-    max_total = 1 + ai["max_messages_context"]
-    while len(history["messages"]) > max_total:
-        history["messages"].pop(1)  # Remove from index 1 to keep system prompt
+    messages.append({"role": "assistant", "content": content})
+
+    max_total = 1 + cast(int, ai["max_messages_context"])
+    while len(messages) > max_total:
+        messages.pop(1)
 
     if ai["remove_emojis"]:
-        response = demoji(response.message.content)
+        content = demoji(content)
     if ai["lower_response"]:
-        response = response.lower()
+        content = content.lower()
 
-    return response
+    return content
 
 
 def create(path, content, is_dir=False):

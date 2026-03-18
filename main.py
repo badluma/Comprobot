@@ -1,24 +1,19 @@
-# import os
-import sys
+from os import getenv as os_getenv
+from typing import cast
+
 import platform
-
-# import commands
-# import moderation
-from functions import *
-
-# import functions
-import process
-import dotenv
-import templates
+import sys
 
 import discord
-# import ollama
+import dotenv
 
+import process
 from bot import client
+from data import ai, config
+from functions import chat, para
 
 dotenv.load_dotenv()
 
-from data.data import *
 
 response = None
 if sys.platform.startswith("win"):
@@ -47,38 +42,40 @@ async def on_message(message):
         return
     response = None
 
-    if message.content.startswith(config["prefix"]):
+    if message.content.startswith(cast(str, config["prefix"])):
         async with message.channel.typing():
             response = await process.process(message)
 
     is_reply_to_bot = False
-    if message.reference and message.reference.message_id:
+    user_id = client.user.id if client.user else None
+    if message.reference and message.reference.message_id and user_id:
         try:
             ref_msg = await message.channel.fetch_message(message.reference.message_id)
-            is_reply_to_bot = ref_msg.author.id == client.user.id
+            is_reply_to_bot = ref_msg.author.id == user_id
         except discord.NotFound:
             pass
 
-    if (f"<@{client.user.id}>" in message.content or is_reply_to_bot) and ai["activate_ai"]:
+    if (f"<@{user_id}>" in message.content or is_reply_to_bot) and ai.get(
+        "activate_ai", False
+    ):
         async with message.channel.typing():
             response = chat(message)
 
     if response:
         async with message.channel.typing():
-            content = (
-                str(response.message.content)
-                if hasattr(response, "message")
-                else str(response)
-            )
+            content = str(response)
             for chunk in [content[i : i + 2000] for i in range(0, len(content), 2000)]:
                 await message.channel.send(chunk)
 
 
 @client.event
 async def on_ready():
-    print(f"Logged in as {client.user.name}")
+    user_name = client.user.name if client.user else "Unknown"
+    print(f"Logged in as {user_name}")
     para()
 
 
 if __name__ == "__main__":
-    client.run(os.getenv("BOT_TOKEN"))
+    token = os_getenv("BOT_TOKEN")
+    if token:
+        client.run(token)

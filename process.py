@@ -1,21 +1,14 @@
-from typing import Any
-from bot import client
-
-# import discord
+from typing import Any, cast
 
 import api
-# import moderation
-# import commands
 import money_system
-# import discord
-# import ollama
-
-from data.data import *
+from bot import client
+from data import config, error_messages, keywords, success_messages
 
 
 async def process(message) -> str | None | Any:
 
-    if message.content.startswith(config["prefix"]):
+    if message.content.startswith(cast(str, config["prefix"])):
         command_parts = message.content[1:].strip().split()
 
         command = command_parts[0]
@@ -53,10 +46,9 @@ async def process(message) -> str | None | Any:
             if args:
                 return money_system.check_balance(args[0])
             else:
-                return f"No username given."
-        elif (
-            command in keywords["add_money"]
-            and (message.author.guild_permissions.administrator or config["bot_admins"])
+                return "No username given."  # TODO: add customizable error command
+        elif command in keywords["add_money"] and (
+            message.author.guild_permissions.administrator or config["bot_admins"]
         ):
             if len(args) >= 2:
                 try:
@@ -66,9 +58,8 @@ async def process(message) -> str | None | Any:
                     return f"Invalid amount: {args[1]}"
             else:
                 return "No amount given."
-        elif (
-            command in keywords["remove_money"]
-            and (message.author.guild_permissions.administrator or config["bot_admins"])
+        elif command in keywords["remove_money"] and (
+            message.author.guild_permissions.administrator or config["bot_admins"]
         ):
             if len(args) >= 2:
                 try:
@@ -79,20 +70,20 @@ async def process(message) -> str | None | Any:
             else:
                 return "No amount given."
 
-        elif (
-            command in keywords["settings"]
-            and (message.author.guild_permissions.administrator or message.author.name in config["bot_admins"])
+        elif command in keywords["settings"] and (
+            message.author.guild_permissions.administrator
+            or message.author.name in config["bot_admins"]
         ):
             if not args:
-                return f"No arguments given."
+                return error_messages["no_argument_given"]
 
             if args[0] in keywords["profile_picture"]:
                 if not message.attachments:
                     return error_messages["no_attachments"]
-                if client is None:
+                if client is None or client.user is None:
                     return error_messages["bot_unavailable"]
                 new_pfp = message.attachments[0]
-                await new_pfp.save(f"Cache/pfp.png")
+                await new_pfp.save("Cache/pfp.png")
                 with open("Cache/pfp.png", "rb") as image_file:
                     image_data = image_file.read()
                 await client.user.edit(avatar=image_data)
@@ -101,10 +92,10 @@ async def process(message) -> str | None | Any:
             elif args[0] in keywords["banner"]:
                 if not message.attachments:
                     return error_messages["no_attachments"]
-                if client is None:
+                if client is None or client.user is None:
                     return error_messages["bot_unavailable"]
                 new_banner = message.attachments[0]
-                await new_banner.save(f"Cache/banner.png")
+                await new_banner.save("Cache/banner.png")
                 with open("Cache/banner.png", "rb") as image_file:
                     image_data = image_file.read()
                 await client.user.edit(banner=image_data)
@@ -113,6 +104,8 @@ async def process(message) -> str | None | Any:
             elif args[0] in keywords["change_name"]:
                 if len(args) < 2:
                     return error_messages["no_argument_given"]
+                if client is None or client.user is None:
+                    return error_messages["bot_unavailable"]
                 await client.user.edit(username=args[1])
                 return success_messages["nickname_applied"]
 

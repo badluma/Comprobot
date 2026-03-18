@@ -1,5 +1,6 @@
 import requests
-from data.data import *
+
+from data import error_messages
 
 
 def access_api(url, parameter, error_message, headers=None):
@@ -20,6 +21,7 @@ def access_api(url, parameter, error_message, headers=None):
 
     return response
 
+
 # ---------- Commands ----------
 def quote():
     quote_response = requests.get("https://zenquotes.io/api/random")
@@ -32,6 +34,7 @@ def quote():
         response = error_messages["quote"]
     return response
 
+
 def joke():
     return access_api(
         "https://icanhazdadjoke.com/",
@@ -40,14 +43,18 @@ def joke():
         {"Accept": "application/json"},
     )
 
+
 def meme():
     return access_api("https://meme-api.com/gimme", "url", error_messages["meme"])
+
 
 def duck():
     return access_api("https://random-d.uk/api/random", "url", error_messages["duck"])
 
+
 def dog():
     return access_api("https://random.dog/woojson", "url", error_messages["dog"])
+
 
 def cat():
     raw = requests.get("https://api.thecatapi.com/v1/images/search")
@@ -61,10 +68,12 @@ def cat():
         response = error_messages["cat"]
     return response
 
+
 def chuck():
     return access_api(
         "https://api.chucknorris.io/jokes/random", "value", error_messages["chuck"]
     )
+
 
 def fact():
     return access_api(
@@ -72,6 +81,7 @@ def fact():
         "text",
         error_messages["fact"],
     )
+
 
 def bible():
     bible_response = requests.get("https://bible-api.com/data/web/random")
@@ -89,6 +99,7 @@ def bible():
         response = f"{error_messages['bible']} (HTTP {bible_response.status_code})"
     return response
 
+
 def calculate(calculation):
     try:
         result = eval(calculation)
@@ -96,6 +107,7 @@ def calculate(calculation):
     except Exception as e:
         response = f"{error_messages['calculate']} (error {str(e)})"
     return response
+
 
 def bitcoin(currency_parameter):
     currency = currency_parameter.lower() if len(str(currency_parameter)) > 1 else "usd"
