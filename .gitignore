@@ -4,3 +4,4 @@ Cache/
 .idea/
 .env
 .DS_Store
+.ai/
