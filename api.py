@@ -123,3 +123,13 @@ def bitcoin(currency_parameter):
     else:
         response = error_messages["bitcoin"]
     return response
+
+def tord(url, rating, max_retries=10):
+    for _ in range(max_retries):
+        response = requests.get(url)
+        if response.status_code != 200:
+            continue
+        data = response.json()
+        if not rating or data.get("rating") == rating:
+            return data["question"]
+    return None
