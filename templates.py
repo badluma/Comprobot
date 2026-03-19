@@ -1,7 +1,8 @@
 ai = r'''activate_ai = false
 
-model = "sam860/lfm2:1.2b"
-max_messages_context = 5
+provider = "gemini" # Available providers: "ollama", "gemini", "groq"
+model = "gemini-2.0-flash"
+max_messages_context = 10
 remove_emojis = true
 lower_response = true
 
@@ -66,9 +67,10 @@ banner_applied          = "Banner applied successfully."
 nickname_applied        = "Name applied successfully."
 bio_applied             = "Bio applied successfully."'''
 
-conversation_history = r'''messages = [
-    { role = "system", content = """You are a helpful assistant.""" },
-]'''
+env_template = r"""BOT_TOKEN=
+GEMINI=
+GROQ=
+"""
 
 create_commands = r"""create("config.toml", config)
 create("error-messages.toml", error_messages)
@@ -77,4 +79,5 @@ create("keywords.toml", keywords)
 create("ai.toml", ai)
 create("moderation.toml", moderation)
 create("data/.do_not_touch/money.toml", money)
-create("data/.do_not_touch/conversation_history.toml", conversation_history)"""
+create("data/.do_not_touch/conversation_history.toml", conversation_history)
+create(".env", env_template)"""

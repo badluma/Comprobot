@@ -1,14 +1,15 @@
 import os
 import re
 from typing import Dict, List, cast
+from google import genai
+import groq
 
 import appdirs
 import discord
 import ollama
 
 from bot import client
-from data import ai, history
-
+from data import ai
 
 def para(count=1):
     for i in range(count):
@@ -59,21 +60,100 @@ def demoji(text):
 
 
 def chat(message):
-    messages: List[Dict[str, str]] = cast(List[Dict[str, str]], history["messages"])
+    messages: List[Dict[str, str]] = cast(List[Dict[str, str]])
     user_id = client.user.id if client.user else ""
+
+    if ai["provider"].lower() in ("ollama", "groq"):
+        messages.append(
+            {
+                "role": "user",
+                "content": message.content.replace(f"<@{user_id}>", ""),
+            }
+        )
+    elif ai["provider"].lower() == "gemini":
+        messages.append(
+            {
+                "role": "user",
+                "parts": [{"text": message.content.replace(f"<@{user_id}>", "")}],
+            }
+        )
+    else:
+        raise ValueError(f"Unknown provider: {ai['provider']}")
+
+    if ai["provider"].lower() == "ollama":
+        response = ollama.chat(model=cast(str, ai["model"]), messages=messages)
+        content: str = response.message.content or ""
+    elif ai["provider"].lower() == "gemini":
+        gemini_client = genai.Client(api_key=os.getenv("GEMINI"))
+        system_instruction = None
+        formatted_messages = []
+        for m in messages:
+            if m["role"] == "system":
+                system_instruction = m["content"]
+            else:
+                formatted_messages.append(
+                    {
+                        "role": m["role"],
+                        "parts": [
+                            {"text": m["content"] if "content" in m else m["parts"][0]}
+                        ],
+                    }
+                )
+        config = None
+        if system_instruction:
+            config = genai.types.GenerateContentConfig(
+                system_instruction=system_instruction
+            )
+        try:
+            response = gemini_client.models.generate_content(
+                model=ai["model"], contents=formatted_messages, config=config
+            )
+            content = response.text or ""
+        except genai.errors.ClientError as e:
+            if "NOT_FOUND" in str(e) or "404" in str(e):
+                available = gemini_client.models.list()
+                print(f"Available models: {[m.name for m in available]}")
+            raise
+    elif ai["provider"].lower() == "groq":
+        groq_client = groq.Groq(api_key=os.getenv("GROQ"))
+        formatted_messages = []
+        for m in messages:
+            if m["role"] == "system":
+                formatted_messages.append(
+                    {
+                        "role": "system",
+                        "content": m["content"],
+                    }
+                )
+            else:
+                formatted_messages.append(
+                    {
+                        "role": "user" if m["role"] == "user" else "assistant",
+                        "content": m["content"],
+                    }
+                )
+        response = groq_client.chat.completions.create(
+            model=ai["model"], messages=formatted_messages
+        )
+        content = response.choices[0].message.content or ""
+    else:
+        raise ValueError(f"Unknown provider: {ai['provider']}")
+
+    if ai["provider"].lower() == "groq":
+        role = "assistant"
+    elif ai["provider"].lower() == "ollama":
+        role = "assistant"
+    elif ai["provider"].lower() == "gemini":
+        role = "model"
+    else:
+        raise ValueError(f"Unknown provider: {ai['provider']}")
 
     messages.append(
         {
-            "role": "user",
-            "content": message.content.replace(f"<@{user_id}>", ""),
+            "role": role,
+            "content": content,
         }
     )
-
-    response = ollama.chat(model=cast(str, ai["model"]), messages=messages)
-
-    content: str = response.message.content or ""
-
-    messages.append({"role": "assistant", "content": content})
 
     max_total = 1 + cast(int, ai["max_messages_context"])
     while len(messages) > max_total:
@@ -84,6 +164,8 @@ def chat(message):
     if ai["lower_response"]:
         content = content.lower()
 
+
+    content = re.sub(r'<.*?>', '', content).strip()
     return content
 
 
