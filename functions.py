@@ -11,6 +11,7 @@ import ollama
 from bot import client
 from data import ai
 
+
 def para(count=1):
     for i in range(count):
         print()
@@ -60,7 +61,7 @@ def demoji(text):
 
 
 def chat(message):
-    messages: List[Dict[str, str]] = cast(List[Dict[str, str]])
+    messages: List[Dict[str, str]] = []
     user_id = client.user.id if client.user else ""
 
     if ai["provider"].lower() in ("ollama", "groq"):
@@ -164,8 +165,7 @@ def chat(message):
     if ai["lower_response"]:
         content = content.lower()
 
-
-    content = re.sub(r'<.*?>', '', content).strip()
+    content = re.sub(r"<.*?>", "", content).strip()
     return content
 
 
