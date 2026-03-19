@@ -24,6 +24,11 @@ cat       = "Failed to get a cat image."
 chuck     = "Failed to get a Chuck Norris joke."
 fact      = "Failed to get a fact."
 bible     = "Failed to get a bible verse."
+truth     = "Failed to get a truth question."
+dare      = "Failed to get a dare question."
+wyr       = "Failed to get a Would You Rather question."
+never-hie = "Failed to get a Never Have I Ever question."
+paranoia  = "Failed to get a paranoia question."
 calculate = "Invalid calculation. Use +-*/"
 bitcoin   = "Failed to get the current bitcoin price."
 currency  = "Unknown currency."
@@ -35,30 +40,39 @@ no_attachment     = "No attachment given."
 bot_unavailable   = "Bot not available."'''
 
 keywords = r"""quote            = ["quote"]
-joke             = ["joke"]
-meme             = ["meme"]
-image            = ["image", "picture"]
-duck             = ["duck"]
-dog              = ["dog"]
-cat              = ["cat"]
-chuck_norris     = ["chuck", "norris", "chucknorris"]
-fact             = ["fact"]
-bible            = ["bible"]
+joke              = ["joke"]
+meme              = ["meme"]
+image             = ["image", "picture"]
+duck              = ["duck"]
+dog               = ["dog"]
+cat               = ["cat"]
+chuck_norris      = ["chuck", "norris", "chucknorris"]
+fact              = ["fact"]
+bible             = ["bible"]
+calculate         = ["calculate", "calc"]
+bitcoin           = ["bitcoin", "btc"]
+qr_code           = ["qr_code", "qr"]
 
-add_money        = ["add", "add_money"]
-remove_money     = ["remove", "rm", "remove_money"]
-check_balance    = ["check", "check_balance", "balance"]
+truth             = ["truth"]
+dare              = ["dare"]
+wyr               = ["wyr"]
+never_have_i_ever = ["never-have-i-ever", "nhie"]
+paranoia          = ["paranoia"]
 
-settings         = ["config", "set", "settings"]
+add_money         = ["add", "add_money"]
+remove_money      = ["remove", "rm", "remove_money"]
+check_balance     = ["check", "check_balance", "balance"]
+
+settings          = ["config", "set", "settings"]
 
 # Keywords for settings, which are arguments of the settings keyword (e.g. !settings pfp)
-profile_picture  = ["pfp", "picture", "pic"]
-banner           = ["banner"]
-change_name      = ["name", "nickname"]
+profile_picture   = ["pfp", "picture", "pic"]
+banner            = ["banner"]
+change_name       = ["name", "nickname"]
 
-change_keywords  = ["keywords", "key"]
-error_messages   = ["error"]
-success_messages = ["success"]"""
+change_keywords   = ["keywords", "key"]
+error_messages    = ["error"]
+success_messages  = ["success"]"""
 
 moderation = r""""""
 

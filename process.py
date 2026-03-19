@@ -1,6 +1,7 @@
 from typing import Any, cast
 
 import api
+import commands
 import money_system
 from bot import client
 from data import config, error_messages, keywords, success_messages
@@ -43,22 +44,25 @@ async def process(message) -> str | None | Any:
             return api.bible()
 
         elif command in keywords["truth"]:
-            return api.tord("https://api.truthordarebot.xyz/v1/truth", args[1] if args else None)
+            return api.tord("https://api.truthordarebot.xyz/v1/truth", args[0] if args else None)
         elif command in keywords["dare"]:
-            return api.tord("https://api.truthordarebot.xyz/api/dare", args[1] if args else None)
+            return api.tord("https://api.truthordarebot.xyz/api/dare", args[0] if args else None)
         elif command in keywords["wyr"]:
-            return api.tord("https://api.truthordarebot.xyz/api/wyr", args[1] if args else None)
+            return api.tord("https://api.truthordarebot.xyz/api/wyr", args[0] if args else None)
         elif command in keywords["never_have_i_ever"]:
-            return api.tord("https://api.truthordarebot.xyz/api/nhie", args[1] if args else None)
+            return api.tord("https://api.truthordarebot.xyz/api/nhie", args[9] if args else None)
         elif command in keywords["paranoia"]:
-            return api.tord("https://api.truthordarebot.xyz/api/paranoia", args[1] if args else None)
+            return api.tord("https://api.truthordarebot.xyz/api/paranoia", args[0] if args else None)
+
+        elif command in keywords["qr_code"]:
+            return commands.qr(args[0])
 
 
         elif command in keywords["check_balance"]:
             if args:
                 return money_system.check_balance(args[0])
             else:
-                return "No username given."  # TODO: add customizable error command
+                return error_messages["no_argument_given"]
         elif command in keywords["add_money"] and (
             message.author.guild_permissions.administrator or config["bot_admins"]
         ):
