@@ -42,6 +42,18 @@ async def process(message) -> str | None | Any:
         elif command in keywords["bible"]:
             return api.bible()
 
+        elif command in keywords["truth"]:
+            return api.tord("https://api.truthordarebot.xyz/v1/truth", args[1] if args else None)
+        elif command in keywords["dare"]:
+            return api.tord("https://api.truthordarebot.xyz/api/dare", args[1] if args else None)
+        elif command in keywords["wyr"]:
+            return api.tord("https://api.truthordarebot.xyz/api/wyr", args[1] if args else None)
+        elif command in keywords["never_have_i_ever"]:
+            return api.tord("https://api.truthordarebot.xyz/api/nhie", args[1] if args else None)
+        elif command in keywords["paranoia"]:
+            return api.tord("https://api.truthordarebot.xyz/api/paranoia", args[1] if args else None)
+
+
         elif command in keywords["check_balance"]:
             if args:
                 return money_system.check_balance(args[0])
