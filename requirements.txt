@@ -4,3 +4,5 @@ requests
 tomlkit
 appdirs
 ollama
+google-genai
+groq
