@@ -53,17 +53,9 @@ money: Dict[str, Dict[str, int]] = _load_or_create(
 )
 
 ai_parsed = tomlkit.loads(ai_str)
-system_prompt_text = cast(str, ai_parsed["system_prompt"])
+system_prompt_text = cast(str, cast(object, ai_parsed["system_prompt"]))
 
-conversation_history_template = templates.conversation_history.replace(
-    "You are a helpful assistant.", system_prompt_text
-)
-history: Dict[str, List[Dict[str, str]]] = _load_or_create(
-    _get_data_path("conversation_history.toml"), conversation_history_template
-)
-
-history_messages = cast(List[Dict[str, str]], history["messages"])
-history_messages[0]["content"] = system_prompt_text
+_ensure_file(_get_data_path(".env"), templates.env_template)
 
 
 def save_toml(data, path):
