@@ -1,18 +1,24 @@
 from os import getenv as os_getenv
-from typing import cast
+from os import path as os_path
+
+from functions import *
+from data import *
 
 import platform
 import sys
 
+import process
 import discord
 import dotenv
+import appdirs
 
-import process
-from bot import client
-from data import ai, config
-from functions import chat, para
-
-dotenv.load_dotenv()
+dotenv.load_dotenv(
+    dotenv.find_dotenv(
+        os_path.join(
+            appdirs.user_data_dir(appname="Comprobot", appauthor=False), ".env"
+        )
+    )
+)
 
 
 response = None
