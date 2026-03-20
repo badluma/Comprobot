@@ -77,6 +77,7 @@ async def on_message(message):
 @client.event
 async def on_ready():
     user_name = client.user.name if client.user else "Unknown"
+    print(f"Configuration directory: {appdirs.user_data_dir(appname="Comprobot", appauthor=False)}")
     print(f"Logged in as {user_name}")
     para()
 
