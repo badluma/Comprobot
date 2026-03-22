@@ -1,15 +1,15 @@
-from typing import cast
 import platform
 import sys
 from os import getenv as os_getenv
 from os import path as os_path
+from typing import cast
 
 import discord
 import dotenv
 
 import process
 from data import ai, config
-from functions import appdirs, chat, client
+from functions import appdirs, chat, client, para
 
 dotenv.load_dotenv(
     dotenv.find_dotenv(
@@ -80,6 +80,7 @@ async def on_ready():
     )
     user_name = client.user.name if client.user else "Unknown"
     print(f"Logged in as {user_name}")
+    para()
 
 
 if __name__ == "__main__":
