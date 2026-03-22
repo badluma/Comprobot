@@ -23,6 +23,8 @@ async def process(message) -> str | None | Any:
             return api.quote()
         elif command in keywords["joke"]:
             return api.joke()
+        elif command in keywords["dadjoke"]:
+            return api.dadjoke()
         elif command in keywords["meme"]:
             return api.meme()
         elif command in keywords["image"]:

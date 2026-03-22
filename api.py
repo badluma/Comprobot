@@ -35,7 +35,7 @@ def quote():
     return response
 
 
-def joke():
+def dadjoke():
     return access_api(
         "https://icanhazdadjoke.com/",
         "joke",
@@ -124,6 +124,7 @@ def bitcoin(currency_parameter):
         response = error_messages["bitcoin"]
     return response
 
+
 def tord(url, rating, max_retries=10):
     for _ in range(max_retries):
         response = requests.get(url)
@@ -133,3 +134,18 @@ def tord(url, rating, max_retries=10):
         if not rating or data.get("rating") == rating:
             return data["question"]
     return None
+
+
+def joke():
+    setup = access_api(
+        "https://official-joke-api.appspot.com/jokes/random",
+        "setup",
+        error_messages["joke"],
+    )
+    punchline = access_api(
+        "https://official-joke-api.appspot.com/jokes/random",
+        "punchline",
+        error_messages["joke"],
+    )
+    response = f"{setup} ||{punchline}||"
+    return response

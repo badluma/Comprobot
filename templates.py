@@ -17,6 +17,7 @@ bot_admins = ["badluma"]"""
 
 error_messages = r'''quote     = "Failed to get a quote."
 joke      = "Failed to get a joke."
+dadjoke   = "Failed to get a dad joke."
 meme      = "Failed to get a meme."
 duck      = "Failed to get a duck image."
 dog       = "Failed to get a dog image."
@@ -41,6 +42,7 @@ bot_unavailable   = "Bot not available."'''
 
 keywords = r"""quote            = ["quote"]
 joke              = ["joke"]
+dadjoke           = ["dadjoke"]
 meme              = ["meme"]
 image             = ["image", "picture"]
 duck              = ["duck"]
