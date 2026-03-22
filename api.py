@@ -49,10 +49,10 @@ def meme():
 
 
 def waifu(category="waifu"):
-    if requests.get("https://api.waifu.pics/sfw/{category}").status_code == 404:
-        return error_messages["invalid_argument"]
+    if requests.get(f"https://api.waifu.pics/sfw/{category}").status_code != 200:
+        return error_messages["unknown_argument"]
     result = access_api(
-        "https://api.waifu.pics/sfw/{category}", "url", error_messages["waifu"]
+        f"https://api.waifu.pics/sfw/{category}", "url", error_messages["waifu"]
     )
     return result
 
