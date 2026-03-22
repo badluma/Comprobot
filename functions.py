@@ -2,6 +2,7 @@ import os
 import re
 from typing import Dict, List, cast
 from google import genai
+from google.genai.errors import ClientError
 import groq
 
 import appdirs
@@ -61,7 +62,7 @@ def demoji(text):
 
 
 def chat(message):
-    messages: List[Dict[str, str]] = []
+    messages: List[Dict[str, str | List[Dict[str, str]]]] = []
     user_id = client.user.id if client.user else ""
 
     if ai["provider"].lower() in ("ollama", "groq"):
@@ -110,7 +111,7 @@ def chat(message):
                 model=ai["model"], contents=formatted_messages, config=config
             )
             content = response.text or ""
-        except genai.errors.ClientError as e:
+        except ClientError as e:
             if "NOT_FOUND" in str(e) or "404" in str(e):
                 available = gemini_client.models.list()
                 print(f"Available models: {[m.name for m in available]}")
@@ -165,7 +166,7 @@ def chat(message):
     if ai["lower_response"]:
         content = content.lower()
 
-    content = re.sub(r"<.*?>", "", content).strip()
+    content = re.sub(r"<think>.*?</think>", "", content, flags=re.DOTALL).strip()
     return content
 
 
