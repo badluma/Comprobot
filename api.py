@@ -48,6 +48,15 @@ def meme():
     return access_api("https://meme-api.com/gimme", "url", error_messages["meme"])
 
 
+def waifu(category="waifu"):
+    if requests.get("https://api.waifu.pics/sfw/{category}").status_code == 404:
+        return error_messages["invalid_argument"]
+    result = access_api(
+        "https://api.waifu.pics/sfw/{category}", "url", error_messages["waifu"]
+    )
+    return result
+
+
 def duck():
     return access_api("https://random-d.uk/api/random", "url", error_messages["duck"])
 

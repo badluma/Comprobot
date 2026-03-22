@@ -19,6 +19,7 @@ error_messages = r'''quote     = "Failed to get a quote."
 joke      = "Failed to get a joke."
 dadjoke   = "Failed to get a dad joke."
 meme      = "Failed to get a meme."
+waifu     = "Failed to get a waifu image."
 duck      = "Failed to get a duck image."
 dog       = "Failed to get a dog image."
 cat       = "Failed to get a cat image."
@@ -44,6 +45,7 @@ keywords = r"""quote            = ["quote"]
 joke              = ["joke"]
 dadjoke           = ["dadjoke"]
 meme              = ["meme"]
+waifu             = ["waifu"]
 image             = ["image", "picture"]
 duck              = ["duck"]
 dog               = ["dog"]
