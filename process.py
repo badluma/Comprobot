@@ -27,6 +27,11 @@ async def process(message) -> str | None | Any:
             return api.dadjoke()
         elif command in keywords["meme"]:
             return api.meme()
+        elif command in keywords["waifu"]:
+            if args:
+                return api.waifu(args[0])
+            else:
+                return api.waifu()
         elif command in keywords["image"]:
             if args[0] in keywords["duck"]:
                 return api.duck()
