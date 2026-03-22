@@ -4,7 +4,7 @@ import api
 import commands
 import money_system
 from bot import client
-from data import config, error_messages, keywords, success_messages
+from data import active, config, error_messages, keywords, success_messages
 
 
 async def process(message) -> str | None | Any:
@@ -19,59 +19,59 @@ async def process(message) -> str | None | Any:
         # print(command)
         # print(args)
 
-        if command in keywords["quote"]:
+        if command in keywords["quote"] and active["quote"]:
             return api.quote()
-        elif command in keywords["joke"]:
+        elif command in keywords["joke"] and active["joke"]:
             return api.joke()
-        elif command in keywords["dadjoke"]:
+        elif command in keywords["dadjoke"] and active["dadjoke"]:
             return api.dadjoke()
-        elif command in keywords["meme"]:
+        elif command in keywords["meme"] and active["meme"]:
             return api.meme()
-        elif command in keywords["waifu"]:
+        elif command in keywords["waifu"] and active["waifu"]:
             if args:
                 return api.waifu(args[0])
             else:
                 return api.waifu()
-        elif command in keywords["image"]:
-            if args[0] in keywords["duck"]:
+        elif command in keywords["image"] and active["image"]:
+            if args[0] in keywords["duck"] and active["duck"]:
                 return api.duck()
-            elif args[0] in keywords["dog"]:
+            elif args[0] in keywords["dog"] and active["dog"]:
                 return api.dog()
-            elif args[0] in keywords["cat"]:
+            elif args[0] in keywords["cat"] and active["cat"]:
                 return api.cat()
             elif not args:
                 return error_messages["no_argument_given"]
             else:
                 return error_messages["unknown_argument"]
-        elif command in keywords["chuck_norris"]:
+        elif command in keywords["chuck_norris"] and active["chuck_norris"]:
             return api.chuck()
-        elif command in keywords["fact"]:
+        elif command in keywords["fact"] and active["fact"]:
             return api.fact()
-        elif command in keywords["bible"]:
+        elif command in keywords["bible"] and active["bible"]:
             return api.bible()
 
-        elif command in keywords["truth"]:
+        elif command in keywords["truth"] and active["truth"]:
             return api.tord(
                 "https://api.truthordarebot.xyz/v1/truth", args[0] if args else None
             )
-        elif command in keywords["dare"]:
+        elif command in keywords["dare"] and active["dare"]:
             return api.tord(
                 "https://api.truthordarebot.xyz/api/dare", args[0] if args else None
             )
-        elif command in keywords["wyr"]:
+        elif command in keywords["wyr"] and active["wyr"]:
             return api.tord(
                 "https://api.truthordarebot.xyz/api/wyr", args[0] if args else None
             )
-        elif command in keywords["never_have_i_ever"]:
+        elif command in keywords["never_have_i_ever"] and active["never_have_i_ever"]:
             return api.tord(
                 "https://api.truthordarebot.xyz/api/nhie", args[9] if args else None
             )
-        elif command in keywords["paranoia"]:
+        elif command in keywords["paranoia"] and active["paranoia"]:
             return api.tord(
                 "https://api.truthordarebot.xyz/api/paranoia", args[0] if args else None
             )
 
-        elif command in keywords["qr_code"]:
+        elif command in keywords["qr_code"] and active["qr_code"]:
             return commands.qr(args[0])
 
         elif command in keywords["check_balance"]:
@@ -146,7 +146,7 @@ async def process(message) -> str | None | Any:
                     return error_messages["no_argument_given"]
                 keywords[args[1]] = args[2:]
 
-        elif command == "purge":
+        elif command == "purge" and active["purge"]:
             if message.author.guild_permissions.administrator:
                 await message.channel.purge()
                 return "All messages deleted."

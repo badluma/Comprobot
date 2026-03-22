@@ -99,3 +99,27 @@ create("moderation.toml", moderation)
 create("data/.do_not_touch/money.toml", money)
 create("data/.do_not_touch/conversation_history.toml", conversation_history)
 create(".env", env_template)"""
+
+active = r"""quote            = true
+joke              = true
+dadjoke           = true
+meme              = true
+waifu             = true
+image             = true
+duck              = true
+dog               = true
+cat               = true
+chuck_norris      = true
+fact              = true
+bible             = true
+calculate         = true
+bitcoin           = true
+qr_code           = true
+
+truth             = true
+dare              = true
+wyr               = true
+never_have_i_ever = true
+paranoia          = true
+
+purge             = true"""
