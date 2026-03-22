@@ -48,12 +48,16 @@ def meme():
     return access_api("https://meme-api.com/gimme", "url", error_messages["meme"])
 
 
-def waifu(category="waifu"):
-    if requests.get(f"https://api.waifu.pics/sfw/{category}").status_code != 200:
-        return error_messages["unknown_argument"]
-    result = access_api(
-        f"https://api.waifu.pics/sfw/{category}", "url", error_messages["waifu"]
-    )
+def waifu(activate_nsfw: bool = False):
+    if activate_nsfw:
+        result = access_api(
+            "https://api.waifu.pics/nsfw/waifu", "url", error_messages["waifu"]
+        )
+    else:
+        result = access_api(
+            "https://api.waifu.pics/sfw/waifu", "url", error_messages["waifu"]
+        )
+
     return result
 
 

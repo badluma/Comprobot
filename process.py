@@ -29,9 +29,12 @@ async def process(message) -> str | None | Any:
             return api.meme()
         elif command in keywords["waifu"] and active["waifu"]:
             if args:
-                return api.waifu(args[0])
+                if args[0] in keywords["nsfw"] and active["nsfw"]:
+                    return api.waifu(True)
+                else:
+                    return api.waifu(False)
             else:
-                return api.waifu()
+                return api.waifu(False)
         elif command in keywords["image"] and active["image"]:
             if args[0] in keywords["duck"] and active["duck"]:
                 return api.duck()

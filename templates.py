@@ -68,6 +68,7 @@ remove_money      = ["remove", "rm", "remove_money"]
 check_balance     = ["check", "check_balance", "balance"]
 
 settings          = ["config", "set", "settings"]
+nsfw              = ["nsfw"]
 
 # Keywords for settings, which are arguments of the settings keyword (e.g. !settings pfp)
 profile_picture   = ["pfp", "picture", "pic"]
@@ -100,7 +101,8 @@ create("data/.do_not_touch/money.toml", money)
 create("data/.do_not_touch/conversation_history.toml", conversation_history)
 create(".env", env_template)"""
 
-active = r"""quote             = true
+active = r"""
+quote             = true
 joke              = true
 dadjoke           = true
 meme              = true
@@ -121,5 +123,7 @@ dare              = true
 wyr               = true
 never_have_i_ever = true
 paranoia          = true
+
+nsfw              = false
 
 purge             = true"""
