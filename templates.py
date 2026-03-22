@@ -1,19 +1,19 @@
-ai = r'''activate_ai = false
+ai = r'''activate_ai          = false
 
-provider = "gemini" # Available providers: "ollama", "gemini", "groq"
-model = "gemini-2.0-flash"
+provider             = "gemini" # Available providers: "ollama", "gemini", "groq"
+model                = "gemini-2.0-flash"
 max_messages_context = 10
-remove_emojis = true
-lower_response = true
+remove_emojis        = true
+lower_response       = true
 
 system_prompt = """
 You are a helpful assistant that gives short, helpful answers.
 Your answers can maximally be 1000 characters long.
 """'''
 
-config = r"""prefix = "!"
-money_symbol   = "€"
-bot_admins = ["badluma"]"""
+config = r"""prefix       = "!"
+money_symbol = "$"
+bot_admins   = []"""
 
 error_messages = r'''quote     = "Failed to get a quote."
 joke      = "Failed to get a joke."
@@ -41,7 +41,7 @@ no_argument_given = "No argument given."
 no_attachment     = "No attachment given."
 bot_unavailable   = "Bot not available."'''
 
-keywords = r"""quote            = ["quote"]
+keywords = r"""quote             = ["quote"]
 joke              = ["joke"]
 dadjoke           = ["dadjoke"]
 meme              = ["meme"]
@@ -100,7 +100,7 @@ create("data/.do_not_touch/money.toml", money)
 create("data/.do_not_touch/conversation_history.toml", conversation_history)
 create(".env", env_template)"""
 
-active = r"""quote            = true
+active = r"""quote             = true
 joke              = true
 dadjoke           = true
 meme              = true
