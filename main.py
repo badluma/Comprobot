@@ -1,16 +1,15 @@
+from typing import cast
+import platform
+import sys
 from os import getenv as os_getenv
 from os import path as os_path
 
-from functions import *
-from data import *
-
-import platform
-import sys
-
-import process
 import discord
 import dotenv
-import appdirs
+
+import process
+from data import ai, config
+from functions import appdirs, chat, client
 
 dotenv.load_dotenv(
     dotenv.find_dotenv(
@@ -76,10 +75,11 @@ async def on_message(message):
 
 @client.event
 async def on_ready():
+    print(
+        f"Configuration directory: {appdirs.user_data_dir(appname='Comprobot', appauthor=False)}"
+    )
     user_name = client.user.name if client.user else "Unknown"
-    print(f"Configuration directory: {appdirs.user_data_dir(appname="Comprobot", appauthor=False)}")
     print(f"Logged in as {user_name}")
-    para()
 
 
 if __name__ == "__main__":
