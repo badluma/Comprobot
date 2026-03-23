@@ -1,7 +1,7 @@
 ai = r'''activate_ai          = false
 
-provider             = "gemini" # Available providers: "ollama", "gemini", "groq"
-model                = "gemini-2.0-flash"
+provider             = "groq" # Available providers: "ollama", "gemini", "groq"
+model                = "qwen/qwen3-32b"
 max_messages_context = 10
 remove_emojis        = true
 lower_response       = true
@@ -11,9 +11,11 @@ You are a helpful assistant that gives short, helpful answers.
 Your answers can maximally be 1000 characters long.
 """'''
 
-config = r"""prefix       = "!"
-money_symbol = "$"
-bot_admins   = []"""
+config = r"""
+commmand_prefix = "!"
+settings_prefix = "s!"
+money_symbol    = "$"
+bot_admins      = []"""
 
 error_messages = r'''quote     = "Failed to get a quote."
 joke        = "Failed to get a joke."
@@ -42,7 +44,8 @@ missing_argument = "Missing argument."
 no_attachment    = "No attachment given."
 bot_unavailable  = "Bot not available."'''
 
-keywords = r"""quote             = ["quote"]
+keywords = r"""[commands]
+quote             = ["quote"]
 joke              = ["joke"]
 dadjoke           = ["dadjoke"]
 meme              = ["meme"]
@@ -65,21 +68,18 @@ wyr               = ["wyr"]
 never_have_i_ever = ["never-have-i-ever", "nhie"]
 paranoia          = ["paranoia"]
 
-add_money         = ["add", "add_money"]
-remove_money      = ["remove", "rm", "remove_money"]
-check_balance     = ["check", "check_balance", "balance"]
-
+[settings]
 settings          = ["config", "set", "settings"]
 nsfw              = ["nsfw"]
-
-# Keywords for settings, which are arguments of the settings keyword (e.g. !settings pfp)
 profile_picture   = ["pfp", "picture", "pic"]
 banner            = ["banner"]
 change_name       = ["name", "nickname"]
-
 change_keywords   = ["keywords", "key"]
-error_messages    = ["error"]
-success_messages  = ["success"]"""
+
+[money]
+add_money         = ["add", "add_money"]
+remove_money      = ["remove", "rm", "remove_money"]
+check_balance     = ["check", "check_balance", "balance"]"""
 
 moderation = r""""""
 

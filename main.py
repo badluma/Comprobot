@@ -48,9 +48,12 @@ async def on_message(message):
         return
     response = None
 
-    if message.content.startswith(cast(str, config["prefix"])):
+    if message.content.startswith(cast(str, config["command_prefix"])):
         async with message.channel.typing():
-            response = await process.process(message)
+            response = await process.command(message)
+    if message.content.startswith(cast(str, config["settings_prefix"])):
+        async with message.channel.typing():
+            response = await process.settings(message)
 
     is_reply_to_bot = False
     user_id = client.user.id if client.user else None

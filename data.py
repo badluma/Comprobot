@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, cast
+from typing import Any, Dict, List
 
 import tomlkit
 
@@ -44,7 +44,7 @@ success_messages: Dict[str, str] = _load_or_create(
 config: Dict[str, Any] = _load_or_create(
     _get_data_path("config.toml"), templates.config
 )
-keywords: Dict[str, List[str]] = _load_or_create(
+keywords: Dict[str, Dict[str, List[str]]] = _load_or_create(
     _get_data_path("keywords.toml"), templates.keywords
 )
 ai: Dict[str, Any] = _load_or_create(_get_data_path("ai.toml"), ai_str)

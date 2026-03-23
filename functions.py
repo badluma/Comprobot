@@ -1,13 +1,13 @@
 import os
 import re
-from typing import Dict, List, cast
-from google import genai
-from google.genai.errors import ClientError
-import groq
+from typing import Any, Dict, List, cast
 
 import appdirs
 import discord
+import groq
 import ollama
+from google import genai
+from google.genai.errors import ClientError
 
 from bot import client
 from data import ai, system_prompt_text
@@ -62,7 +62,7 @@ def demoji(text):
 
 
 def chat(message):
-    messages: List[Dict[str, str | List[Dict[str, str]]]] = []
+    messages: List[Dict[str, Any]] = []
     user_id = client.user.id if client.user else ""
 
     if ai["provider"].lower() in ("ollama", "groq"):
