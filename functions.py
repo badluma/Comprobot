@@ -10,7 +10,7 @@ import discord
 import ollama
 
 from bot import client
-from data import ai
+from data import ai, system_prompt_text
 
 
 def para(count=1):
@@ -83,6 +83,13 @@ def chat(message):
         raise ValueError(f"Unknown provider: {ai['provider']}")
 
     if ai["provider"].lower() == "ollama":
+        messages.insert(
+            0,
+            {
+                "role": "system",
+                "content": system_prompt_text,
+            },
+        )
         response = ollama.chat(model=cast(str, ai["model"]), messages=messages)
         content: str = response.message.content or ""
     elif ai["provider"].lower() == "gemini":
@@ -118,22 +125,10 @@ def chat(message):
             raise
     elif ai["provider"].lower() == "groq":
         groq_client = groq.Groq(api_key=os.getenv("GROQ"))
-        formatted_messages = []
-        for m in messages:
-            if m["role"] == "system":
-                formatted_messages.append(
-                    {
-                        "role": "system",
-                        "content": m["content"],
-                    }
-                )
-            else:
-                formatted_messages.append(
-                    {
-                        "role": "user" if m["role"] == "user" else "assistant",
-                        "content": m["content"],
-                    }
-                )
+        formatted_messages = [
+            {"role": "system", "content": system_prompt_text},
+            messages[0],
+        ]
         response = groq_client.chat.completions.create(
             model=ai["model"], messages=formatted_messages
         )

@@ -48,15 +48,13 @@ keywords: Dict[str, List[str]] = _load_or_create(
     _get_data_path("keywords.toml"), templates.keywords
 )
 ai: Dict[str, Any] = _load_or_create(_get_data_path("ai.toml"), ai_str)
+system_prompt_text = ai["system_prompt"]
 money: Dict[str, Dict[str, int]] = _load_or_create(
     _get_data_path("money.toml"), r"""balances = {}"""
 )
 active: Dict[str, bool] = _load_or_create(
     _get_data_path("active.toml"), templates.active
 )
-
-ai_parsed = tomlkit.loads(ai_str)
-system_prompt_text = cast(str, cast(object, ai_parsed["system_prompt"]))
 
 _ensure_file(_get_data_path(".env"), templates.env_template)
 

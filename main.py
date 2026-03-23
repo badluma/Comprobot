@@ -4,12 +4,13 @@ from os import getenv as os_getenv
 from os import path as os_path
 from typing import cast
 
+import appdirs
 import discord
 import dotenv
 
 import process
 from data import ai, config
-from functions import appdirs, chat, client, para
+from functions import chat, client, para
 
 dotenv.load_dotenv(
     dotenv.find_dotenv(
