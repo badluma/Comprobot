@@ -15,10 +15,6 @@ async def process(message) -> str | None | Any:
         command = command_parts[0]
         args = command_parts[1:]
 
-        # print(command_parts)
-        # print(command)
-        # print(args)
-
         if command in keywords["quote"] and active["quote"]:
             return api.quote()
         elif command in keywords["joke"] and active["joke"]:
