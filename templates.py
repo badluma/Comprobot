@@ -16,30 +16,31 @@ money_symbol = "$"
 bot_admins   = []"""
 
 error_messages = r'''quote     = "Failed to get a quote."
-joke      = "Failed to get a joke."
-dadjoke   = "Failed to get a dad joke."
-meme      = "Failed to get a meme."
-waifu     = "Failed to get a waifu image."
-duck      = "Failed to get a duck image."
-dog       = "Failed to get a dog image."
-cat       = "Failed to get a cat image."
-chuck     = "Failed to get a Chuck Norris joke."
-fact      = "Failed to get a fact."
-bible     = "Failed to get a bible verse."
-truth     = "Failed to get a truth question."
-dare      = "Failed to get a dare question."
-wyr       = "Failed to get a Would You Rather question."
-never-hie = "Failed to get a Never Have I Ever question."
-paranoia  = "Failed to get a paranoia question."
-calculate = "Invalid calculation. Use +-*/"
-bitcoin   = "Failed to get the current bitcoin price."
-currency  = "Unknown currency."
+joke        = "Failed to get a joke."
+dadjoke     = "Failed to get a dad joke."
+meme        = "Failed to get a meme."
+waifu       = "Failed to get a waifu image."
+duck        = "Failed to get a duck image."
+dog         = "Failed to get a dog image."
+cat         = "Failed to get a cat image."
+chuck       = "Failed to get a Chuck Norris joke."
+fact        = "Failed to get a fact."
+bible       = "Failed to get a bible verse."
+truth       = "Failed to get a truth question."
+dare        = "Failed to get a dare question."
+wyr         = "Failed to get a Would You Rather question."
+never-hie   = "Failed to get a Never Have I Ever question."
+paranoia    = "Failed to get a paranoia question."
+calculate   = "Invalid calculation. Use +-*/"
+bitcoin     = "Failed to get the current bitcoin price."
+currency    = "Unknown currency."
+unavailable = "API unavailable."
 
-unknown_command   = "Unknown command."
-unknown_argument  = "Unknown argument."
-no_argument_given = "No argument given."
-no_attachment     = "No attachment given."
-bot_unavailable   = "Bot not available."'''
+unknown_command  = "Unknown command."
+unknown_argument = "Unknown argument."
+missing_argument = "Missing argument."
+no_attachment    = "No attachment given."
+bot_unavailable  = "Bot not available."'''
 
 keywords = r"""quote             = ["quote"]
 joke              = ["joke"]
@@ -55,6 +56,7 @@ fact              = ["fact"]
 bible             = ["bible"]
 calculate         = ["calculate", "calc"]
 bitcoin           = ["bitcoin", "btc"]
+currency          = ["currency", "convert", "conv"]
 qr_code           = ["qr_code", "qr"]
 
 truth             = ["truth"]
@@ -116,6 +118,7 @@ fact              = true
 bible             = true
 calculate         = true
 bitcoin           = true
+currency          = true
 qr_code           = true
 
 truth             = true

@@ -43,7 +43,7 @@ async def process(message) -> str | None | Any:
             elif args[0] in keywords["cat"] and active["cat"]:
                 return api.cat()
             elif not args:
-                return error_messages["no_argument_given"]
+                return error_messages["missing_argument"]
             else:
                 return error_messages["unknown_argument"]
         elif command in keywords["chuck_norris"] and active["chuck_norris"]:
@@ -77,11 +77,16 @@ async def process(message) -> str | None | Any:
         elif command in keywords["qr_code"] and active["qr_code"]:
             return commands.qr(args[0])
 
+        elif command in keywords["currency"] and active["currency"]:
+            if not len(args) >= 3:
+                return error_messages["missing_argument"]
+            return api.currency(args[0], args[1], args[2])
+
         elif command in keywords["check_balance"]:
             if args:
                 return money_system.check_balance(args[0])
             else:
-                return error_messages["no_argument_given"]
+                return error_messages["missing_argument"]
         elif command in keywords["add_money"] and (
             message.author.guild_permissions.administrator or config["bot_admins"]
         ):
@@ -110,7 +115,7 @@ async def process(message) -> str | None | Any:
             or message.author.name in config["bot_admins"]
         ):
             if not args:
-                return error_messages["no_argument_given"]
+                return error_messages["missing_argument"]
 
             if args[0] in keywords["profile_picture"]:
                 if not message.attachments:
@@ -138,7 +143,7 @@ async def process(message) -> str | None | Any:
 
             elif args[0] in keywords["change_name"]:
                 if len(args) < 2:
-                    return error_messages["no_argument_given"]
+                    return error_messages["missing_argument"]
                 if client is None or client.user is None:
                     return error_messages["bot_unavailable"]
                 await client.user.edit(username=args[1])
@@ -146,7 +151,7 @@ async def process(message) -> str | None | Any:
 
             elif args[0] in keywords["keywords"]:
                 if len(args) < 2:
-                    return error_messages["no_argument_given"]
+                    return error_messages["missing_argument"]
                 keywords[args[1]] = args[2:]
 
         elif command == "purge" and active["purge"]:
