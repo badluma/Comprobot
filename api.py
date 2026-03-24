@@ -48,17 +48,17 @@ def meme():
     return access_api("https://meme-api.com/gimme", "url", error_messages["meme"])
 
 
-def waifu(activate_nsfw: bool = False):
-    if activate_nsfw:
-        result = access_api(
-            "https://api.waifu.pics/nsfw/waifu", "url", error_messages["waifu"]
-        )
-    else:
-        result = access_api(
-            "https://api.waifu.pics/sfw/waifu", "url", error_messages["waifu"]
-        )
+def waifu():
+    waifu1 = access_api(
+        "https://api.waifu.pics/sfw/waifu", "url", error_messages["waifu"]
+    )
+    waifu2 = access_api(
+        "https://api.waifu.pics/sfw/waifu", "url", error_messages["waifu"]
+    )
+    return f"""### Which one is better?
 
-    return result
+    {waifu1}
+    {waifu2}"""
 
 
 def duck():

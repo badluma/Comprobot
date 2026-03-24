@@ -70,7 +70,6 @@ paranoia          = ["paranoia"]
 
 [settings]
 settings          = ["config", "set", "settings"]
-nsfw              = ["nsfw"]
 profile_picture   = ["pfp", "picture", "pic"]
 banner            = ["banner"]
 change_name       = ["name", "nickname"]

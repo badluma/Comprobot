@@ -9,7 +9,7 @@ from data import active, config, error_messages, keywords, success_messages
 
 async def command(ctx) -> str | None | Any:
 
-    if ctx.content.startswith(cast(str, config["prefix"])):
+    if ctx.content.startswith(cast(str, config["command_prefix"])):
         command_parts = ctx.content[1:].strip().split()
 
         command = command_parts[0]
@@ -24,13 +24,7 @@ async def command(ctx) -> str | None | Any:
         elif command in keywords["commands"]["meme"] and active["meme"]:
             return api.meme()
         elif command in keywords["commands"]["waifu"] and active["waifu"]:
-            if args:
-                if args[0] in keywords["commands"]["nsfw"] and active["nsfw"]:
-                    return api.waifu(True)
-                else:
-                    return api.waifu(False)
-            else:
-                return api.waifu(False)
+            return api.waifu()
         elif command in keywords["commands"]["image"] and active["image"]:
             if args[0] in keywords["commands"]["duck"] and active["duck"]:
                 return api.duck()
