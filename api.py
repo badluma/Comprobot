@@ -111,6 +111,10 @@ def bible(
                 )
         except (requests.exceptions.JSONDecodeError, KeyError):
             response = error_messages["bible"]
+    elif bible_response.status_code == 404:
+        response = error_messages["passage_not_found"].replace(
+            r"{{PASSAGE}}", f"{book_arg} {chapter_arg}:{verse_arg}"
+        )
     else:
         response = f"{error_messages['bible']} (HTTP {bible_response.status_code})"
     return response
