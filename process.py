@@ -9,112 +9,123 @@ from data import active, config, error_messages, keywords, success_messages
 
 async def command(ctx) -> str | None | Any:
 
-    if ctx.content.startswith(cast(str, config["command_prefix"])):
-        command_parts = ctx.content[1:].strip().split()
+    command_parts = ctx.content[len(config["command_prefix"]) :].strip().split()
 
-        command = command_parts[0]
-        args = command_parts[1:]
+    command = command_parts[0]
+    args = command_parts[1:]
 
-        if command in keywords["commands"]["quote"] and active["quote"]:
-            return api.quote()
-        elif command in keywords["commands"]["joke"] and active["joke"]:
-            return api.joke()
-        elif command in keywords["commands"]["dadjoke"] and active["dadjoke"]:
-            return api.dadjoke()
-        elif command in keywords["commands"]["meme"] and active["meme"]:
-            return api.meme()
-        elif command in keywords["commands"]["waifu"] and active["waifu"]:
-            return api.waifu()
-        elif command in keywords["commands"]["image"] and active["image"]:
-            if args[0] in keywords["commands"]["duck"] and active["duck"]:
-                return api.duck()
-            elif args[0] in keywords["commands"]["dog"] and active["dog"]:
-                return api.dog()
-            elif args[0] in keywords["commands"]["cat"] and active["cat"]:
-                return api.cat()
-            elif not args:
-                return error_messages["missing_argument"]
-            else:
-                return error_messages["unknown_argument"]
-        elif command in keywords["commands"]["chuck_norris"] and active["chuck_norris"]:
-            return api.chuck()
-        elif command in keywords["commands"]["fact"] and active["fact"]:
-            return api.fact()
-        elif command in keywords["commands"]["bible"] and active["bible"]:
-            return api.bible()
-
-        elif command in keywords["commands"]["truth"] and active["truth"]:
-            return api.tord(
-                "https://api.truthordarebot.xyz/v1/truth", args[0] if args else None
-            )
-        elif command in keywords["commands"]["dare"] and active["dare"]:
-            return api.tord(
-                "https://api.truthordarebot.xyz/api/dare", args[0] if args else None
-            )
-        elif command in keywords["commands"]["wyr"] and active["wyr"]:
-            return api.tord(
-                "https://api.truthordarebot.xyz/api/wyr", args[0] if args else None
-            )
-        elif (
-            command in keywords["commands"]["never_have_i_ever"]
-            and active["never_have_i_ever"]
-        ):
-            return api.tord(
-                "https://api.truthordarebot.xyz/api/nhie", args[0] if args else None
-            )
-        elif command in keywords["commands"]["paranoia"] and active["paranoia"]:
-            return api.tord(
-                "https://api.truthordarebot.xyz/api/paranoia", args[0] if args else None
-            )
-
-        elif command in keywords["commands"]["qr_code"] and active["qr_code"]:
-            return commands.qr(args[0])
-
-        elif command in keywords["commands"]["currency"] and active["currency"]:
-            if not len(args) >= 3:
-                return error_messages["missing_argument"]
-            return api.currency(args[0], args[1], args[2])
-
-        elif command in keywords["money"]["check_balance"]:
-            if args:
-                return money_system.check_balance(args[0])
-            else:
-                return error_messages["missing_argument"]
-        elif command in keywords["money"]["add_money"] and (
-            ctx.author.guild_permissions.administrator or config["bot_admins"]
-        ):
-            if len(args) >= 2:
-                try:
-                    amount = int(args[1])
-                    return money_system.add_money(args[0], amount)
-                except ValueError:
-                    return f"Invalid amount: {args[1]}"
-            else:
-                return "No amount given."
-        elif command in keywords["money"]["remove_money"] and (
-            ctx.author.guild_permissions.administrator or config["bot_admins"]
-        ):
-            if len(args) >= 2:
-                try:
-                    amount = int(args[1])
-                    return money_system.remove_money(args[0], amount)
-                except ValueError:
-                    return f"Invalid amount: {args[1]}"
-            else:
-                return "No amount given."
-
-        elif command == "purge" and active["purge"]:
-            if ctx.author.guild_permissions.administrator:
-                await ctx.channel.purge()
-                return "All messages deleted."
-
+    if command in keywords["commands"]["quote"] and active["quote"]:
+        return api.quote()
+    elif command in keywords["commands"]["joke"] and active["joke"]:
+        return api.joke()
+    elif command in keywords["commands"]["dadjoke"] and active["dadjoke"]:
+        return api.dadjoke()
+    elif command in keywords["commands"]["meme"] and active["meme"]:
+        return api.meme()
+    elif command in keywords["commands"]["waifu"] and active["waifu"]:
+        return api.waifu()
+    elif command in keywords["commands"]["image"] and active["image"]:
+        if args[0] in keywords["commands"]["duck"] and active["duck"]:
+            return api.duck()
+        elif args[0] in keywords["commands"]["dog"] and active["dog"]:
+            return api.dog()
+        elif args[0] in keywords["commands"]["cat"] and active["cat"]:
+            return api.cat()
+        elif not args:
+            return error_messages["missing_argument"]
         else:
-            return None
+            return error_messages["unknown_argument"]
+    elif command in keywords["commands"]["chuck_norris"] and active["chuck_norris"]:
+        return api.chuck()
+    elif command in keywords["commands"]["fact"] and active["fact"]:
+        return api.fact()
+    elif command in keywords["commands"]["bible"] and active["bible"]:
+        return api.bible()
+
+    elif command in keywords["commands"]["truth"] and active["truth"]:
+        return api.tord(
+            "https://api.truthordarebot.xyz/v1/truth", args[0] if args else None
+        )
+    elif command in keywords["commands"]["dare"] and active["dare"]:
+        return api.tord(
+            "https://api.truthordarebot.xyz/api/dare", args[0] if args else None
+        )
+    elif command in keywords["commands"]["wyr"] and active["wyr"]:
+        return api.tord(
+            "https://api.truthordarebot.xyz/api/wyr", args[0] if args else None
+        )
+    elif (
+        command in keywords["commands"]["never_have_i_ever"]
+        and active["never_have_i_ever"]
+    ):
+        return api.tord(
+            "https://api.truthordarebot.xyz/api/nhie", args[0] if args else None
+        )
+    elif command in keywords["commands"]["paranoia"] and active["paranoia"]:
+        return api.tord(
+            "https://api.truthordarebot.xyz/api/paranoia", args[0] if args else None
+        )
+
+    elif command in keywords["commands"]["qr_code"] and active["qr_code"]:
+        if args:
+            return commands.qr(args[0])
+        else:
+            return error_messages["missing_argument"]
+
+    elif command in keywords["commands"]["calculate"]:
+        if args:
+            return commands.calculate(args[0])
+        else:
+            return error_messages["missing_argument"]
+
+    elif command in keywords["commands"]["ascii_art"]:
+        return commands.ascii()
+
+    elif command in keywords["commands"]["currency"] and active["currency"]:
+        if not len(args) >= 3:
+            return error_messages["missing_argument"]
+        return api.currency(args[0], args[1], args[2])
+
+    elif command in keywords["money"]["check_balance"]:
+        if args:
+            return money_system.check_balance(args[0])
+        else:
+            return error_messages["missing_argument"]
+    elif command in keywords["money"]["add_money"] and (
+        ctx.author.guild_permissions.administrator or config["bot_admins"]
+    ):
+        if len(args) >= 2:
+            try:
+                amount = int(args[1])
+                return money_system.add_money(args[0], amount)
+            except ValueError:
+                return f"Invalid amount: {args[1]}"
+        else:
+            return "No amount given."
+    elif command in keywords["money"]["remove_money"] and (
+        ctx.author.guild_permissions.administrator or config["bot_admins"]
+    ):
+        if len(args) >= 2:
+            try:
+                amount = int(args[1])
+                return money_system.remove_money(args[0], amount)
+            except ValueError:
+                return f"Invalid amount: {args[1]}"
+        else:
+            return "No amount given."
+
+    elif command == "purge" and active["purge"]:
+        if ctx.author.guild_permissions.administrator:
+            await ctx.channel.purge()
+            return "All messages deleted."
+
+    else:
+        return None
 
 
 async def settings(ctx):
 
-    command_parts = ctx.content[1:].strip().split()
+    command_parts = ctx.content[len(config["settings_prefix"]) :].strip().split()
 
     command = command_parts[0]
     args = command_parts[1:]

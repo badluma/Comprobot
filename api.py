@@ -113,15 +113,6 @@ def bible():
     return response
 
 
-def calculate(calculation):
-    try:
-        result = eval(calculation)
-        response = f"Result: {result}"
-    except Exception as e:
-        response = f"{error_messages['calculate']} (error {str(e)})"
-    return response
-
-
 def bitcoin(currency_parameter):
     currency = currency_parameter.lower() if len(str(currency_parameter)) > 1 else "usd"
     bitcoin_price = requests.get(
