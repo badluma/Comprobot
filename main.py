@@ -51,7 +51,7 @@ async def on_message(message):
     if message.content.startswith(cast(str, config["command_prefix"])):
         async with message.channel.typing():
             response = await process.command(message)
-    if message.content.startswith(cast(str, config["settings_prefix"])):
+    elif message.content.startswith(cast(str, config["settings_prefix"])):
         async with message.channel.typing():
             response = await process.settings(message)
 

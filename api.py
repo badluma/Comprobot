@@ -87,16 +87,28 @@ def fact():
     )
 
 
-def bible():
-    bible_response = requests.get("https://bible-api.com/data/web/random")
+def bible(
+    is_random, book_arg: str = "John", chapter_arg: int = 16, verse_arg: int = 32
+):
+
+    if is_random:
+        url = "https://bible-api.com/data/web/random"
+    else:
+        url = f"https://bible-api.com/{book_arg} {chapter_arg}:{verse_arg}"
+
+    bible_response = requests.get(url)
     if bible_response.status_code == 200:
         try:
             data = bible_response.json()
             if "random_verse" in data:
                 verse = data["random_verse"]
-                response = f"{verse['text']}{verse['book']} {verse['chapter']}, {verse['verse']}"
+                response = f"{verse['text']}\n{verse['book']} {verse['chapter']}:{verse['verse']}"
+            elif "text" in data and "reference" in data:
+                response = f"{data['text']}\n{data['reference']}"
             else:
-                response = error_messages["bible"]
+                response = error_messages["passage_not_found"].replace(
+                    r"{{PASSAGE}}", f"{book_arg} {chapter_arg}:{verse_arg}"
+                )
         except (requests.exceptions.JSONDecodeError, KeyError):
             response = error_messages["bible"]
     else:
@@ -132,17 +144,15 @@ def tord(url, rating, max_retries=10):
 
 
 def joke():
-    setup = access_api(
-        "https://official-joke-api.appspot.com/jokes/random",
-        "setup",
-        error_messages["joke"],
-    )
-    punchline = access_api(
-        "https://official-joke-api.appspot.com/jokes/random",
-        "punchline",
-        error_messages["joke"],
-    )
-    response = f"{setup} ||{punchline}||"
+    raw = requests.get("https://official-joke-api.appspot.com/jokes/random")
+    if raw.status_code == 200:
+        try:
+            data = raw.json()
+            response = f"{data['setup']} ||{data['punchline']}||"
+        except (requests.exceptions.JSONDecodeError, KeyError):
+            response = error_messages["joke"]
+    else:
+        response = error_messages["joke"]
     return response
 
 

@@ -1,4 +1,5 @@
 from typing import Any
+from zipfile import error
 
 import api
 import commands
@@ -38,8 +39,11 @@ async def command(ctx) -> str | None | Any:
     elif command in keywords["commands"]["fact"] and active["fact"]:
         return api.fact()
     elif command in keywords["commands"]["bible"] and active["bible"]:
-        return api.bible()
-
+        if not args:
+            return api.bible(True)
+        if len(args) >= 3:
+            return api.bible(False, args[0], args[1], args[2])
+        return error_messages["passage_not_found"]
     elif command in keywords["commands"]["truth"] and active["truth"]:
         return api.tord(
             "https://api.truthordarebot.xyz/v1/truth", args[0] if args else None
