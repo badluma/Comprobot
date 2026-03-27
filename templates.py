@@ -23,7 +23,6 @@ ascii_art       = []
 
 error_messages = r'''quote     = "Failed to get a quote."
 joke             = "Failed to get a joke."
-dadjoke          = "Failed to get a dad joke."
 meme             = "Failed to get a meme."
 waifu            = "Failed to get a waifu image."
 duck             = "Failed to get a duck image."

@@ -35,15 +35,6 @@ def quote():
     return response
 
 
-def dadjoke():
-    return access_api(
-        "https://icanhazdadjoke.com/",
-        "joke",
-        error_messages["joke"],
-        {"Accept": "application/json"},
-    )
-
-
 def meme():
     return access_api("https://meme-api.com/gimme", "url", error_messages["meme"])
 

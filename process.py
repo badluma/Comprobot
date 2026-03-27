@@ -18,8 +18,6 @@ async def command(ctx) -> str | None | Any:
         return api.quote()
     elif command in keywords["commands"]["joke"] and active["joke"]:
         return api.joke()
-    elif command in keywords["commands"]["dadjoke"] and active["dadjoke"]:
-        return api.dadjoke()
     elif command in keywords["commands"]["meme"] and active["meme"]:
         return api.meme()
     elif command in keywords["commands"]["waifu"] and active["waifu"]:
