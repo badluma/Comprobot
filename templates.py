@@ -12,31 +12,35 @@ Your answers can maximally be 1000 characters long.
 """'''
 
 config = r"""
-commmand_prefix = "!"
+commmand_prefix =  "!"
 settings_prefix = "s!"
+music_prefix    = "m!"
+
 money_symbol    = "$"
-bot_admins      = []"""
+bot_admins      = []
+ascii_art       = []
+"""
 
 error_messages = r'''quote     = "Failed to get a quote."
-joke        = "Failed to get a joke."
-dadjoke     = "Failed to get a dad joke."
-meme        = "Failed to get a meme."
-waifu       = "Failed to get a waifu image."
-duck        = "Failed to get a duck image."
-dog         = "Failed to get a dog image."
-cat         = "Failed to get a cat image."
-chuck       = "Failed to get a Chuck Norris joke."
-fact        = "Failed to get a fact."
-bible       = "Failed to get a bible verse."
-truth       = "Failed to get a truth question."
-dare        = "Failed to get a dare question."
-wyr         = "Failed to get a Would You Rather question."
-never-hie   = "Failed to get a Never Have I Ever question."
-paranoia    = "Failed to get a paranoia question."
-calculate   = "Invalid calculation. Use +-*/"
-bitcoin     = "Failed to get the current bitcoin price."
-currency    = "Unknown currency."
-unavailable = "API unavailable."
+joke             = "Failed to get a joke."
+dadjoke          = "Failed to get a dad joke."
+meme             = "Failed to get a meme."
+waifu            = "Failed to get a waifu image."
+duck             = "Failed to get a duck image."
+dog              = "Failed to get a dog image."
+cat              = "Failed to get a cat image."
+chuck            = "Failed to get a Chuck Norris joke."
+fact             = "Failed to get a fact."
+bible            = "Failed to get a bible verse."
+truth            = "Failed to get a truth question."
+dare             = "Failed to get a dare question."
+wyr              = "Failed to get a Would You Rather question."
+never-hie        = "Failed to get a Never Have I Ever question."
+paranoia         = "Failed to get a paranoia question."
+calculate        = "Invalid calculation. Use +-*/"
+bitcoin          = "Failed to get the current bitcoin price."
+currency         = "Unknown currency."
+unavailable      = "API unavailable."
 
 unknown_command  = "Unknown command."
 unknown_argument = "Unknown argument."
@@ -61,6 +65,7 @@ calculate         = ["calculate", "calc"]
 bitcoin           = ["bitcoin", "btc"]
 currency          = ["currency", "convert", "conv"]
 qr_code           = ["qr_code", "qr"]
+ascii_art         = ["ascii", "art"]
 
 truth             = ["truth"]
 dare              = ["dare"]
@@ -82,10 +87,11 @@ check_balance     = ["check", "check_balance", "balance"]"""
 
 moderation = r""""""
 
-success_messages = r'''profile_picture_applied = "Profile picture applied successfully."
+success_messages = r"""profile_picture_applied = "Profile picture applied successfully."
 banner_applied          = "Banner applied successfully."
 nickname_applied        = "Name applied successfully."
-bio_applied             = "Bio applied successfully."'''
+bio_applied             = "Bio applied successfully."
+"""
 
 env_template = r"""BOT_TOKEN=
 GEMINI=
@@ -128,4 +134,5 @@ paranoia          = true
 
 nsfw              = false
 
-purge             = true"""
+purge             = true
+"""

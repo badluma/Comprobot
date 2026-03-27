@@ -1,4 +1,4 @@
-discord.py
+discord.py[voice]
 python-dotenv
 requests
 tomlkit
