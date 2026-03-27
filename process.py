@@ -1,5 +1,4 @@
 from typing import Any
-from zipfile import error
 
 import api
 import commands
