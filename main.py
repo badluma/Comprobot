@@ -79,15 +79,15 @@ async def on_message(message):
 
 @client.event
 async def on_ready():
-    print(
-        f"Configuration directory: {appdirs.user_data_dir(appname='Comprobot', appauthor=False)}"
-    )
     user_name = client.user.name if client.user else "Unknown"
     print(f"Logged in as {user_name}")
     para()
 
 
 if __name__ == "__main__":
+    print(
+        f"Configuration directory: {appdirs.user_data_dir(appname='Comprobot', appauthor=False)}"
+    )
     token = os_getenv("BOT_TOKEN")
     if token:
         client.run(token)

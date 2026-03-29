@@ -23,14 +23,31 @@ def _ensure_file(path, content):
             f.write(content)
 
 
+def _merge_defaults(data, defaults):
+    for key, value in defaults.items():
+        if key not in data:
+            data[key] = value
+        elif isinstance(value, dict) and isinstance(data.get(key), dict):
+            _merge_defaults(data[key], value)
+
+
 def _load_or_create(path, template_content):
     try:
         with open(path, "rb") as f:
-            return tomlkit.load(f)
+            data = tomlkit.load(f)
     except FileNotFoundError:
         _ensure_file(path, template_content)
         with open(path, "rb") as f:
-            return tomlkit.load(f)
+            data = tomlkit.load(f)
+
+    defaults = tomlkit.loads(template_content)
+    _merge_defaults(data, defaults)
+
+    if data != defaults:
+        with open(path, "w") as f:
+            tomlkit.dump(data, f)
+
+    return data
 
 
 ai_str = templates.ai
