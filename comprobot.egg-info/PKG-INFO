@@ -1,0 +1,39 @@
+Metadata-Version: 2.4
+Name: comprobot
+Version: 1.0.0
+Summary: A self-hostable Discord bot built for maximum customization.
+Author: badluma
+License: MIT
+Project-URL: Homepage, https://github.com/badluma/comprobot
+Project-URL: Repository, https://github.com/badluma/comprobot
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: discord.py[voice]
+Requires-Dist: python-dotenv
+Requires-Dist: requests
+Requires-Dist: tomlkit
+Requires-Dist: appdirs
+Requires-Dist: ollama
+Requires-Dist: google-genai
+Requires-Dist: groq
+Provides-Extra: dev
+Requires-Dist: ruff; extra == "dev"
+
+## Description
+
+Comprobot is a highly-customizable, open-source Discord bot that you can run on your own server.
+
+It’s built with Python, has a wide range of fun and useful commands, and is designed to be easy to extend. You can add new commands, customize outputs , or change the behaviour of existing ones. You can also easily edit the keywords of existing commands and customize their outputs.
+
+The bot also comes with built-in AI capabilities when pinging the bot, with Ollama, Groq and Gemini as available providers.
+
+## Documentation
+
+You can find the whole documentation [here](https://badluma.github.io/Comprobot-Docs/).
+
+## License
+
+MIT

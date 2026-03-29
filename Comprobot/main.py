@@ -84,10 +84,12 @@ async def on_ready():
     para()
 
 
-if __name__ == "__main__":
+def main():
     print(
         f"Configuration directory: {appdirs.user_data_dir(appname='Comprobot', appauthor=False)}"
     )
     token = os_getenv("BOT_TOKEN")
     if token:
         client.run(token)
+    else:
+        print("Error: BOT_TOKEN not found in environment variables")

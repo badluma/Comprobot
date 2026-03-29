@@ -1,0 +1,2 @@
+[console_scripts]
+comprobot = Comprobot.__main__:main

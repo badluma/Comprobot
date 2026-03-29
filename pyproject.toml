@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "comprobot"
+version = "1.0.0"
+authors = [{name = "badluma"}]
+description = "A self-hostable Discord bot built for maximum customization."
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "discord.py[voice]",
+    "python-dotenv",
+    "requests",
+    "tomlkit",
+    "appdirs",
+    "ollama",
+    "google-genai",
+    "groq",
+]
+
+[project.optional-dependencies]
+dev = ["ruff"]
+
+[project.urls]
+Homepage = "https://github.com/badluma/comprobot"
+Repository = "https://github.com/badluma/comprobot"
+
+[project.scripts]
+comprobot = "Comprobot.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["Comprobot*"]
