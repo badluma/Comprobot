@@ -3,12 +3,12 @@ from typing import Any
 
 from appdirs import user_cache_dir, user_data_dir
 
-import api
-import commands
-import data
-import money_system
-from bot import client
-from data import active, config, error_messages, keywords, success_messages
+from . import api
+from . import commands
+from . import data
+from . import money_system
+from .bot import client
+from .data import active, config, error_messages, keywords, success_messages
 
 
 async def command(ctx) -> str | None | Any:

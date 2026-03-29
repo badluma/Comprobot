@@ -9,8 +9,8 @@ import ollama
 from google import genai
 from google.genai.errors import ClientError
 
-from bot import client
-from data import ai, system_prompt_text
+from .bot import client
+from .data import ai, system_prompt_text
 
 
 def para(count=1):

@@ -4,7 +4,7 @@ from typing import Any, Dict, List
 import appdirs
 import tomlkit
 
-import templates
+from . import templates
 
 
 def _get_data_path(filename):
