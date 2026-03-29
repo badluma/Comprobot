@@ -51,7 +51,6 @@ bot_unavailable   = "Bot not available."'''
 keywords = r"""[commands]
 quote             = ["quote"]
 joke              = ["joke"]
-dadjoke           = ["dadjoke"]
 meme              = ["meme"]
 waifu             = ["waifu"]
 image             = ["image", "picture"]
@@ -91,6 +90,7 @@ success_messages = r"""profile_picture_applied = "Profile picture applied succes
 banner_applied          = "Banner applied successfully."
 nickname_applied        = "Name applied successfully."
 bio_applied             = "Bio applied successfully."
+keywords_applied        = "Custom keywords applied successfully."
 """
 
 env_template = r"""BOT_TOKEN=
@@ -111,7 +111,6 @@ create(".env", env_template)"""
 active = r"""
 quote             = true
 joke              = true
-dadjoke           = true
 meme              = true
 waifu             = true
 image             = true

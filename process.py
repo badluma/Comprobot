@@ -1,7 +1,11 @@
+import os
 from typing import Any
+
+from appdirs import user_cache_dir, user_data_dir
 
 import api
 import commands
+import data
 import money_system
 from bot import client
 from data import active, config, error_messages, keywords, success_messages
@@ -131,14 +135,17 @@ async def settings(ctx):
     command = command_parts[0]
     args = command_parts[1:]
 
+    cache_dir = user_cache_dir("Comprobot", appauthor=False)
+    os.makedirs(cache_dir, exist_ok=True)
+
     if command in keywords["settings"]["profile_picture"]:
         if not ctx.attachments:
             return error_messages["no_attachments"]
         if client is None or client.user is None:
             return error_messages["bot_unavailable"]
         new_pfp = ctx.attachments[0]
-        await new_pfp.save("Cache/pfp.png")
-        with open("Cache/pfp.png", "rb") as image_file:
+        await new_pfp.save(f"{cache_dir}/pfp.png")
+        with open(f"{cache_dir}/pfp.png", "rb") as image_file:
             image_data = image_file.read()
         await client.user.edit(avatar=image_data)
         return success_messages["profile_picture_applied"]
@@ -149,8 +156,8 @@ async def settings(ctx):
         if client is None or client.user is None:
             return error_messages["bot_unavailable"]
         new_banner = ctx.attachments[0]
-        await new_banner.save("Cache/banner.png")
-        with open("Cache/banner.png", "rb") as image_file:
+        await new_banner.save(f"{cache_dir}/banner.png")
+        with open(f"{cache_dir}/banner.png", "rb") as image_file:
             image_data = image_file.read()
         await client.user.edit(banner=image_data)
         return success_messages["banner_applied"]
@@ -166,10 +173,24 @@ async def settings(ctx):
     elif command in keywords["settings"]["change_keywords"]:
         if len(args) < 2:
             return error_messages["missing_argument"]
-        keywords[args[1]] = args[2:]
+
+        target_category = None
+        for category in keywords:
+            if args[0] in keywords[category]:
+                target_category = category
+                break
+
+        if target_category is None:
+            return error_messages["unknown_argument"]
+
+        keywords[target_category][args[0]] = args[1:]
+
+        data.save_toml(keywords, f"{user_data_dir('Comprobot')}/keywords.toml")
+
+        return success_messages["keywords_applied"]
 
     else:
-        return None
+        return error_messages["unknown_command"]
 
 
 async def games(ctx):

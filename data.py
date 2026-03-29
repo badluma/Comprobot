@@ -1,21 +1,19 @@
+import os
 from typing import Any, Dict, List
 
+import appdirs
 import tomlkit
 
 import templates
 
 
 def _get_data_path(filename):
-    import os
-
-    import appdirs
 
     base_dir = appdirs.user_data_dir(appname="Comprobot", appauthor=False)
     return os.path.join(base_dir, filename)
 
 
 def _ensure_file(path, content):
-    import os
 
     os.makedirs(os.path.dirname(path), exist_ok=True)
     if not os.path.isfile(path):
