@@ -8,9 +8,9 @@ import appdirs
 import discord
 import dotenv
 
-import process
-from data import ai, config
-from functions import chat, client, para
+from . import process
+from .data import ai, config
+from .functions import chat, client, para
 
 dotenv.load_dotenv(
     dotenv.find_dotenv(

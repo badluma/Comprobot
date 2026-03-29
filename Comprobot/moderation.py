@@ -1,5 +1,6 @@
 import discord
-from functions import direct_msg
+from .functions import direct_msg
+
 
 async def ban(message):
     member = message.guild.get_member(message.author.id)
@@ -21,6 +22,7 @@ async def ban(message):
     except (discord.Forbidden, discord.HTTPException):
         print(f"Couldn't DM {message.author.name}")
 
+
 async def kick(message):
     member = message.guild.get_member(message.author.id)
     if member is None:
@@ -36,7 +38,7 @@ async def kick(message):
             print(f"Insufficient permissions to kick {message.author.name}")
         await direct_msg(
             f"Your account has been kicked because your message contains banned text",
-            message
+            message,
         )
     except (discord.Forbidden, discord.HTTPException):
         print(f"Couldn't DM {message.author.name}")

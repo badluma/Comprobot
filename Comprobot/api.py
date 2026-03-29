@@ -1,6 +1,6 @@
 import requests
 
-from data import error_messages
+from .data import error_messages
 
 
 def access_api(url, parameter, error_message, headers=None):

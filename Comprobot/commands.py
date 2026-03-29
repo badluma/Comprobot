@@ -1,6 +1,6 @@
 import random
 
-from data import config, error_messages
+from .data import config, error_messages
 
 
 def qr(link):
