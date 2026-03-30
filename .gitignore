@@ -6,3 +6,5 @@ __pycache__/
 icon.svg
 .ai/
 requirements.txt
+dist/
+comprobot.egg-info/
