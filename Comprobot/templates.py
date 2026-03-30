@@ -12,7 +12,7 @@ Your answers can maximally be 1000 characters long.
 """'''
 
 config = r"""
-commmand_prefix =  "!"
+command_prefix =  "!"
 settings_prefix = "s!"
 music_prefix    = "m!"
 
