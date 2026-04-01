@@ -135,10 +135,10 @@ def bible(
                 verse = data["random_verse"]
                 response = (
                     choice(output["commands"]["bible"])
-                    .replace(r"{{PASSAGE}}", verse["text"])
-                    .replace(r"{{BOOK}}", verse["book"])
-                    .replace(r"{{CHAPTER}}", str(verse["chapter"]))
-                    .replace(r"{{VERSE}}", str(verse["verse"]))
+                    .replace(r"{{PASSAGE}}", verse["text"].strip())
+                    .replace(r"{{BOOK}}", verse["book"].strip())
+                    .replace(r"{{CHAPTER}}", str(verse["chapter"].strip()))
+                    .replace(r"{{VERSE}}", str(verse["verse"].strip()))
                 )
             elif "text" in data and "reference" in data:
                 parts = data["reference"].split()
@@ -153,10 +153,10 @@ def bible(
                 verse_num = chapter_verse.split(":")[1] if ":" in chapter_verse else "1"
                 response = (
                     choice(output["commands"]["bible"])
-                    .replace(r"{{PASSAGE}}", data["text"])
-                    .replace(r"{{BOOK}}", book)
-                    .replace(r"{{CHAPTER}}", chapter)
-                    .replace(r"{{VERSE}}", verse_num)
+                    .replace(r"{{PASSAGE}}", data["text"].strip())
+                    .replace(r"{{BOOK}}", book.strip())
+                    .replace(r"{{CHAPTER}}", chapter.strip())
+                    .replace(r"{{VERSE}}", verse_num.strip())
                 )
             else:
                 response = error_messages["passage_not_found"].replace(
