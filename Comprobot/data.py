@@ -48,13 +48,8 @@ def _load_or_create(path, template_content):
     return data
 
 
-ai_str = templates.ai
-
 error_messages: Dict[str, str] = _load_or_create(
     _get_data_path("error-messages.toml"), templates.error_messages
-)
-success_messages: Dict[str, str] = _load_or_create(
-    _get_data_path("success_messages.toml"), templates.success_messages
 )
 config: Dict[str, Any] = _load_or_create(
     _get_data_path("config.toml"), templates.config
@@ -62,13 +57,16 @@ config: Dict[str, Any] = _load_or_create(
 keywords: Dict[str, Dict[str, List[str]]] = _load_or_create(
     _get_data_path("keywords.toml"), templates.keywords
 )
-ai: Dict[str, Any] = _load_or_create(_get_data_path("ai.toml"), ai_str)
+ai: Dict[str, Any] = _load_or_create(_get_data_path("ai.toml"), templates.ai)
 system_prompt_text = ai["system_prompt"]
 money: Dict[str, Dict[str, int]] = _load_or_create(
-    _get_data_path("money.toml"), r"""balances = {}"""
+    _get_data_path("money.toml"), r"""members = {}"""
 )
 active: Dict[str, bool] = _load_or_create(
     _get_data_path("active.toml"), templates.active
+)
+output: Dict[str, Dict[str, List[str]]] = _load_or_create(
+    _get_data_path("output.toml"), templates.output
 )
 
 _ensure_file(_get_data_path(".env"), templates.env_template)
@@ -77,3 +75,7 @@ _ensure_file(_get_data_path(".env"), templates.env_template)
 def save_toml(data, path):
     with open(path, "w") as f:
         tomlkit.dump(data, f)
+
+
+def save_money():
+    save_toml(money, _get_data_path("money.toml"))

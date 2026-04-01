@@ -1,14 +1,12 @@
 import os
+from random import choice
 from typing import Any
 
 from appdirs import user_cache_dir, user_data_dir
 
-from . import api
-from . import commands
-from . import data
-from . import money_system
+from . import api, commands, data, money_system
 from .bot import client
-from .data import active, config, error_messages, keywords, success_messages
+from .data import active, config, error_messages, keywords, output
 
 
 async def command(ctx) -> str | None | Any:
@@ -83,13 +81,16 @@ async def command(ctx) -> str | None | Any:
         else:
             return error_messages["missing_argument"]
 
+    elif command in keywords["commands"]["bitcoin"] and active["bitcoin"]:
+        return api.bitcoin(args[0] if args else "usd")
+
     elif command in keywords["commands"]["ascii_art"]:
         return commands.ascii()
 
     elif command in keywords["commands"]["currency"] and active["currency"]:
         if not len(args) >= 3:
             return error_messages["missing_argument"]
-        return api.currency(args[0], args[1], args[2])
+        return api.currency(args[1], args[2], args[0])
 
     elif command in keywords["money"]["check_balance"]:
         if args:
@@ -148,7 +149,7 @@ async def settings(ctx):
         with open(f"{cache_dir}/pfp.png", "rb") as image_file:
             image_data = image_file.read()
         await client.user.edit(avatar=image_data)
-        return success_messages["profile_picture_applied"]
+        return choice(output["settings"]["profile_picture_applied"])
 
     elif command in keywords["settings"]["banner"]:
         if not ctx.attachments:
@@ -160,7 +161,7 @@ async def settings(ctx):
         with open(f"{cache_dir}/banner.png", "rb") as image_file:
             image_data = image_file.read()
         await client.user.edit(banner=image_data)
-        return success_messages["banner_applied"]
+        return choice(output["settings"]["banner_applied"])
 
     elif command in keywords["settings"]["change_name"]:
         if len(args) < 2:
@@ -168,7 +169,9 @@ async def settings(ctx):
         if client is None or client.user is None:
             return error_messages["bot_unavailable"]
         await client.user.edit(username=args[1])
-        return success_messages["nickname_applied"]
+        return choice(output["settings"]["nickname_applied"]).replace(
+            "{{NAME}}", " ".join(args[1:])
+        )
 
     elif command in keywords["settings"]["change_keywords"]:
         if len(args) < 2:
@@ -187,7 +190,11 @@ async def settings(ctx):
 
         data.save_toml(keywords, f"{user_data_dir('Comprobot')}/keywords.toml")
 
-        return success_messages["keywords_applied"]
+        return (
+            choice(output["settings"]["keywords_applied"])
+            .replace("{{KEYWORDS}}", " ".join(args[1:]))
+            .replace("{{COMMAND}}", args[0])
+        )
 
     else:
         return error_messages["unknown_command"]

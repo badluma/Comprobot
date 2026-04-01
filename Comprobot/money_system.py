@@ -1,35 +1,56 @@
+from random import choice
 from . import data
-from appdirs import user_data_dir
+import tomlkit
+import tomlkit.exceptions
 
 
 def add_money(username, amount):
     data.money["members"][username] = data.money["members"].get(username, 0) + amount
-    data.save_toml(data.money, f"{user_data_dir('Comprobot')}/.dontchange/money.toml")
-    return f"{data.money['members'][username]}{data.config['money_symbol']} added to to {username}"
+    data.save_money()
+    balance = data.money["members"][username]
+    return (
+        choice(data.output["money"]["add_money"])
+        .replace("{{AMOUNT}}", str(amount))
+        .replace("{{USERNAME}}", username)
+        .replace("{{BALANCE}}", str(balance))
+        .replace("{{MONEY_SYMBOL}}", data.config["money_symbol"])
+    )
 
 
 def remove_money(username, amount):
     current = data.money["members"].get(username, 0)
     if current < amount:
         data.money["members"][username] = 0
-        data.save_toml(
-            data.money, f"{user_data_dir('Comprobot')}/.dontchange/money.toml"
+        data.save_money()
+        return (
+            choice(data.output["money"]["insufficient_funds"])
+            .replace("{{USERNAME}}", username)
+            .replace("{{BALANCE}}", str(0))
+            .replace("{{MONEY_SYMBOL}}", data.config["money_symbol"])
         )
-        return f"{username} doesn't have enough money. They now have 0{data.config['money_symbol']}."
     else:
         data.money["members"][username] -= amount
-        data.save_toml(
-            data.money, f"{user_data_dir('Comprobot')}/.dontchange/money.toml"
+        data.save_money()
+        balance = data.money["members"][username]
+        return (
+            choice(data.output["money"]["remove_money"])
+            .replace("{{AMOUNT}}", str(amount))
+            .replace("{{USERNAME}}", username)
+            .replace("{{BALANCE}}", str(balance))
+            .replace("{{MONEY_SYMBOL}}", data.config["money_symbol"])
         )
-        return f"{amount} subtracted from {username}. They now have {data.money['members'][username]}{data.config['money_symbol']}."
 
 
 def check_balance(username):
     try:
-        return f"{data.money['members'][username]}{data.config['money_symbol']}"
-    except KeyError:
+        balance = data.money["members"][username]
+    except (KeyError, tomlkit.exceptions.NonExistentKey):
         data.money["members"][username] = 0
-        data.save_toml(
-            data.money, f"{user_data_dir('Comprobot')}/.dontchange/money.toml"
-        )
-        return f"0{data.config['money_symbol']}"
+        data.save_money()
+        balance = 0
+    return (
+        choice(data.output["money"]["check_balance"])
+        .replace("{{USERNAME}}", username)
+        .replace("{{BALANCE}}", str(balance))
+        .replace("{{MONEY_SYMBOL}}", data.config["money_symbol"])
+    )

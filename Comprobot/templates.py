@@ -18,7 +18,7 @@ music_prefix    = "m!"
 
 money_symbol    = "$"
 bot_admins      = []
-ascii_art       = []
+ascii_art       = ["¯\\_(ツ)_/¯"]
 """
 
 error_messages = r'''quote      = "Failed to get a quote."
@@ -86,13 +86,6 @@ check_balance     = ["check", "check_balance", "balance"]"""
 
 moderation = r""""""
 
-success_messages = r"""profile_picture_applied = "Profile picture applied successfully."
-banner_applied          = "Banner applied successfully."
-nickname_applied        = "Name applied successfully."
-bio_applied             = "Bio applied successfully."
-keywords_applied        = "Custom keywords applied successfully."
-"""
-
 env_template = r"""BOT_TOKEN=
 GEMINI=
 GROQ=
@@ -100,7 +93,6 @@ GROQ=
 
 create_commands = r"""create("config.toml", config)
 create("error-messages.toml", error_messages)
-create("success_messages.toml", success_messages)
 create("keywords.toml", keywords)
 create("ai.toml", ai)
 create("moderation.toml", moderation)
@@ -108,8 +100,7 @@ create("data/.do_not_touch/money.toml", money)
 create("data/.do_not_touch/conversation_history.toml", conversation_history)
 create(".env", env_template)"""
 
-active = r"""
-quote             = true
+active = r"""quote             = true
 joke              = true
 meme              = true
 waifu             = true
@@ -134,4 +125,40 @@ paranoia          = true
 nsfw              = false
 
 purge             = true
+"""
+
+output = r"""[commands]
+quote             = ["{{QUOTE}}\n~ {{AUTHOR}}"]
+joke              = ["{{SETUP}} ||{{PUNCHLINE}}||"]
+meme              = ["{{URL}}"]
+waifu             = ["### Which one is the better waifu? \n ![]({{URL1}}) ![]({{URL2}})"]
+duck              = ["{{URL}}"]
+dog               = ["{{URL}}"]
+cat               = ["{{URL}}"]
+chuck_norris      = ["{{JOKE}}"]
+fact              = ["{{FACT}}"]
+bible             = ["{{PASSAGE}}\n{{BOOK}} {{CHAPTER}}:{{VERSE}}"]
+calculate         = ["{{RESULT}}"]
+bitcoin           = ["The bitcoin price is currently at {{AMOUNT}} {{CURRENCY}}."]
+currency          = ["{{FROM_AMOUNT}} {{FROM_CURRENCY}} = {{TO_AMOUNT}} {{TO_CURRENCY}}"]
+qr_code           = ["{{URL}}"]
+ascii_art         = ["{{ASCII_ART}}"]
+
+truth             = ["{{QUESTION}}"]
+dare              = ["{{QUESTION}}"]
+wyr               = ["{{QUESTION}}"]
+never_have_i_ever = ["{{QUESTION}}"]
+paranoia          = ["{{QUESTION}}"]
+
+[settings]
+profile_picture_applied = ["Profile picture applied successfully."]
+banner_applied          = ["Banner applied successfully."]
+nickname_applied        = ["Name '{{NAME}}' applied successfully."]
+keywords_applied        = ["Custom keywords '{{KEYWORDS}}' for the command '{{COMMAND}}' applied successfully!"]
+
+[money]
+add_money         = ["{{AMOUNT}}{{MONEY_SYMBOL}} added to to the account of {{USERNAME}}. They now have {{BALANCE}}{{MONEY_SYMBOL}}."]
+remove_money      = ["{{AMOUNT}} subtracted from the account of {{USERNAME}}. They now have {{BALANCE}}{{MONEY_SYMBOL}}."]
+check_balance     = ["The balance of the account from {{USERNAME}} is currently {{BALANCE}}{{MONEY_SYMBOL}}."]
+insufficient_funds = ["{{USERNAME}} doesn't have enough money. They now have {{BALANCE}}{{MONEY_SYMBOL}}."]
 """
