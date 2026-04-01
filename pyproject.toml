@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "comprobot"
-version = "1.0.2"
+version = "1.1.0"
 authors = [{name = "badluma"}]
 description = "A self-hostable Discord bot built for maximum customization."
 readme = "README.md"
