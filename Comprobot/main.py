@@ -64,8 +64,10 @@ async def on_message(message):
         except discord.NotFound:
             pass
 
-    if (f"<@{user_id}>" in message.content or is_reply_to_bot) and ai.get(
-        "activate_ai", False
+    if (
+        f"<@{user_id}>" in message.content
+        or (is_reply_to_bot if config["answer_to_reply"] else False)
+        and ai["activate_ai"]
     ):
         async with message.channel.typing():
             response = chat(message)

@@ -5,6 +5,7 @@ model                = "qwen/qwen3-32b"
 max_messages_context = 10
 remove_emojis        = true
 lower_response       = true
+answer_to_reply      = false
 
 system_prompt = """
 You are a helpful assistant that gives short, helpful answers.
