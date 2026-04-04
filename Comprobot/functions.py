@@ -12,6 +12,8 @@ from google.genai.errors import ClientError
 from .bot import client
 from .data import ai, system_prompt_text
 
+context_memory: Dict[int, List[Dict[str, Any]]] = {}
+
 
 def para(count=1):
     for i in range(count):
@@ -61,58 +63,102 @@ def demoji(text):
     return emoji_pattern.sub("", text)
 
 
-def chat(message):
-    messages: List[Dict[str, Any]] = []
+async def get_referenced_message(message):
+    if not message.reference:
+        return None
+
+    if isinstance(message.reference.resolved, discord.Message):
+        return message.reference.resolved
+
+    try:
+        return await message.channel.fetch_message(message.reference.message_id)
+    except discord.NotFound:
+        return None
+
+
+async def chat(message):
     user_id = client.user.id if client.user else ""
+    channel_id = message.channel.id
 
-    if ai["provider"].lower() in ("ollama", "groq"):
-        messages.append(
-            {
-                "role": "user",
-                "content": message.content.replace(f"<@{user_id}>", ""),
-            }
-        )
-    elif ai["provider"].lower() == "gemini":
-        messages.append(
-            {
-                "role": "user",
-                "parts": [{"text": message.content.replace(f"<@{user_id}>", "")}],
-            }
-        )
-    else:
-        raise ValueError(f"Unknown provider: {ai['provider']}")
+    if channel_id not in context_memory:
+        context_memory[channel_id] = []
 
-    if ai["provider"].lower() == "ollama":
-        messages.insert(
-            0,
-            {
-                "role": "system",
-                "content": system_prompt_text,
-            },
+    messages = context_memory[channel_id]
+
+    referenced_message = await get_referenced_message(message)
+
+    # Construct user content based on templates
+    attachment_url = ""
+    if message.attachments and ai["include_attachment"]:
+        attachment_url = message.attachments[0].url
+    elif referenced_message and ai["include_attachment"]:
+        if referenced_message.attachments:
+            attachment_url = referenced_message.attachments[0].url
+
+    user_prompt_content = (
+        ai["user_prompt_structure"]
+        .replace("{{PROMPT}}", ai["user_prompt"])
+        .replace(
+            "{{REPLY_PROMPT}}",
+            ai["user_reply_prompt"]
+            if ai["include_reply"] and referenced_message
+            else "",
         )
-        response = ollama.chat(model=cast(str, ai["model"]), messages=messages)
-        content: str = response.message.content or ""
-    elif ai["provider"].lower() == "gemini":
+        .replace(
+            "{{ATTACHMENT_PROMPT}}",
+            ai["user_attachement_prompt"].replace("{{FILE}}", attachment_url)
+            if attachment_url
+            else "",
+        )
+        .replace(
+            "{{USERNAME}}",
+            message.author.display_name if ai["include_username"] else "",
+        )
+        .replace("{{MESSAGE}}", message.content.replace(f"<@{user_id}>", ""))
+        .replace(
+            "{{REPLY}}",
+            referenced_message.content
+            if referenced_message and ai["include_reply"]
+            else "",
+        )
+    )
+
+    # Add user message to history
+    messages.append({"role": "user", "content": user_prompt_content})
+
+    # Limit context
+    max_total = cast(int, ai["max_messages_context"])
+    while len(messages) > max_total:
+        messages.pop(0)
+
+    provider = ai["provider"].lower()
+    content = ""
+
+    if provider == "ollama":
+        formatted_messages = [
+            {"role": "system", "content": system_prompt_text}
+        ] + messages
+        response = ollama.chat(
+            model=cast(str, ai["model"]), messages=formatted_messages
+        )
+        content = response.message.content or ""
+    elif provider == "gemini":
         gemini_client = genai.Client(api_key=os.getenv("GEMINI"))
-        system_instruction = None
         formatted_messages = []
         for m in messages:
-            if m["role"] == "system":
-                system_instruction = m["content"]
-            else:
-                formatted_messages.append(
-                    {
-                        "role": m["role"],
-                        "parts": [
-                            {"text": m["content"] if "content" in m else m["parts"][0]}
-                        ],
-                    }
-                )
-        config = None
-        if system_instruction:
-            config = genai.types.GenerateContentConfig(
-                system_instruction=system_instruction
+            formatted_messages.append(
+                {
+                    "role": "user" if m["role"] == "user" else "model",
+                    "parts": [{"text": m["content"]}],
+                }
             )
+
+        config = None
+        if system_prompt_text:
+            config = genai.types.GenerateContentConfig(
+                system_instruction=system_prompt_text
+            )
+
         try:
             response = gemini_client.models.generate_content(
                 model=ai["model"], contents=formatted_messages, config=config
@@ -123,38 +169,25 @@ def chat(message):
                 available = gemini_client.models.list()
                 print(f"Available models: {[m.name for m in available]}")
             raise
-    elif ai["provider"].lower() == "groq":
+    elif provider == "groq":
         groq_client = groq.Groq(api_key=os.getenv("GROQ"))
         formatted_messages = [
-            {"role": "system", "content": system_prompt_text},
-            messages[0],
-        ]
+            {"role": "system", "content": system_prompt_text}
+        ] + messages
         response = groq_client.chat.completions.create(
-            model=ai["model"], messages=formatted_messages
+            model=ai["model"],
+            messages=formatted_messages,  # type: ignore
         )
         content = response.choices[0].message.content or ""
     else:
         raise ValueError(f"Unknown provider: {ai['provider']}")
 
-    if ai["provider"].lower() == "groq":
-        role = "assistant"
-    elif ai["provider"].lower() == "ollama":
-        role = "assistant"
-    elif ai["provider"].lower() == "gemini":
-        role = "model"
-    else:
-        raise ValueError(f"Unknown provider: {ai['provider']}")
+    # Add assistant message to history
+    messages.append({"role": "assistant", "content": content})
 
-    messages.append(
-        {
-            "role": role,
-            "content": content,
-        }
-    )
-
-    max_total = 1 + cast(int, ai["max_messages_context"])
+    # Prune again after adding assistant message
     while len(messages) > max_total:
-        messages.pop(1)
+        messages.pop(0)
 
     if ai["remove_emojis"]:
         content = demoji(content)

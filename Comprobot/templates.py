@@ -6,11 +6,35 @@ max_messages_context = 10
 remove_emojis        = true
 lower_response       = true
 answer_to_reply      = false
+include_username     = true
+include_reply        = true
+include_attachment   = true
 
 system_prompt = """
 You are a helpful assistant that gives short, helpful answers.
 Your answers can maximally be 1000 characters long.
-"""'''
+"""
+
+user_prompt = """
+{{USERNAME}} wrote the following message: {{MESSAGE}}
+"""
+
+user_reply_prompt = """
+They added the following context: {{REPLY}}
+"""
+
+user_attachement_prompt = """
+The user attached the following file: {{FILE}}
+"""
+
+user_prompt_structure = """
+{{PROMPT}}
+
+{{REPLY_PROMPT}}
+
+{{ATTACHMENT_PROMPT}}
+"""
+'''
 
 config = r"""
 command_prefix =  "!"

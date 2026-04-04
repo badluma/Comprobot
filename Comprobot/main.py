@@ -70,7 +70,7 @@ async def on_message(message):
         and ai["activate_ai"]
     ):
         async with message.channel.typing():
-            response = chat(message)
+            response = await chat(message)
 
     if response:
         async with message.channel.typing():
