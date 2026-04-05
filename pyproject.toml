@@ -30,11 +30,11 @@ dependencies = [
 dev = ["ruff"]
 
 [project.urls]
-Homepage = "https://github.com/badluma/comprobot"
+Homepage = "https://badluma.github.io/Comprobot-Docs"
 Repository = "https://github.com/badluma/comprobot"
 
 [project.scripts]
-comprobot = "Comprobot.__main__:main"
+comprobot = "Comprobot.main:main"
 
 [tool.setuptools.packages.find]
 where = ["."]

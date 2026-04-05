@@ -86,7 +86,7 @@ async def on_ready():
     para()
 
 
-def main():
+if __name__ == "__main__":
     print(
         f"Configuration directory: {appdirs.user_data_dir(appname='Comprobot', appauthor=False)}"
     )
