@@ -44,6 +44,8 @@ music_prefix    = "m!"
 money_symbol    = "$"
 bot_admins      = []
 ascii_art       = ["¯\\_(ツ)_/¯"]
+
+debug_mode      = false
 """
 
 error_messages = r'''quote      = "Failed to get a quote."
@@ -109,7 +111,12 @@ add_money         = ["add", "add_money"]
 remove_money      = ["remove", "rm", "remove_money"]
 check_balance     = ["check", "check_balance", "balance"]"""
 
-moderation = r""""""
+moderation = r"""delete = []
+kick   = []
+ban    = []
+mute   = []
+time_to_mute = 5 # In minutes
+"""
 
 env_template = r"""BOT_TOKEN=
 GEMINI=
@@ -182,8 +189,16 @@ nickname_applied        = ["Name '{{NAME}}' applied successfully."]
 keywords_applied        = ["Custom keywords '{{KEYWORDS}}' for the command '{{COMMAND}}' applied successfully!"]
 
 [money]
-add_money         = ["{{AMOUNT}}{{MONEY_SYMBOL}} added to to the account of {{USERNAME}}. They now have {{BALANCE}}{{MONEY_SYMBOL}}."]
-remove_money      = ["{{AMOUNT}} subtracted from the account of {{USERNAME}}. They now have {{BALANCE}}{{MONEY_SYMBOL}}."]
-check_balance     = ["The balance of the account from {{USERNAME}} is currently {{BALANCE}}{{MONEY_SYMBOL}}."]
+add_money          = ["{{AMOUNT}}{{MONEY_SYMBOL}} added to to the account of {{USERNAME}}. They now have {{BALANCE}}{{MONEY_SYMBOL}}."]
+remove_money       = ["{{AMOUNT}} subtracted from the account of {{USERNAME}}. They now have {{BALANCE}}{{MONEY_SYMBOL}}."]
+check_balance      = ["The balance of the account from {{USERNAME}} is currently {{BALANCE}}{{MONEY_SYMBOL}}."]
 insufficient_funds = ["{{USERNAME}} doesn't have enough money. They now have {{BALANCE}}{{MONEY_SYMBOL}}."]
+
+[moderation]
+delete = ["Your message was deleted because it contains banned text: {{TEXT}}"]
+kick   = ["Your account was kicked because your message contains banned text: {{TEXT}}"]
+ban    = ["Your account was banned because your message contains banned text: {{TEXT}}"]
+mute   = ["Your account was muted for {{MINUTES}} minutes because your message contains banned text: {{TEXT}}"]
+
+reason = "Sending banned text"
 """

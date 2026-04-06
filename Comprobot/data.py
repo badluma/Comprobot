@@ -68,6 +68,9 @@ active: Dict[str, bool] = _load_or_create(
 output: Dict[str, Dict[str, List[str]]] = _load_or_create(
     _get_data_path("output.toml"), templates.output
 )
+moderation: Dict[Any, Any] = _load_or_create(
+    _get_data_path("moderation.toml"), templates.moderation
+)
 
 _ensure_file(_get_data_path(".env"), templates.env_template)
 

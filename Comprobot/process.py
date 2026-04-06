@@ -1,17 +1,20 @@
 import os
 from random import choice
-from typing import Any
+from typing import Any, cast
 
+import discord
 from appdirs import user_cache_dir, user_data_dir
 
 from . import api, commands, data, money_system
 from .bot import client
-from .data import active, config, error_messages, keywords, output
+from .data import active, ai, config, error_messages, keywords, output
+from .functions import chat
+from .moderation import check_message
 
 
-async def command(ctx) -> str | None | Any:
+async def command(message) -> str | None | Any:
 
-    command_parts = ctx.content[len(config["command_prefix"]) :].strip().split()
+    command_parts = message.content[len(config["command_prefix"]) :].strip().split()
 
     command = command_parts[0]
     args = command_parts[1:]
@@ -98,7 +101,7 @@ async def command(ctx) -> str | None | Any:
         else:
             return error_messages["missing_argument"]
     elif command in keywords["money"]["add_money"] and (
-        ctx.author.guild_permissions.administrator or config["bot_admins"]
+        message.author.guild_permissions.administrator or config["bot_admins"]
     ):
         if len(args) >= 2:
             try:
@@ -109,7 +112,7 @@ async def command(ctx) -> str | None | Any:
         else:
             return "No amount given."
     elif command in keywords["money"]["remove_money"] and (
-        ctx.author.guild_permissions.administrator or config["bot_admins"]
+        message.author.guild_permissions.administrator or config["bot_admins"]
     ):
         if len(args) >= 2:
             try:
@@ -121,17 +124,17 @@ async def command(ctx) -> str | None | Any:
             return "No amount given."
 
     elif command == "purge" and active["purge"]:
-        if ctx.author.guild_permissions.administrator:
-            await ctx.channel.purge()
+        if message.author.guild_permissions.administrator:
+            await message.channel.purge()
             return "All messages deleted."
 
     else:
         return None
 
 
-async def settings(ctx):
+async def settings(message):
 
-    command_parts = ctx.content[len(config["settings_prefix"]) :].strip().split()
+    command_parts = message.content[len(config["settings_prefix"]) :].strip().split()
 
     command = command_parts[0]
     args = command_parts[1:]
@@ -140,11 +143,11 @@ async def settings(ctx):
     os.makedirs(cache_dir, exist_ok=True)
 
     if command in keywords["settings"]["profile_picture"]:
-        if not ctx.attachments:
+        if not message.attachments:
             return error_messages["no_attachments"]
         if client is None or client.user is None:
             return error_messages["bot_unavailable"]
-        new_pfp = ctx.attachments[0]
+        new_pfp = message.attachments[0]
         await new_pfp.save(f"{cache_dir}/pfp.png")
         with open(f"{cache_dir}/pfp.png", "rb") as image_file:
             image_data = image_file.read()
@@ -152,11 +155,11 @@ async def settings(ctx):
         return choice(output["settings"]["profile_picture_applied"])
 
     elif command in keywords["settings"]["banner"]:
-        if not ctx.attachments:
+        if not message.attachments:
             return error_messages["no_attachments"]
         if client is None or client.user is None:
             return error_messages["bot_unavailable"]
-        new_banner = ctx.attachments[0]
+        new_banner = message.attachments[0]
         await new_banner.save(f"{cache_dir}/banner.png")
         with open(f"{cache_dir}/banner.png", "rb") as image_file:
             image_data = image_file.read()
@@ -200,5 +203,54 @@ async def settings(ctx):
         return error_messages["unknown_command"]
 
 
-async def games(ctx):
+async def games(message):
     pass
+
+
+async def process(message):
+    print(
+        "\033[90m"
+        + f"[{message.channel}] "
+        + "\033[36m"
+        + f"{message.author.name}: "
+        + "\033[0m"
+        + message.content
+    )
+
+    global response
+
+    if message.author == client.user:
+        return
+    response = None
+
+    await check_message(message)
+
+    if message.content.startswith(cast(str, config["command_prefix"])):
+        async with message.channel.typing():
+            response = await command(message)
+    elif message.content.startswith(cast(str, config["settings_prefix"])):
+        async with message.channel.typing():
+            response = await settings(message)
+
+    is_reply_to_bot = False
+    user_id = client.user.id if client.user else None
+    if message.reference and message.reference.message_id and user_id:
+        try:
+            ref_msg = await message.channel.fetch_message(message.reference.message_id)
+            is_reply_to_bot = ref_msg.author.id == user_id
+        except discord.NotFound:
+            pass
+
+    if (
+        f"<@{user_id}>" in message.content
+        or (is_reply_to_bot if ai["answer_to_reply"] else False)
+        and ai["activate_ai"]
+    ):
+        async with message.channel.typing():
+            response = await chat(message)
+
+    if response:
+        async with message.channel.typing():
+            content = str(response)
+            for chunk in [content[i : i + 2000] for i in range(0, len(content), 2000)]:
+                await message.channel.send(chunk)
