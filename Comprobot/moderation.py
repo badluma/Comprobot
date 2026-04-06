@@ -101,9 +101,9 @@ async def check_message(message):
                 continue
 
             await direct_msg(
-                message,
                 choice(output["moderation"]["mute"]).replace(
                     "{{MINUTES}}", str(moderation["time_to_mute"])
                 ),
+                message,
             )
             continue
