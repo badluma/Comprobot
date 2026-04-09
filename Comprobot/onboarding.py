@@ -1,25 +1,24 @@
-from appdirs import user_data_dir
-from InquirerPy.base.control import Choice
-from InquirerPy.prompts.checkbox import CheckboxPrompt
-from InquirerPy.prompts.confirm import ConfirmPrompt
-from InquirerPy.prompts.filepath import FilePathPrompt
-from InquirerPy.prompts.list import ListPrompt
-from InquirerPy.prompts.secret import SecretPrompt
-from InquirerPy.utils import InquirerPyStyle
+import os
 
-from .data import active
+import InquirerPy.utils
+import tomlkit
+from InquirerPy.base.control import Choice
+from InquirerPy.prompts import checkbox, confirm, filepath, input, secret
+from InquirerPy.prompts import list as inquirer_list
 
 ACCENT = "\033[0;36m"
 GRAY = "\u001b[0;37m"
 RESET = "\033[0m"
 
-style = InquirerPyStyle({"questionmark": "white"})
-
-
-active_choices = [Choice(value, enabled=True) for value in list(active.keys())]
+style = InquirerPy.utils.InquirerPyStyle({"questionmark": "white"})
 
 
 def onboarding():
+    from . import templates
+
+    active_data = tomlkit.loads(templates.active)
+    all_commands = list(active_data.keys())
+    active_choices = [Choice(value, enabled=True) for value in all_commands]
 
     print(f"\n{ACCENT}Welcome to Comprobot{RESET}")
     print("Thank you so much for downloading this bot!")
@@ -50,7 +49,7 @@ def onboarding():
 
     try:
         # 1. Bot Token
-        token = SecretPrompt(
+        token = secret.SecretPrompt(
             message="Your bot token:",
             style=style,
             vi_mode=True,
@@ -59,7 +58,7 @@ def onboarding():
         print()
 
         # 2. Commands to activate
-        commands_activated = CheckboxPrompt(
+        commands_activated = checkbox.CheckboxPrompt(
             message="Select commands to activate:",
             instruction="Press Space to deselect and press Enter to continue.",
             choices=active_choices,
@@ -73,46 +72,50 @@ def onboarding():
         print()
 
         # 3. Activate AI features
-        ai_activated = ConfirmPrompt(
+        ai_activated = confirm.ConfirmPrompt(
             message="Do you want to activate AI features?", style=style, default=True
         ).execute()
         if ai_activated:
             print()
 
             # 3.1. Select provider
-            provider = ListPrompt(
+            provider = inquirer_list.ListPrompt(
                 message="Select a provider:",
                 choices=[
                     Choice(value="groq", name="Groq (recommended)"),
                     Choice(value="gemini", name="Gemini"),
+                    Choice(value="ollama", name="Ollama (local)"),
                 ],
                 default="groq",
                 style=style,
                 show_cursor=False,
             ).execute()
 
-            if provider == "groq":
-                print()
-                print(
-                    f"To get your forever-free Groq API key, head to {ACCENT}console.groq.com/keys{RESET}."
-                )
-                print(
-                    "Create an account and then create a new API key without an expiration date."
-                )
-                print("Then copy the API key and paste it here.")
-            elif provider == "gemini":
-                print()
-                pass
-            else:
-                ai_activated = False
-                provider = None
-                api_key = None
+            match provider:
+                case "groq":
+                    print()
+                    print(
+                        f"To get your forever-free Groq API key, head to {ACCENT}console.groq.com/keys{RESET}."
+                    )
+                    print(
+                        "Create an account and then create a new API key without an expiration date."
+                    )
+                    print("Then copy the API key and paste it here.")
+                case "gemini":
+                    print()
+                    pass
+                case "ollama":
+                    pass
+                case _:
+                    ai_activated = False
+                    provider = None
+                    api_key = None
 
-            if provider:
+            if provider in ["groq", "gemini"]:
                 print()
 
                 # 3.2. Get API key
-                api_key = SecretPrompt(
+                api_key = secret.SecretPrompt(
                     message="Your API key:",
                     style=style,
                     vi_mode=True,
@@ -120,14 +123,21 @@ def onboarding():
             else:
                 api_key = None
 
+            model = input.InputPrompt(
+                message="Enter the model you want to use:",
+                style=style,
+                vi_mode=True,
+            )
+
         else:
+            model = None
             provider = None
             api_key = None
 
         print()
 
         # 4. Custom data directory
-        set_custom_path = ConfirmPrompt(
+        set_custom_path = confirm.ConfirmPrompt(
             message="Do you want to set a custom directory to store the bot's data in?",
             style=style,
             default=False,
@@ -135,16 +145,31 @@ def onboarding():
 
         if set_custom_path:
             print()
-            file_path = FilePathPrompt(
-                message="Enter the custom data directory:",
-                style=style,
-                vi_mode=True,
-            ).execute()
+            file_path = (
+                filepath.FilePathPrompt(
+                    message="Enter the custom data directory:",
+                    style=style,
+                    vi_mode=True,
+                )
+                .execute()
+                .replace("~", os.path.expanduser("~"))
+            )
         else:
-            file_path = user_data_dir(appname="Comprobot", appauthor=False)
+            file_path = os.path.expanduser("~/.local/share/comprobot")
 
     except KeyboardInterrupt:
         quit()
+
+    os.makedirs(file_path, exist_ok=True)
+
+    env_path = os.path.join(file_path, ".env")
+    with open(env_path, "w") as f:
+        f.write(f"BOT_TOKEN={token}\n")
+        if api_key:
+            if provider == "groq":
+                f.write(f"GROQ={api_key}\n")
+            elif provider == "gemini":
+                f.write(f"GEMINI={api_key}\n")
 
     return {
         "token": token,
@@ -152,8 +177,6 @@ def onboarding():
         "ai_activated": ai_activated,
         "provider": provider,
         "api_key": api_key,
+        "model": model,
         "file_path": file_path,
     }
-
-
-print("\n\n\n", onboarding())
