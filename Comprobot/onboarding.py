@@ -171,7 +171,7 @@ def onboarding():
             elif provider == "gemini":
                 f.write(f"GEMINI={api_key}\n")
 
-    return {
+    result = {
         "token": token,
         "commands_activated": commands_activated,
         "ai_activated": ai_activated,
@@ -180,3 +180,6 @@ def onboarding():
         "model": model,
         "file_path": file_path,
     }
+
+    print(result)
+    return result
