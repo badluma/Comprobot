@@ -1,7 +1,8 @@
-import discord
 import os
-import dotenv
+
 import appdirs
+import discord
+import dotenv
 
 dotenv.load_dotenv(
     dotenv.find_dotenv(
