@@ -3,7 +3,7 @@ import os
 import InquirerPy.utils
 import tomlkit
 from InquirerPy.base.control import Choice
-from InquirerPy.prompts import checkbox, confirm, filepath, input, secret
+from InquirerPy.prompts import checkbox, confirm, input, secret
 from InquirerPy.prompts import list as inquirer_list
 
 ACCENT = "\033[0;36m"
@@ -136,33 +136,12 @@ def onboarding():
 
         print()
 
-        # 4. Custom data directory
-        set_custom_path = confirm.ConfirmPrompt(
-            message="Do you want to set a custom directory to store the bot's data in?",
-            style=style,
-            default=False,
-        ).execute()
-
-        if set_custom_path:
-            print()
-            file_path = (
-                filepath.FilePathPrompt(
-                    message="Enter the custom data directory:",
-                    style=style,
-                    vi_mode=True,
-                )
-                .execute()
-                .replace("~", os.path.expanduser("~"))
-            )
-        else:
-            file_path = os.path.expanduser("~/.local/share/comprobot")
-
     except KeyboardInterrupt:
         quit()
 
-    os.makedirs(file_path, exist_ok=True)
-
-    env_path = os.path.join(file_path, ".env")
+    env_path = os.path.join(
+        appdirs.user_data_dir(appname="Comprobot", appauthor=False), ".env"
+    )
     with open(env_path, "w") as f:
         f.write(f"BOT_TOKEN={token}\n")
         if api_key:
