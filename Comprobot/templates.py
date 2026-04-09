@@ -118,7 +118,7 @@ mute   = []
 time_to_mute = 5 # In minutes
 """
 
-env_template = r"""BOT_TOKEN=
+env = r"""BOT_TOKEN=
 GEMINI=
 GROQ=
 """

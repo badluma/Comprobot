@@ -72,7 +72,7 @@ moderation: Dict[Any, Any] = _load_or_create(
     _get_data_path("moderation.toml"), templates.moderation
 )
 
-_ensure_file(_get_data_path(".env"), templates.env_template)
+_ensure_file(_get_data_path(".env"), templates.env)
 
 
 def save_toml(data, path):
