@@ -71,5 +71,7 @@ if __name__ == "__main__":
             save_toml(ai, get_data_path("ai.toml"))
             save_toml(active, get_data_path("active.toml"))
 
+            main()
+
         case _:
             print(parser.format_help())

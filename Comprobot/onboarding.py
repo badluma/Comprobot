@@ -171,5 +171,10 @@ def onboarding():
     }
 
     if config["debug_mode"]:
+        print()
         print(json.dumps(result, indent=4))
+        print()
+
+    print(f"{ACCENT}You're all set!{RESET} Have fun using Comprobot!")
+
     return result
