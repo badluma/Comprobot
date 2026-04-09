@@ -2,7 +2,7 @@ import argparse
 
 import dotenv
 
-from .data import active, ai, config
+from .data import active, ai, get_data_path, save_toml
 from .main import main
 from .onboarding import onboarding
 
@@ -67,6 +67,9 @@ if __name__ == "__main__":
                 ai["model"] = settings["model"]
             else:
                 ai["model"] = ""
+
+            save_toml(ai, get_data_path("ai.toml"))
+            save_toml(active, get_data_path("active.toml"))
 
         case _:
             print(parser.format_help())

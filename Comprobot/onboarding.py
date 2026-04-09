@@ -1,10 +1,14 @@
+import json
 import os
 
+import appdirs
 import InquirerPy.utils
 import tomlkit
 from InquirerPy.base.control import Choice
 from InquirerPy.prompts import checkbox, confirm, input, secret
 from InquirerPy.prompts import list as inquirer_list
+
+from .data import config
 
 ACCENT = "\033[0;36m"
 GRAY = "\u001b[0;37m"
@@ -122,12 +126,14 @@ def onboarding():
                 ).execute()
             else:
                 api_key = None
+            print()
 
+            # 3.3. Select model
             model = input.InputPrompt(
                 message="Enter the model you want to use:",
                 style=style,
                 vi_mode=True,
-            )
+            ).execute()
 
         else:
             model = None
@@ -147,8 +153,13 @@ def onboarding():
         if api_key:
             if provider == "groq":
                 f.write(f"GROQ={api_key}\n")
+                f.write("GEMINI=\n")
             elif provider == "gemini":
                 f.write(f"GEMINI={api_key}\n")
+                f.write("GROQ=\n")
+        else:
+            f.write("GROQ=\n")
+            f.write("GEMINI=\n")
 
     result = {
         "token": token,
@@ -157,8 +168,8 @@ def onboarding():
         "provider": provider,
         "api_key": api_key,
         "model": model,
-        "file_path": file_path,
     }
 
-    print(result)
+    if config["debug_mode"]:
+        print(json.dumps(result, indent=4))
     return result
