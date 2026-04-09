@@ -6,7 +6,7 @@ import tomlkit.exceptions
 
 def add_money(username, amount):
     data.money["members"][username] = data.money["members"].get(username, 0) + amount
-    data.save_money()
+    data.save_toml(data.money, data.get_data_path("money.toml"))
     balance = data.money["members"][username]
     return (
         choice(data.output["money"]["add_money"])
@@ -21,7 +21,7 @@ def remove_money(username, amount):
     current = data.money["members"].get(username, 0)
     if current < amount:
         data.money["members"][username] = 0
-        data.save_money()
+        data.save_toml(data.money, data.get_data_path("money.toml"))
         return (
             choice(data.output["money"]["insufficient_funds"])
             .replace("{{USERNAME}}", username)
@@ -30,7 +30,7 @@ def remove_money(username, amount):
         )
     else:
         data.money["members"][username] -= amount
-        data.save_money()
+        data.save_toml(data.money, data.get_data_path("money.toml"))
         balance = data.money["members"][username]
         return (
             choice(data.output["money"]["remove_money"])
@@ -46,7 +46,7 @@ def check_balance(username):
         balance = data.money["members"][username]
     except (KeyError, tomlkit.exceptions.NonExistentKey):
         data.money["members"][username] = 0
-        data.save_money()
+        data.save_toml(data.money, data.get_data_path("money.toml"))
         balance = 0
     return (
         choice(data.output["money"]["check_balance"])

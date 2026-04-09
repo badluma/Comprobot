@@ -74,7 +74,3 @@ ensure_file(get_data_path(".env"), templates.env)
 def save_toml(data, path):
     with open(path, "w") as f:
         tomlkit.dump(data, f)
-
-
-def save_money():
-    save_toml(money, get_data_path("money.toml"))
