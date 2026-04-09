@@ -22,7 +22,7 @@ settings: dict = {}
 
 if __name__ == "__main__":
     match args.command:
-        case "start" | None:
+        case "start":
             main()
         case "onboard":
             settings = onboarding()
@@ -69,4 +69,4 @@ if __name__ == "__main__":
                 ai["model"] = ""
 
         case _:
-            quit()
+            print(parser.format_help())
