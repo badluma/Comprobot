@@ -1,5 +1,6 @@
 import os
 import re
+import subprocess
 from typing import Any, Dict, List, cast
 
 import appdirs
@@ -22,9 +23,9 @@ def para(count=1):
 
 def clear():
     if os.name == "nt":
-        os.system("cls")
+        subprocess.call("cls")
     else:
-        os.system("clear")
+        subprocess.call("clear")
 
 
 async def direct_msg(message, author_message):

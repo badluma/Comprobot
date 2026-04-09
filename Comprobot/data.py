@@ -7,13 +7,13 @@ import tomlkit
 from . import templates
 
 
-def _get_data_path(filename):
+def get_data_path(filename):
 
     base_dir = appdirs.user_data_dir(appname="Comprobot", appauthor=False)
     return os.path.join(base_dir, filename)
 
 
-def _ensure_file(path, content):
+def ensure_file(path, content):
 
     os.makedirs(os.path.dirname(path), exist_ok=True)
     if not os.path.isfile(path):
@@ -21,25 +21,25 @@ def _ensure_file(path, content):
             f.write(content)
 
 
-def _merge_defaults(data, defaults):
+def merge_defaults(data, defaults):
     for key, value in defaults.items():
         if key not in data:
             data[key] = value
         elif isinstance(value, dict) and isinstance(data.get(key), dict):
-            _merge_defaults(data[key], value)
+            merge_defaults(data[key], value)
 
 
-def _load_or_create(path, template_content):
+def load_or_create(path, template_content):
     try:
         with open(path, "rb") as f:
             data = tomlkit.load(f)
     except FileNotFoundError:
-        _ensure_file(path, template_content)
+        ensure_file(path, template_content)
         with open(path, "rb") as f:
             data = tomlkit.load(f)
 
     defaults = tomlkit.loads(template_content)
-    _merge_defaults(data, defaults)
+    merge_defaults(data, defaults)
 
     if data != defaults:
         with open(path, "w") as f:
@@ -48,37 +48,29 @@ def _load_or_create(path, template_content):
     return data
 
 
-error_messages: Dict[str, str] = _load_or_create(
-    _get_data_path("error-messages.toml"), templates.error_messages
+error_messages: Dict[str, str] = load_or_create(
+    get_data_path("error-messages.toml"), templates.error_messages
 )
-config: Dict[str, Any] = _load_or_create(
-    _get_data_path("config.toml"), templates.config
+config: Dict[str, Any] = load_or_create(get_data_path("config.toml"), templates.config)
+keywords: Dict[str, Dict[str, List[str]]] = load_or_create(
+    get_data_path("keywords.toml"), templates.keywords
 )
-keywords: Dict[str, Dict[str, List[str]]] = _load_or_create(
-    _get_data_path("keywords.toml"), templates.keywords
-)
-ai: Dict[str, Any] = _load_or_create(_get_data_path("ai.toml"), templates.ai)
+ai: Dict[str, Any] = load_or_create(get_data_path("ai.toml"), templates.ai)
 system_prompt_text = ai["system_prompt"]
-money: Dict[str, Dict[str, int]] = _load_or_create(
-    _get_data_path("money.toml"), r"""members = {}"""
+money: Dict[str, Dict[str, int]] = load_or_create(
+    get_data_path("money.toml"), r"""members = {}"""
 )
-active: Dict[str, bool] = _load_or_create(
-    _get_data_path("active.toml"), templates.active
+active: Dict[str, bool] = load_or_create(get_data_path("active.toml"), templates.active)
+output: Dict[str, Dict[str, List[str]]] = load_or_create(
+    get_data_path("output.toml"), templates.output
 )
-output: Dict[str, Dict[str, List[str]]] = _load_or_create(
-    _get_data_path("output.toml"), templates.output
-)
-moderation: Dict[Any, Any] = _load_or_create(
-    _get_data_path("moderation.toml"), templates.moderation
+moderation: Dict[Any, Any] = load_or_create(
+    get_data_path("moderation.toml"), templates.moderation
 )
 
-_ensure_file(_get_data_path(".env"), templates.env_template)
+ensure_file(get_data_path(".env"), templates.env)
 
 
 def save_toml(data, path):
     with open(path, "w") as f:
         tomlkit.dump(data, f)
-
-
-def save_money():
-    save_toml(money, _get_data_path("money.toml"))

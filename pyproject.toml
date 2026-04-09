@@ -24,6 +24,7 @@ dependencies = [
     "ollama",
     "google-genai",
     "groq",
+    "InqurererPy",
 ]
 
 [project.optional-dependencies]

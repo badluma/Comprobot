@@ -118,19 +118,10 @@ mute   = []
 time_to_mute = 5 # In minutes
 """
 
-env_template = r"""BOT_TOKEN=
+env = r"""BOT_TOKEN=
 GEMINI=
 GROQ=
 """
-
-create_commands = r"""create("config.toml", config)
-create("error-messages.toml", error_messages)
-create("keywords.toml", keywords)
-create("ai.toml", ai)
-create("moderation.toml", moderation)
-create("data/.do_not_touch/money.toml", money)
-create("data/.do_not_touch/conversation_history.toml", conversation_history)
-create(".env", env_template)"""
 
 active = r"""quote             = true
 joke              = true
