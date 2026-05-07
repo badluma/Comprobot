@@ -1,4 +1,5 @@
 __pycache__/
+.ruff_cache/
 .venv/
 .idea/
 .env
@@ -9,3 +10,5 @@ requirements.txt
 dist/
 comprobot.egg-info/
 .actrc
+CLAUDE.md
+.claude

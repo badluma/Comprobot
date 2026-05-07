@@ -6,6 +6,7 @@ appdirs
 ollama
 google-genai
 groq
+InqurererPy
 
 [dev]
 ruff

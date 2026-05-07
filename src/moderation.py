@@ -50,6 +50,7 @@ async def kick(message, item):
         print(f"Couldn't DM {message.author.name}")
 
 
+
 async def check_message(message):
     if message.guild is None:
         return
