@@ -17,7 +17,7 @@ def ensure_file(path, content):
 
     os.makedirs(os.path.dirname(path), exist_ok=True)
     if not os.path.isfile(path):
-        with open(path, "w") as f:
+        with open(path, "w", encoding="utf-8") as f:
             f.write(content)
 
 
@@ -42,7 +42,7 @@ def load_or_create(path, template_content):
     merge_defaults(data, defaults)
 
     if data != defaults:
-        with open(path, "w") as f:
+        with open(path, "w", encoding="utf-8") as f:
             tomlkit.dump(data, f)
 
     return data
