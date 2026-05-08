@@ -6,10 +6,13 @@ from .data import error_messages, output
 
 
 def access_api(url, parameter, error_message, headers=None):
-    if headers:
-        raw = requests.get(url, headers=headers)
-    else:
-        raw = requests.get(url)
+    try:
+        if headers:
+            raw = requests.get(url, headers=headers)
+        else:
+            raw = requests.get(url)
+    except requests.exceptions.RequestException as e:
+        return (False, str(f"{error_message} ({e})"))
     if raw.status_code == 200:
         try:
             data = raw.json()
@@ -25,7 +28,10 @@ def access_api(url, parameter, error_message, headers=None):
 
 # ---------- Commands ----------
 def quote():
-    quote_response = requests.get("https://zenquotes.io/api/random")
+    try:
+        quote_response = requests.get("https://zenquotes.io/api/random")
+    except requests.exceptions.RequestException as e:
+        return f"{error_messages['quote']} ({e})"
     if quote_response.status_code != 200:
         return f"{error_messages['quote']} (HTTP {quote_response.status_code})"
     try:
