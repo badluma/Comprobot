@@ -6,21 +6,20 @@ from .data import active, ai, get_data_path, save_toml
 from .main import main
 from .onboarding import onboarding
 
-parser = argparse.ArgumentParser(
-    prog="comprobot",
-    description="A self-hostable open-source Discord bot built for maximum customization.",
-)
-subparsers = parser.add_subparsers(dest="command", metavar="")
-subparsers.add_parser("onboard", help="Set up Comprobot for the first time.")
-subparsers.add_parser("start", help="Start the bot.")
-# subparsers.add_parser("config", help="View or edit the bot's configuration.") TODO: implement config command
-# subparsers.add_parser("reset", help="Reset the bot's data and configuration.") TODO: implement reset command
 
-args = parser.parse_args()
+def cli_main():
+    parser = argparse.ArgumentParser(
+        prog="comprobot",
+        description="A self-hostable open-source Discord bot built for maximum customization.",
+    )
+    subparsers = parser.add_subparsers(dest="command", metavar="")
+    subparsers.add_parser("onboard", help="Set up Comprobot for the first time.")
+    subparsers.add_parser("start", help="Start the bot.")
+    test_parser = subparsers.add_parser("test", help="Process a message through the bot's command processor.")
+    test_parser.add_argument("message", help="The message to process (e.g. '!calculate 2+2')")
 
-settings: dict = {}
+    args = parser.parse_args()
 
-if __name__ == "__main__":
     match args.command:
         case "start":
             main()
@@ -73,5 +72,13 @@ if __name__ == "__main__":
 
             main()
 
+        case "test":
+            from .testing import run_test
+            run_test(args.message)
+
         case _:
             print(parser.format_help())
+
+
+if __name__ == "__main__":
+    cli_main()

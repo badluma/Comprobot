@@ -1,0 +1,135 @@
+name: Test Linux
+
+on: push
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install package
+        run: pip install -e ".[dev]"
+
+      # ── Commands ──────────────────────────────────────────────────────────────
+
+      - name: calculate (with args)
+        run: comprobot test "!calculate 2+2"
+
+      - name: calculate (no args → missing argument)
+        run: comprobot test "!calculate"
+
+      - name: qr (with args)
+        run: comprobot test "!qr https://example.com"
+
+      - name: qr (no args → missing argument)
+        run: comprobot test "!qr"
+
+      - name: ascii
+        run: comprobot test "!ascii"
+
+      - name: image (no subcommand → missing argument)
+        run: comprobot test "!image"
+
+      - name: purge
+        run: comprobot test "!purge"
+
+      # ── Settings ──────────────────────────────────────────────────────────────
+
+      - name: config (no subcommand → unknown command)
+        run: comprobot test "!config"
+
+      - name: config pfp (no attachment → error)
+        run: comprobot test "!config pfp"
+
+      - name: config banner (no attachment → error)
+        run: comprobot test "!config banner"
+
+      - name: config name (no args → missing argument)
+        run: comprobot test "!config name"
+
+      - name: config name (with args → bot unavailable)
+        run: comprobot test "!config name TestBot"
+
+      - name: config keywords (no args → missing argument)
+        run: comprobot test "!config keywords"
+
+      # ── Money ─────────────────────────────────────────────────────────────────
+
+      - name: balance (with username)
+        run: comprobot test "!balance testuser"
+
+      - name: add money
+        run: comprobot test "!add testuser 100"
+
+      - name: remove money
+        run: comprobot test "!remove testuser 50"
+
+      - name: balance (no args → missing argument)
+        run: comprobot test "!balance"
+
+      - name: add money (no args → missing argument)
+        run: comprobot test "!add"
+
+      - name: remove money (no args → missing argument)
+        run: comprobot test "!remove"
+
+      # ── API Commands ──────────────────────────────────────────────────────────
+
+      - name: quote
+        run: comprobot test "!quote"
+
+      - name: meme
+        run: comprobot test "!meme"
+
+      - name: waifu
+        run: comprobot test "!waifu"
+
+      - name: image duck
+        run: comprobot test "!image duck"
+
+      - name: image dog
+        run: comprobot test "!image dog"
+
+      - name: image cat
+        run: comprobot test "!image cat"
+
+      - name: chuck
+        run: comprobot test "!chuck"
+
+      - name: fact
+        run: comprobot test "!fact"
+
+      - name: bible (random)
+        run: comprobot test "!bible"
+
+      - name: bible (specific verse)
+        run: comprobot test "!bible John 3 16"
+
+      - name: bitcoin (default usd)
+        run: comprobot test "!bitcoin"
+
+      - name: bitcoin (eur)
+        run: comprobot test "!bitcoin eur"
+
+      - name: currency
+        run: comprobot test "!currency 10 usd eur"
+
+      - name: truth
+        run: comprobot test "!truth"
+
+      - name: dare
+        run: comprobot test "!dare"
+
+      - name: wyr
+        run: comprobot test "!wyr"
+
+      - name: nhie
+        run: comprobot test "!nhie"
+
+      - name: paranoia
+        run: comprobot test "!paranoia"

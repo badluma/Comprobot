@@ -35,7 +35,7 @@ Homepage = "https://badluma.github.io/Comprobot-Docs"
 Repository = "https://github.com/badluma/comprobot"
 
 [project.scripts]
-comprobot = "src.main:main"
+comprobot = "src.__main__:cli_main"
 
 [tool.setuptools.packages.find]
 where = ["."]
