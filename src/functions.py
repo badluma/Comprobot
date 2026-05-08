@@ -176,8 +176,8 @@ async def chat(message):
             {"role": "system", "content": system_prompt_text}
         ] + messages
         response = groq_client.chat.completions.create(
-            model=ai["model"],
-            messages=formatted_messages,  # type: ignore
+            model=cast(str, ai["model"]),
+            messages=cast(Any, formatted_messages),
         )
         content = response.choices[0].message.content or ""
     else:

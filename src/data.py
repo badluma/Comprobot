@@ -56,7 +56,7 @@ keywords: Dict[str, Dict[str, List[str]]] = load_or_create(
     get_data_path("keywords.toml"), templates.keywords
 )
 ai: Dict[str, Any] = load_or_create(get_data_path("ai.toml"), templates.ai)
-system_prompt_text = ai["system_prompt"]
+system_prompt_text: str = str(ai["system_prompt"])
 money: Dict[str, Dict[str, int]] = load_or_create(
     get_data_path("money.toml"), r"""members = {}"""
 )

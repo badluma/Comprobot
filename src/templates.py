@@ -37,9 +37,7 @@ user_prompt_structure = """
 '''
 
 config = r"""
-command_prefix =  "!"
-settings_prefix = "s!"
-music_prefix    = "m!"
+prefix =  "!"
 
 money_symbol    = "$"
 bot_admins      = []

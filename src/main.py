@@ -6,8 +6,9 @@ from os import path as os_path
 import appdirs
 import dotenv
 
-from . import process
-from .functions import client, para
+from .bot import client
+from .functions import para
+from .process import Comprobot
 
 dotenv.load_dotenv(
     dotenv.find_dotenv(
@@ -17,8 +18,6 @@ dotenv.load_dotenv(
     )
 )
 
-
-response = None
 if sys.platform.startswith("win"):
     print("Running on Windows (cmd)")
 elif platform.system() in ["Linux", "Darwin"]:
@@ -27,9 +26,11 @@ else:
     print("Unknown OS")
 
 
-@client.event
-async def on_message(message):
-    await process.process(message)
+async def _setup_hook():
+    await client.add_cog(Comprobot(client))
+
+
+client.setup_hook = _setup_hook
 
 
 @client.event

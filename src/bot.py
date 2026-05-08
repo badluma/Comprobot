@@ -3,6 +3,7 @@ import os
 import appdirs
 import discord
 import dotenv
+from discord.ext import commands
 
 dotenv.load_dotenv(
     dotenv.find_dotenv(
@@ -14,4 +15,11 @@ dotenv.load_dotenv(
 
 intents = discord.Intents.default()
 intents.message_content = True
-client = discord.Client(intents=intents)
+
+from .data import config  # noqa: E402
+
+bot = commands.Bot(
+    command_prefix=lambda b, m: config["prefix"],
+    intents=intents,
+)
+client = bot
