@@ -117,4 +117,7 @@ async def _run(message: str) -> int:
 
 
 def run_test(message: str) -> None:
+    import io
+    if isinstance(sys.stdout, io.TextIOWrapper):
+        sys.stdout.reconfigure(encoding="utf-8")
     sys.exit(asyncio.run(_run(message)))
