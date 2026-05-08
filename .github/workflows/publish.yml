@@ -37,6 +37,26 @@ jobs:
               return;
             }
 
+            const getVersion = async (ref) => {
+              const { data: file } = await github.rest.repos.getContent({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                path: 'pyproject.toml',
+                ref,
+              });
+              const content = Buffer.from(file.content, 'base64').toString();
+              return content.match(/^version\s*=\s*"(.+)"/m)?.[1];
+            };
+
+            const currentVersion = await getVersion(sha);
+            const parentSha = commit.parents[0]?.sha;
+            const parentVersion = parentSha ? await getVersion(parentSha) : null;
+
+            if (!currentVersion || currentVersion === parentVersion) {
+              core.setOutput('proceed', 'false');
+              return;
+            }
+
             const names = ['Test macOS', 'Test Windows', 'Test Linux'];
             const { data: { workflows } } = await github.rest.actions.listRepoWorkflows({
               owner: context.repo.owner,
