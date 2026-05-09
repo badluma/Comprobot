@@ -6,6 +6,25 @@ It’s built with Python, has a wide range of fun and useful commands, and is de
 
 The bot also comes with built-in AI capabilities when pinging the bot, with Ollama, Groq and Gemini as available providers.
 
+## Install
+
+**pipx** 
+```sh
+pipx install comprobot
+```
+
+**Homebrew** (macOS/Linux)
+```sh
+brew tap badluma/homebrew
+brew install comprobot
+```
+
+**Scoop** (Windows)
+```sh
+scoop bucket add badluma https://github.com/badluma/scoop-bucket
+scoop install comprobot
+```
+
 ## Documentation
 
 You can find the whole documentation [here](https://badluma.github.io/Comprobot-Docs/).

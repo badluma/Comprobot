@@ -1,0 +1,18 @@
+{
+  "version": "2.1.0",
+  "description": "A self-hostable Discord bot built for maximum customization.",
+  "homepage": "https://badluma.github.io/Comprobot-Docs",
+  "license": "MIT",
+  "depends": "python",
+  "installer": {
+    "script": "pip install comprobot==$version"
+  },
+  "uninstaller": {
+    "script": "pip uninstall -y comprobot"
+  },
+  "checkver": {
+    "url": "https://pypi.org/pypi/comprobot/json",
+    "jsonpath": "$.info.version"
+  },
+  "autoupdate": {}
+}
