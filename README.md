@@ -15,6 +15,8 @@ pipx install comprobot
 
 **APT** (Ubuntu/Debian)
 ```sh
+# If add-apt-repository isn't found, run this first:
+# sudo apt install software-properties-common
 sudo add-apt-repository ppa:badluma/ppa
 sudo apt update && sudo apt upgrade 
 sudo apt install comprobot
