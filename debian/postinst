@@ -3,10 +3,10 @@ set -e
 
 case "$1" in
     configure)
-        pip3 install --quiet --break-system-packages \
+        pip3 install --quiet --break-system-packages --upgrade \
             "discord.py[voice]" \
             python-dotenv \
-            tomlkit \
+            "tomlkit>=0.12.0" \
             ollama \
             google-genai \
             groq \
