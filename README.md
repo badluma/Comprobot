@@ -8,12 +8,19 @@ The bot also comes with built-in AI capabilities when pinging the bot, with Olla
 
 ## Install
 
-**pipx** 
+**pipx** (All platforms)
 ```sh
 pipx install comprobot
 ```
 
-**Homebrew** (macOS/Linux)
+**APT** (Ubuntu/Debian)
+```sh
+sudo add-apt-repository ppa:badluma/ppa
+sudo apt update && sudo apt upgrade 
+sudo apt install comprobot
+```
+
+**Homebrew** (macOS)
 ```sh
 brew tap badluma/homebrew
 brew install comprobot
@@ -24,6 +31,8 @@ brew install comprobot
 scoop bucket add badluma https://github.com/badluma/scoop-bucket
 scoop install comprobot
 ```
+
+Support for Docker Hub and AUR (Arch Linux) is planned.
 
 ## Documentation
 
