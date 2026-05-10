@@ -1,6 +1,6 @@
 Source: comprobot
 Maintainer: badluma <macumba-51sandbar@icloud.com>
-Build-Depends: debhelper-compat (= 13), dh-python, python3-all, python3-setuptools, python3-pip
+Build-Depends: debhelper-compat (= 13), dh-python, python3-all, python3-setuptools, python3-pip, pybuild-plugin-pyproject
 Section: net
 Priority: optional
 Standards-Version: 4.6.0
