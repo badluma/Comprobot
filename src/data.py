@@ -31,12 +31,12 @@ def merge_defaults(data, defaults):
 
 def load_or_create(path, template_content):
     try:
-        with open(path, "rb") as f:
-            data = tomlkit.load(f)
+        with open(path, "r", encoding="utf-8") as f:
+            data = tomlkit.loads(f.read())
     except FileNotFoundError:
         ensure_file(path, template_content)
-        with open(path, "rb") as f:
-            data = tomlkit.load(f)
+        with open(path, "r", encoding="utf-8") as f:
+            data = tomlkit.loads(f.read())
 
     defaults = tomlkit.loads(template_content)
     merge_defaults(data, defaults)
@@ -72,5 +72,5 @@ ensure_file(get_data_path(".env"), templates.env)
 
 
 def save_toml(data, path):
-    with open(path, "w") as f:
+    with open(path, "w", encoding="utf-8") as f:
         tomlkit.dump(data, f)
