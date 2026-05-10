@@ -3,10 +3,10 @@ set -e
 
 case "$1" in
     configure)
-        pip3 install --quiet --break-system-packages --upgrade \
+        pip3 install --quiet --break-system-packages --ignore-installed \
             "discord.py[voice]" \
             python-dotenv \
-            "tomlkit>=0.12.0" \
+            "tomlkit>=0.13.0" \
             ollama \
             google-genai \
             groq \
