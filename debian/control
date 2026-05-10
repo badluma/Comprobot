@@ -1,0 +1,14 @@
+Source: comprobot
+Maintainer: badluma <macumba-51sandbar@icloud.com>
+Build-Depends: debhelper-compat (= 13), dh-python, python3-all, python3-setuptools, python3-pip
+Section: net
+Priority: optional
+Standards-Version: 4.6.0
+X-Python3-Version: >= 3.10
+
+Package: comprobot
+Architecture: all
+Description: A self-hostable Discord bot built for maximum customization.
+ Comprobot is a highly-customizable, open-source Discord bot with AI
+ capabilities, moderation tools, and a wide range of built-in commands.
+Depends: ${python3:Depends}, python3-requests, python3-appdirs, python3-pip
