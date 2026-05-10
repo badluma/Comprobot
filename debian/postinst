@@ -3,7 +3,7 @@ set -e
 
 case "$1" in
     configure)
-        pip3 install --quiet \
+        pip3 install --quiet --break-system-packages \
             "discord.py[voice]" \
             python-dotenv \
             tomlkit \
