@@ -1,13 +1,9 @@
 #!/usr/bin/make -f
 
 export PYBUILD_NAME = comprobot
+export PYBUILD_INSTALL_ARGS = --no-deps
 
 %:
 	dh $@ --with python3 --buildsystem=pybuild
 
 override_dh_auto_test:
-
-override_dh_auto_install:
-	dh_auto_install
-	pip3 install --ignore-installed --no-deps --prefix=/usr --root=$(CURDIR)/debian/comprobot \
-		"discord.py[voice]" tomlkit ollama google-genai groq InquirerPy

@@ -1,0 +1,17 @@
+#!/bin/bash
+set -e
+
+case "$1" in
+    configure)
+        pip3 install --quiet \
+            "discord.py[voice]" \
+            python-dotenv \
+            tomlkit \
+            ollama \
+            google-genai \
+            groq \
+            InquirerPy
+        ;;
+esac
+
+exit 0
