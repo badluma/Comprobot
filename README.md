@@ -39,6 +39,21 @@ scoop bucket add badluma https://github.com/badluma/scoop-bucket
 scoop install comprobot
 ```
 
+**Docker**
+```sh
+docker run -d \
+  -v comprobot-data:/root/.local/share/Comprobot \
+  --name comprobot \
+  badluma/comprobot:latest
+```
+
+First run, set up credentials:
+```sh
+docker run -it --rm \
+  -v comprobot-data:/root/.local/share/Comprobot \
+  badluma/comprobot:latest onboard
+```
+
 ## Documentation
 
 You can find the whole documentation [here](https://badluma.github.io/Comprobot-Docs/).
