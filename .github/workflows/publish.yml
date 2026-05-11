@@ -85,7 +85,7 @@ jobs:
     name: "Publish to PyPI"
     needs: release
     runs-on: ubuntu-latest
-    environment: pypi
+    environment: PyPI
     permissions:
       id-token: write
     steps:
@@ -111,6 +111,7 @@ jobs:
     name: "Publish to Launchpad PPA"
     needs: release
     runs-on: ubuntu-latest
+    environment: Launchpad
     steps:
       - uses: actions/checkout@v4
         with:
@@ -158,6 +159,7 @@ jobs:
     name: "Publish to AUR"
     needs: release
     runs-on: ubuntu-latest
+    environment: AUR
     steps:
       - uses: actions/checkout@v4
         with:
@@ -183,6 +185,7 @@ jobs:
     name: "Update Scoop Manifest"
     needs: release
     runs-on: ubuntu-latest
+    environment: Scoop
     steps:
       - name: Update manifest
         env:
@@ -204,6 +207,7 @@ jobs:
     name: "Update Homebrew Formula"
     needs: release
     runs-on: ubuntu-latest
+    environment: Homebrew
     steps:
       - name: Update formula
         env:
