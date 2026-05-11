@@ -154,6 +154,31 @@ jobs:
           VERSION: ${{ needs.release.outputs.version }}
         run: dput ppa:badluma/ppa ../comprobot_${VERSION}_source.changes
 
+  aur:
+    name: "Publish to AUR"
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - name: Update PKGBUILD version
+        env:
+          VERSION: ${{ needs.release.outputs.version }}
+        run: sed -i "s/^pkgver=.*/pkgver=${VERSION}/" aur/PKGBUILD
+
+      - name: Publish to AUR
+        uses: KSXGitHub/github-actions-deploy-aur@v3.0.1
+        with:
+          pkgname: comprobot
+          pkgbuild: ./aur/PKGBUILD
+          commit_username: badluma
+          commit_email: tarmac_quarrel_7f@icloud.com
+          ssh_private_key: ${{ secrets.AUR_SSH_KEY }}
+          commit_message: "Update to v${{ needs.release.outputs.version }}"
+          updpkgsums: true
+
   scoop:
     name: "Update Scoop Manifest"
     needs: release
