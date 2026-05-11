@@ -1,14 +1,25 @@
+# Python
 __pycache__/
 .ruff_cache/
 .venv/
-.idea/
-.env
-.DS_Store
-icon.svg
-.ai/
-requirements.txt
-dist/
 comprobot.egg-info/
+dist/
+requirements.txt
+
+# Environment
+.env
+
+# IDE
+.idea/
 .actrc
-CLAUDE.md
+
+# OS
+.DS_Store
+
+# Claude
+.ai/
 .claude
+CLAUDE.md
+
+# Assets
+icon.svg
