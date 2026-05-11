@@ -22,6 +22,11 @@ sudo apt update && sudo apt upgrade
 sudo apt install comprobot
 ```
 
+**AUR** (Arch)
+```sh
+yay -S --noconfirm --nodiffmenu comprobot
+```
+
 **Homebrew** (macOS)
 ```sh
 brew tap badluma/homebrew
