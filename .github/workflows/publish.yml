@@ -228,3 +228,85 @@ jobs:
           git add Formula/comprobot.rb
           git commit -m "chore: update comprobot to v${VERSION}"
           git push
+
+  binaries:
+    name: "Build standalone binaries"
+    needs: release
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact: comprobot-linux
+          - os: macos-latest
+            artifact: comprobot-macos
+          - os: windows-latest
+            artifact: comprobot-windows
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Build binary
+        shell: bash
+        run: |
+          pip install pyinstaller .
+          pyinstaller --onefile --collect-all src --name ${{ matrix.artifact }} _entry.py
+
+      - name: Upload to release (Unix)
+        if: runner.os != 'Windows'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ needs.release.outputs.version }}
+          files: dist/${{ matrix.artifact }}
+
+      - name: Upload to release (Windows)
+        if: runner.os == 'Windows'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ needs.release.outputs.version }}
+          files: dist/${{ matrix.artifact }}.exe
+
+  docker:
+    name: "Publish to Docker Hub"
+    needs: release
+    runs-on: ubuntu-latest
+    environment: DockerHub
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/comprobot:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/comprobot:${{ needs.release.outputs.version }}
+
+  winget:
+    name: "Publish to winget"
+    needs: [release, binaries]
+    runs-on: ubuntu-latest
+    environment: winget
+    steps:
+      - uses: vedantmgoyal9/winget-releaser@v2
+        with:
+          identifier: badluma.Comprobot
+          release-tag: v${{ needs.release.outputs.version }}
+          installers-regex: 'comprobot-windows\.exe$'
+          token: ${{ secrets.WINGET_TOKEN }}

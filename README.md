@@ -39,7 +39,15 @@ scoop bucket add badluma https://github.com/badluma/scoop-bucket
 scoop install comprobot
 ```
 
-Support for Docker Hub and AUR (Arch Linux) is planned.
+**winget** (Windows)
+```sh
+winget install badluma.Comprobot
+```
+
+**Docker**
+```sh
+docker run -v ~/.local/share/Comprobot:/root/.local/share/Comprobot badluma/comprobot
+```
 
 ## Documentation
 
