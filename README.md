@@ -39,16 +39,6 @@ scoop bucket add badluma https://github.com/badluma/scoop-bucket
 scoop install comprobot
 ```
 
-**winget** (Windows)
-```sh
-winget install badluma.Comprobot
-```
-
-**Docker**
-```sh
-docker run -v ~/.local/share/Comprobot:/root/.local/share/Comprobot badluma/comprobot
-```
-
 ## Documentation
 
 You can find the whole documentation [here](https://badluma.github.io/Comprobot-Docs/).
