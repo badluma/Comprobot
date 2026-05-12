@@ -1,11 +1,10 @@
 name: Publish
 
 "on":
-  push:
-    branches:
-      - main
-    paths:
-      - "pyproject.toml"
+  workflow_run:
+    workflows: ["Test"]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -115,7 +114,7 @@ jobs:
 
   aur:
     name: "Publish to AUR"
-    needs: release
+    needs: [release, pypi]
     runs-on: ubuntu-latest
     environment: AUR
     steps:
