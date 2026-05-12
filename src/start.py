@@ -40,7 +40,7 @@ async def on_ready():
     para()
 
 
-def main():
+def start():
     print(
         f"Configuration directory: {appdirs.user_data_dir(appname='Comprobot', appauthor=False)}"
     )

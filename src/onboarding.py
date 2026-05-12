@@ -56,6 +56,7 @@ def onboarding():
         token = secret.SecretPrompt(
             message="Your bot token:",
             style=style,
+            amark="!",
             vi_mode=True,
         ).execute()
 
@@ -67,6 +68,7 @@ def onboarding():
             instruction="Press Space to deselect and press Enter to continue.",
             choices=active_choices,
             style=style,
+            amark="!",
             transformer=lambda result: (
                 f"{len(result)} commands selected" if result else "No commands selected"
             ),
@@ -77,7 +79,7 @@ def onboarding():
 
         # 3. Activate AI features
         ai_activated = confirm.ConfirmPrompt(
-            message="Do you want to activate AI features?", style=style, default=True
+            message="Do you want to activate AI features?", style=style, amark="!", default=True
         ).execute()
         if ai_activated:
             print()
@@ -92,6 +94,7 @@ def onboarding():
                 ],
                 default="groq",
                 style=style,
+                amark="!",
                 show_cursor=False,
             ).execute()
 
@@ -122,6 +125,7 @@ def onboarding():
                 api_key = secret.SecretPrompt(
                     message="Your API key:",
                     style=style,
+                    amark="!",
                     vi_mode=True,
                 ).execute()
             else:
@@ -132,6 +136,7 @@ def onboarding():
             model = input.InputPrompt(
                 message="Enter the model you want to use:",
                 style=style,
+                amark="!",
                 vi_mode=True,
             ).execute()
 

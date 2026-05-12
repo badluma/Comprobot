@@ -1,33 +1,40 @@
 import argparse
 
-import dotenv
+from dotenv import set_key as dotenv_set_key
 
 from .data import active, ai, get_data_path, save_toml
-from .main import main
+from .start import start
 from .onboarding import onboarding
+from .config import configure
 
 
-def cli_main():
+def main():
     parser = argparse.ArgumentParser(
         prog="comprobot",
         description="A self-hostable open-source Discord bot built for maximum customization.",
     )
     subparsers = parser.add_subparsers(dest="command", metavar="")
-    subparsers.add_parser("onboard", help="Set up Comprobot for the first time.")
     subparsers.add_parser("start", help="Start the bot.")
+    subparsers.add_parser("onboard", help="Set up Comprobot for the first time.")
+    config_parser = subparsers.add_parser("config", help="Configure the bot's settings.")
+    config_parser.add_argument("config_args", nargs=argparse.REMAINDER)
     test_parser = subparsers.add_parser("test", help="Process a message through the bot's command processor.")
     test_parser.add_argument("message", help="The message to process (e.g. '!calculate 2+2')")
 
     args = parser.parse_args()
 
+    print(args)
+
     match args.command:
         case "start":
-            main()
+            start()
         case "onboard":
             settings = onboarding()
 
-            dotenv.set_key(
-                dotenv_path=".env",
+            env_path = get_data_path(".env")
+
+            dotenv_set_key(
+                dotenv_path=env_path,
                 key_to_set="BOT_TOKEN",
                 value_to_set=str(settings["token"]),
             )
@@ -43,24 +50,24 @@ def cli_main():
             ai["provider"] = settings["provider"]
 
             if settings["provider"] == "groq":
-                dotenv.set_key(
-                    dotenv_path=".env",
+                dotenv_set_key(
+                    dotenv_path=env_path,
                     key_to_set="GROQ",
                     value_to_set=settings["api_key"],
                 )
-                dotenv.set_key(dotenv_path=".env", key_to_set="GEMINI", value_to_set="")
+                dotenv_set_key(dotenv_path=env_path, key_to_set="GEMINI", value_to_set="")
 
             elif settings["provider"] == "gemini":
-                dotenv.set_key(
-                    dotenv_path=".env",
+                dotenv_set_key(
+                    dotenv_path=env_path,
                     key_to_set="GEMINI",
                     value_to_set=settings["api_key"],
                 )
-                dotenv.set_key(dotenv_path=".env", key_to_set="GROQ", value_to_set="")
+                dotenv_set_key(dotenv_path=env_path, key_to_set="GROQ", value_to_set="")
 
             else:
-                dotenv.set_key(dotenv_path=".env", key_to_set="GROQ", value_to_set="")
-                dotenv.set_key(dotenv_path=".env", key_to_set="GEMINI", value_to_set="")
+                dotenv_set_key(dotenv_path=env_path, key_to_set="GROQ", value_to_set="")
+                dotenv_set_key(dotenv_path=env_path, key_to_set="GEMINI", value_to_set="")
 
             if settings["model"]:
                 ai["model"] = settings["model"]
@@ -70,7 +77,10 @@ def cli_main():
             save_toml(ai, get_data_path("ai.toml"))
             save_toml(active, get_data_path("active.toml"))
 
-            main()
+            start()
+
+        case "config":
+            configure(args.config_args)
 
         case "test":
             from .testing import run_test
@@ -81,4 +91,4 @@ def cli_main():
 
 
 if __name__ == "__main__":
-    cli_main()
+    main()
