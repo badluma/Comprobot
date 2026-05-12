@@ -174,8 +174,8 @@ jobs:
           URL="https://github.com/badluma/Comprobot/archive/refs/tags/v${VERSION}.tar.gz"
           SHA256=$(curl -sL "$URL" | sha256sum | cut -d' ' -f1)
 
-          git clone "https://x-access-token:${TAP_TOKEN}@github.com/badluma/homebrew-homebrew.git"
-          cd homebrew-homebrew
+          git clone "https://x-access-token:${TAP_TOKEN}@github.com/badluma/homebrew-tap.git"
+          cd homebrew-tap
 
           sed -i "s|url \".*\"|url \"${URL}\"|" Formula/comprobot.rb
           sed -i "s|sha256 \".*\"|sha256 \"${SHA256}\"|" Formula/comprobot.rb
