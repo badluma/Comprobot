@@ -15,6 +15,7 @@ async def ban(message, item):
             member = await message.guild.fetch_member(message.author.id)
         except discord.NotFound:
             print(f"Could not fetch member {message.author.name}.")
+            return
 
     try:
         try:
@@ -36,6 +37,7 @@ async def kick(message, item):
             member = await message.guild.fetch_member(message.author.id)
         except discord.NotFound:
             print(f"Could not fetch member {message.author.name}.")
+            return
 
     try:
         try:
