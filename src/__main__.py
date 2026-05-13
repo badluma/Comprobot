@@ -23,8 +23,6 @@ def main():
 
     args = parser.parse_args()
 
-    print(args)
-
     match args.command:
         case "start":
             start()
