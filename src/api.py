@@ -29,7 +29,7 @@ def access_api(url, parameter, error_message, headers=None):
 # ---------- Commands ----------
 def quote():
     try:
-        quote_response = requests.get("https://zenquotes.io/api/random")
+        quote_response = requests.get("https://zenquotes.io/api/random", timeout=10)
     except requests.exceptions.RequestException as e:
         return f"{error_messages['quote']} ({e})"
     if quote_response.status_code != 200:

@@ -42,7 +42,7 @@ runs:
         BETA_BOT_ID: ${{ inputs.beta_bot_id }}
         DISCORD_CHANNEL_ID: ${{ inputs.channel_id }}
         EXPECTED_RESPONSE: ${{ inputs.expected_response }}
-        MAX_RETRIES: 10
+        MAX_RETRIES: 30
       run: |
         for i in $(seq 1 $MAX_RETRIES); do
           echo "Attempt $i of $MAX_RETRIES..."

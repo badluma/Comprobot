@@ -146,7 +146,7 @@ jobs:
           echo $! > bot.pid
 
       - name: Startup delay
-        run: sleep 10
+        run: sleep 25
 
       # Title
       - name: Send details
