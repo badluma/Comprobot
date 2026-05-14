@@ -138,7 +138,7 @@ jobs:
             rm -rf ~/comprobot_ci
             git clone --depth=1 --branch ${GITHUB_REF_NAME} ${{ github.server_url }}/${{ github.repository }}.git ~/comprobot_ci
             cd ~/comprobot_ci
-            python3 -m pip install -e '.[dev]' -q
+            python3 -m pip install -e '.[dev]' -q --break-system-packages
           "
 
       # Start
