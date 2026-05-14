@@ -125,7 +125,9 @@ jobs:
 
       - name: Set environment variables
         run: |
-          echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          REF="${GITHUB_REF#refs/tags/}"
+          REF="${REF#refs/heads/}"
+          echo "VERSION=$REF" >> $GITHUB_ENV
           echo "COMMIT_MSG=$(git log -1 --pretty=%s)" >> $GITHUB_ENV
           echo "COMMIT_COUNT=$(git rev-list --count HEAD)" >> $GITHUB_ENV
           echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
@@ -154,7 +156,8 @@ jobs:
           REPO_NAME: ${{ github.event.repository.name }}
           ACTOR: ${{ github.actor }}
         run: |
-          MESSAGE="# $COMMIT_MSG\n$REPO_NAME $VERSION\n-# Pushed by: $ACTOR\n-# Commit count: $COMMIT_COUNT\n-# Commit SHA: $SHORT_SHA"
+          MESSAGE=$(printf "# %s\n%s %s\n-# Pushed by: %s\n-# Commit count: %s\n-# Commit SHA: %s" \
+            "$COMMIT_MSG" "$REPO_NAME" "$VERSION" "$ACTOR" "$COMMIT_COUNT" "$SHORT_SHA")
           PAYLOAD=$(jq -n --arg content "$MESSAGE" '{content: $content}')
           RESPONSE=$(curl -s -X POST \
             -H "Authorization: Bot $DISCORD_BOT_TOKEN" \
