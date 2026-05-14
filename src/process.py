@@ -31,40 +31,40 @@ class Comprobot(ext_commands.Cog):
     # ── Commands ─────────────────────────────────────────────────────────────
 
     @ext_commands.command(
-        name=keywords["commands"]["quote"][0],
-        aliases=keywords["commands"]["quote"][1:],
+        name=keywords["general"]["quote"][0],
+        aliases=keywords["general"]["quote"][1:],
     )
     @ext_commands.check(lambda ctx: active["quote"])
     async def quote_cmd(self, ctx):
         await ctx.send(api.quote())
 
     @ext_commands.command(
-        name=keywords["commands"]["joke"][0],
-        aliases=keywords["commands"]["joke"][1:],
+        name=keywords["general"]["joke"][0],
+        aliases=keywords["general"]["joke"][1:],
     )
     @ext_commands.check(lambda ctx: active["joke"])
     async def joke_cmd(self, ctx):
         await ctx.send(api.joke())
 
     @ext_commands.command(
-        name=keywords["commands"]["meme"][0],
-        aliases=keywords["commands"]["meme"][1:],
+        name=keywords["general"]["meme"][0],
+        aliases=keywords["general"]["meme"][1:],
     )
     @ext_commands.check(lambda ctx: active["meme"])
     async def meme_cmd(self, ctx):
         await ctx.send(api.meme())
 
     @ext_commands.command(
-        name=keywords["commands"]["waifu"][0],
-        aliases=keywords["commands"]["waifu"][1:],
+        name=keywords["general"]["waifu"][0],
+        aliases=keywords["general"]["waifu"][1:],
     )
     @ext_commands.check(lambda ctx: active["waifu"])
     async def waifu_cmd(self, ctx):
         await ctx.send(api.waifu())
 
     @ext_commands.group(
-        name=keywords["commands"]["image"][0],
-        aliases=keywords["commands"]["image"][1:],
+        name=keywords["general"]["image"][0],
+        aliases=keywords["general"]["image"][1:],
         invoke_without_command=True,
     )
     @ext_commands.check(lambda ctx: active["image"])
@@ -72,48 +72,48 @@ class Comprobot(ext_commands.Cog):
         await ctx.send(error_messages["missing_argument"])
 
     @image_cmd.command(
-        name=keywords["commands"]["duck"][0],
-        aliases=keywords["commands"]["duck"][1:],
+        name=keywords["general"]["duck"][0],
+        aliases=keywords["general"]["duck"][1:],
     )
     @ext_commands.check(lambda ctx: active["duck"])
     async def duck_cmd(self, ctx):
         await ctx.send(api.duck())
 
     @image_cmd.command(
-        name=keywords["commands"]["dog"][0],
-        aliases=keywords["commands"]["dog"][1:],
+        name=keywords["general"]["dog"][0],
+        aliases=keywords["general"]["dog"][1:],
     )
     @ext_commands.check(lambda ctx: active["dog"])
     async def dog_cmd(self, ctx):
         await ctx.send(api.dog())
 
     @image_cmd.command(
-        name=keywords["commands"]["cat"][0],
-        aliases=keywords["commands"]["cat"][1:],
+        name=keywords["general"]["cat"][0],
+        aliases=keywords["general"]["cat"][1:],
     )
     @ext_commands.check(lambda ctx: active["cat"])
     async def cat_cmd(self, ctx):
         await ctx.send(api.cat())
 
     @ext_commands.command(
-        name=keywords["commands"]["chuck_norris"][0],
-        aliases=keywords["commands"]["chuck_norris"][1:],
+        name=keywords["general"]["chuck_norris"][0],
+        aliases=keywords["general"]["chuck_norris"][1:],
     )
     @ext_commands.check(lambda ctx: active["chuck_norris"])
     async def chuck_cmd(self, ctx):
         await ctx.send(api.chuck())
 
     @ext_commands.command(
-        name=keywords["commands"]["fact"][0],
-        aliases=keywords["commands"]["fact"][1:],
+        name=keywords["general"]["fact"][0],
+        aliases=keywords["general"]["fact"][1:],
     )
     @ext_commands.check(lambda ctx: active["fact"])
     async def fact_cmd(self, ctx):
         await ctx.send(api.fact())
 
     @ext_commands.command(
-        name=keywords["commands"]["bible"][0],
-        aliases=keywords["commands"]["bible"][1:],
+        name=keywords["general"]["bible"][0],
+        aliases=keywords["general"]["bible"][1:],
     )
     @ext_commands.check(lambda ctx: active["bible"])
     async def bible_cmd(self, ctx, book: str | None = None, chapter: int | None = None, verse: int | None = None):
@@ -125,68 +125,68 @@ class Comprobot(ext_commands.Cog):
             await ctx.send(error_messages["missing_argument"])
 
     @ext_commands.command(
-        name=keywords["commands"]["truth"][0],
-        aliases=keywords["commands"]["truth"][1:],
+        name=keywords["general"]["truth"][0],
+        aliases=keywords["general"]["truth"][1:],
     )
     @ext_commands.check(lambda ctx: active["truth"])
     async def truth_cmd(self, ctx, rating: str | None = None):
         result = api.tord("https://api.truthordarebot.xyz/v1/truth", rating)
         if result:
-            await ctx.send(choice(output["commands"]["truth"]).replace("{{QUESTION}}", result))
+            await ctx.send(choice(output["general"]["truth"]).replace("{{QUESTION}}", result))
         else:
             await ctx.send(error_messages["truth"])
 
     @ext_commands.command(
-        name=keywords["commands"]["dare"][0],
-        aliases=keywords["commands"]["dare"][1:],
+        name=keywords["general"]["dare"][0],
+        aliases=keywords["general"]["dare"][1:],
     )
     @ext_commands.check(lambda ctx: active["dare"])
     async def dare_cmd(self, ctx, rating: str | None = None):
         result = api.tord("https://api.truthordarebot.xyz/api/dare", rating)
         if result:
-            await ctx.send(choice(output["commands"]["dare"]).replace("{{QUESTION}}", result))
+            await ctx.send(choice(output["general"]["dare"]).replace("{{QUESTION}}", result))
         else:
             await ctx.send(error_messages["dare"])
 
     @ext_commands.command(
-        name=keywords["commands"]["wyr"][0],
-        aliases=keywords["commands"]["wyr"][1:],
+        name=keywords["general"]["wyr"][0],
+        aliases=keywords["general"]["wyr"][1:],
     )
     @ext_commands.check(lambda ctx: active["wyr"])
     async def wyr_cmd(self, ctx, rating: str | None = None):
         result = api.tord("https://api.truthordarebot.xyz/api/wyr", rating)
         if result:
-            await ctx.send(choice(output["commands"]["wyr"]).replace("{{QUESTION}}", result))
+            await ctx.send(choice(output["general"]["wyr"]).replace("{{QUESTION}}", result))
         else:
             await ctx.send(error_messages["wyr"])
 
     @ext_commands.command(
-        name=keywords["commands"]["never_have_i_ever"][0],
-        aliases=keywords["commands"]["never_have_i_ever"][1:],
+        name=keywords["general"]["never_have_i_ever"][0],
+        aliases=keywords["general"]["never_have_i_ever"][1:],
     )
     @ext_commands.check(lambda ctx: active["never_have_i_ever"])
     async def nhie_cmd(self, ctx, rating: str | None = None):
         result = api.tord("https://api.truthordarebot.xyz/api/nhie", rating)
         if result:
-            await ctx.send(choice(output["commands"]["never_have_i_ever"]).replace("{{QUESTION}}", result))
+            await ctx.send(choice(output["general"]["never_have_i_ever"]).replace("{{QUESTION}}", result))
         else:
             await ctx.send(error_messages["never-hie"])
 
     @ext_commands.command(
-        name=keywords["commands"]["paranoia"][0],
-        aliases=keywords["commands"]["paranoia"][1:],
+        name=keywords["general"]["paranoia"][0],
+        aliases=keywords["general"]["paranoia"][1:],
     )
     @ext_commands.check(lambda ctx: active["paranoia"])
     async def paranoia_cmd(self, ctx, rating: str | None = None):
         result = api.tord("https://api.truthordarebot.xyz/api/paranoia", rating)
         if result:
-            await ctx.send(choice(output["commands"]["paranoia"]).replace("{{QUESTION}}", result))
+            await ctx.send(choice(output["general"]["paranoia"]).replace("{{QUESTION}}", result))
         else:
             await ctx.send(error_messages["paranoia"])
 
     @ext_commands.command(
-        name=keywords["commands"]["qr_code"][0],
-        aliases=keywords["commands"]["qr_code"][1:],
+        name=keywords["general"]["qr_code"][0],
+        aliases=keywords["general"]["qr_code"][1:],
     )
     @ext_commands.check(lambda ctx: active["qr_code"])
     async def qr_cmd(self, ctx, link: str | None = None):
@@ -196,8 +196,8 @@ class Comprobot(ext_commands.Cog):
             await ctx.send(error_messages["missing_argument"])
 
     @ext_commands.command(
-        name=keywords["commands"]["calculate"][0],
-        aliases=keywords["commands"]["calculate"][1:],
+        name=keywords["general"]["calculate"][0],
+        aliases=keywords["general"]["calculate"][1:],
     )
     @ext_commands.check(lambda ctx: active["calculate"])
     async def calculate_cmd(self, ctx, *, expression: str | None = None):
@@ -207,23 +207,31 @@ class Comprobot(ext_commands.Cog):
             await ctx.send(error_messages["missing_argument"])
 
     @ext_commands.command(
-        name=keywords["commands"]["bitcoin"][0],
-        aliases=keywords["commands"]["bitcoin"][1:],
+        name=keywords["general"]["bitcoin"][0],
+        aliases=keywords["general"]["bitcoin"][1:],
     )
     @ext_commands.check(lambda ctx: active["bitcoin"])
     async def bitcoin_cmd(self, ctx, currency: str = "usd"):
         await ctx.send(api.bitcoin(currency))
 
     @ext_commands.command(
-        name=keywords["commands"]["ascii_art"][0],
-        aliases=keywords["commands"]["ascii_art"][1:],
+        name=keywords["general"]["help"][0],
+        aliases=keywords["general"]["help"][1:],
+    )
+    @ext_commands.check(lambda ctx: active["help"])
+    async def help_cmd(self, ctx, category: str | None = None):
+        await ctx.send(cmd_module.help(category))
+
+    @ext_commands.command(
+        name=keywords["general"]["ascii_art"][0],
+        aliases=keywords["general"]["ascii_art"][1:],
     )
     async def ascii_cmd(self, ctx):
         await ctx.send(cmd_module.ascii())
 
     @ext_commands.command(
-        name=keywords["commands"]["currency"][0],
-        aliases=keywords["commands"]["currency"][1:],
+        name=keywords["general"]["currency"][0],
+        aliases=keywords["general"]["currency"][1:],
     )
     @ext_commands.check(lambda ctx: active["currency"])
     async def currency_cmd(self, ctx, amount: str | None = None, from_currency: str | None = None, to_currency: str | None = None):

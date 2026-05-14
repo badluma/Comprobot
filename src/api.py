@@ -39,7 +39,7 @@ def quote():
         fetched_quote = data[0]["q"]
         author = data[0]["a"]
         response = (
-            choice(output["commands"]["quote"])
+            choice(output["general"]["quote"])
             .replace(r"{{QUOTE}}", fetched_quote)
             .replace(r"{{AUTHOR}}", author)
         )
@@ -54,7 +54,7 @@ def meme():
     )
     if not success:
         return url
-    return choice(output["commands"]["meme"]).replace(r"{{URL}}", url)
+    return choice(output["general"]["meme"]).replace(r"{{URL}}", url)
 
 
 def waifu():
@@ -69,7 +69,7 @@ def waifu():
     if not success2:
         return waifu2
     return (
-        choice(output["commands"]["waifu"])
+        choice(output["general"]["waifu"])
         .replace(r"{{URL1}}", waifu1)
         .replace(r"{{URL2}}", waifu2)
     )
@@ -81,7 +81,7 @@ def duck():  # TODO: Fix function (command doesnt respond)
     )
     if not success:
         return url
-    return choice(output["commands"]["duck"]).replace(r"{{URL}}", url)
+    return choice(output["general"]["duck"]).replace(r"{{URL}}", url)
 
 
 def dog():
@@ -90,7 +90,7 @@ def dog():
     )
     if not success:
         return url
-    return choice(output["commands"]["dog"]).replace(r"{{URL}}", url)
+    return choice(output["general"]["dog"]).replace(r"{{URL}}", url)
 
 
 def cat():
@@ -99,7 +99,7 @@ def cat():
         return f"{error_messages['cat']} (HTTP {raw.status_code})"
     try:
         data = raw.json()
-        response = choice(output["commands"]["cat"]).replace(r"{{URL}}", data[0]["url"])
+        response = choice(output["general"]["cat"]).replace(r"{{URL}}", data[0]["url"])
     except (requests.exceptions.JSONDecodeError, KeyError, IndexError):
         response = error_messages["cat"]
     return response
@@ -111,7 +111,7 @@ def chuck():
     )
     if not success:
         return joke
-    return choice(output["commands"]["chuck_norris"]).replace(r"{{JOKE}}", joke)
+    return choice(output["general"]["chuck_norris"]).replace(r"{{JOKE}}", joke)
 
 
 def fact():
@@ -122,7 +122,7 @@ def fact():
     )
     if not success:
         return fact_text
-    return choice(output["commands"]["fact"]).replace(r"{{FACT}}", fact_text)
+    return choice(output["general"]["fact"]).replace(r"{{FACT}}", fact_text)
 
 
 def bible(
@@ -140,7 +140,7 @@ def bible(
             if "random_verse" in data:
                 verse = data["random_verse"]
                 response = (
-                    choice(output["commands"]["bible"])
+                    choice(output["general"]["bible"])
                     .replace(r"{{PASSAGE}}", verse["text"].strip())
                     .replace(r"{{BOOK}}", verse["book"].strip())
                     .replace(r"{{CHAPTER}}", str(verse["chapter"].strip()))
@@ -158,7 +158,7 @@ def bible(
                 )
                 verse_num = chapter_verse.split(":")[1] if ":" in chapter_verse else "1"
                 response = (
-                    choice(output["commands"]["bible"])
+                    choice(output["general"]["bible"])
                     .replace(r"{{PASSAGE}}", data["text"].strip())
                     .replace(r"{{BOOK}}", book.strip())
                     .replace(r"{{CHAPTER}}", chapter.strip())
@@ -188,7 +188,7 @@ def bitcoin(currency_parameter):
         data = bitcoin_price.json()
         if "bitcoin" in data and currency in data["bitcoin"]:
             response = (
-                choice(output["commands"]["bitcoin"])
+                choice(output["general"]["bitcoin"])
                 .replace(r"{{AMOUNT}}", str(data["bitcoin"][currency]))
                 .replace(r"{{CURRENCY}}", currency.upper())
             )
@@ -217,7 +217,7 @@ def joke():
     try:
         data = raw.json()
         response = (
-            choice(output["commands"]["joke"])
+            choice(output["general"]["joke"])
             .replace(r"{{SETUP}}", data["setup"])
             .replace(r"{{PUNCHLINE}}", data["punchline"])
         )
@@ -264,7 +264,7 @@ def currency(currency1, currency2, amount):
     rate = raw_response[currency1][currency2]
     converted_amount = rate * amount
     response = (
-        choice(output["commands"]["currency"])
+        choice(output["general"]["currency"])
         .replace(r"{{FROM_AMOUNT}}", str(amount))
         .replace(r"{{FROM_CURRENCY}}", currency1.upper())
         .replace(r"{{TO_AMOUNT}}", f"{converted_amount:.2f}")

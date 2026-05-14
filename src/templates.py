@@ -73,7 +73,7 @@ missing_argument  = "Missing argument."
 no_attachment     = "No attachment given."
 bot_unavailable   = "Bot not available."'''
 
-keywords = r"""[commands]
+keywords = r"""[general]
 quote             = ["quote"]
 joke              = ["joke"]
 meme              = ["meme"]

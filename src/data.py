@@ -29,6 +29,12 @@ def merge_defaults(data, defaults):
             merge_defaults(data[key], value)
 
 
+def migrate_section(data, old_key, new_key):
+    if old_key in data and new_key not in data:
+        data[new_key] = data[old_key]
+        del data[old_key]
+
+
 def load_or_create(path, template_content):
     try:
         with open(path, "r", encoding="utf-8") as f:
@@ -37,6 +43,8 @@ def load_or_create(path, template_content):
         ensure_file(path, template_content)
         with open(path, "r", encoding="utf-8") as f:
             data = tomlkit.loads(f.read())
+
+    migrate_section(data, "commands", "general")
 
     defaults = tomlkit.loads(template_content)
     merge_defaults(data, defaults)

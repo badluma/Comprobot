@@ -5,7 +5,7 @@ from .data import config, error_messages, output
 
 def qr(link):
     url = f"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={link}"
-    return choice(output["commands"]["qr_code"]).replace(r"{{URL}}", url)
+    return choice(output["general"]["qr_code"]).replace(r"{{URL}}", url)
 
 
 def calculate(calculation):
