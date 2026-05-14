@@ -150,8 +150,9 @@ jobs:
             comprobot config config prefix 'test!'
             comprobot config ai activate_ai false
             comprobot config config bot_admins '${{ secrets.SENDER_BOT_ID }}'
-            nohup comprobot start > ~/bot.log 2>&1 &
+            nohup comprobot start > ~/bot.log 2>&1 < /dev/null &
             echo \$! > ~/bot.pid
+            disown
           "
 
       - name: Startup delay
