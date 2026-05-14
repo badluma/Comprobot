@@ -151,9 +151,10 @@ jobs:
         env:
           DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
           DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
-          VERSION: ${GITHUB_REF#refs/tags/}
-          MESSAGE: "# $COMMIT_MSG\n${{ github.repository }} $VERSION\n-# Pushed by: ${{ github.actor }}\n-# Commit count: ${{ env.COMMIT_COUNT }}\n-# Commit SHA: ${{ env.SHORT_SHA }}"
+          REPO_NAME: ${{ github.event.repository.name }}
+          ACTOR: ${{ github.actor }}
         run: |
+          MESSAGE="# $COMMIT_MSG\n$REPO_NAME $VERSION\n-# Pushed by: $ACTOR\n-# Commit count: $COMMIT_COUNT\n-# Commit SHA: $SHORT_SHA"
           PAYLOAD=$(jq -n --arg content "$MESSAGE" '{content: $content}')
           RESPONSE=$(curl -s -X POST \
             -H "Authorization: Bot $DISCORD_BOT_TOKEN" \
@@ -192,6 +193,8 @@ jobs:
         with:
           message: "test!quote"
           channel_id: ${{ env.DISCORD_THREAD_ID }}
+          discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
+          beta_bot_id: ${{ secrets.BETA_BOT_ID }}
 
       # Stop
       - name: Show bot log

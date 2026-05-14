@@ -8,6 +8,12 @@ inputs:
   channel_id:
     required: true
     description: Discord channel or thread ID to send messages to
+  discord_bot_token:
+    required: true
+    description: Discord bot token
+  beta_bot_id:
+    required: true
+    description: Beta bot user ID to wait for response from
   expected_response:
     required: false
     default: ""
@@ -18,7 +24,7 @@ runs:
   steps:
     - name: Send message to Discord channel
       env:
-        DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+        DISCORD_BOT_TOKEN: ${{ inputs.discord_bot_token }}
         DISCORD_CHANNEL_ID: ${{ inputs.channel_id }}
         MESSAGE: ${{ inputs.message }}
       run: |
@@ -32,8 +38,8 @@ runs:
 
     - name: Wait for response
       env:
-        DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
-        BETA_BOT_ID: ${{ secrets.BETA_BOT_ID }}
+        DISCORD_BOT_TOKEN: ${{ inputs.discord_bot_token }}
+        BETA_BOT_ID: ${{ inputs.beta_bot_id }}
         DISCORD_CHANNEL_ID: ${{ inputs.channel_id }}
         EXPECTED_RESPONSE: ${{ inputs.expected_response }}
         MAX_RETRIES: 10
@@ -46,9 +52,6 @@ runs:
             | jq '.[0]')
 
           MESSAGE_CONTENT=$(echo "$RESPONSE" | jq -r '.content')
-          AUTHOR=$(echo "$RESPONSE" | jq -r '.author.username')
-          TIMESTAMP=$(echo "$RESPONSE" | jq -r '.timestamp')
-          MESSAGE_ID=$(echo "$RESPONSE" | jq -r '.id')
           AUTHOR_ID=$(echo "$RESPONSE" | jq -r '.author.id')
 
           if [ "$AUTHOR_ID" != "$BETA_BOT_ID" ]; then
