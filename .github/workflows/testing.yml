@@ -154,10 +154,11 @@ jobs:
           VERSION: ${GITHUB_REF#refs/tags/}
           MESSAGE: "# $COMMIT_MSG\n${{ github.repository }} $VERSION\n-# Pushed by: ${{ github.actor }}\n-# Commit count: ${{ env.COMMIT_COUNT }}\n-# Commit SHA: ${{ env.SHORT_SHA }}"
         run: |
+          PAYLOAD=$(jq -n --arg content "$MESSAGE" '{content: $content}')
           RESPONSE=$(curl -s -X POST \
             -H "Authorization: Bot $DISCORD_BOT_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"content\": \"$MESSAGE\"}" \
+            -d "$PAYLOAD" \
             "https://discord.com/api/v10/channels/$DISCORD_CHANNEL_ID/messages")
           echo "Send details response: $RESPONSE"
           MESSAGE_ID=$(echo "$RESPONSE" | jq -r '.id')
