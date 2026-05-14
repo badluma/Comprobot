@@ -137,21 +137,6 @@ jobs:
             git clone --depth=1 --branch ${GITHUB_REF_NAME} ${{ github.server_url }}/${{ github.repository }}.git ~/comprobot_ci
             cd ~/comprobot_ci
             python3 -m pip install -e '.[dev]' -q --break-system-packages
-            mkdir -p ~/.config/systemd/user
-            cat > ~/.config/systemd/user/comprobot.service << 'EOF'
-            [Unit]
-            Description=Comprobot Discord Bot CI
-
-            [Service]
-            Type=simple
-            ExecStart=%h/.local/bin/comprobot start
-            Restart=no
-            StandardOutput=append:%h/bot.log
-            StandardError=append:%h/bot.log
-            EOF
-            export XDG_RUNTIME_DIR=/run/user/\$(id -u)
-            systemctl --user daemon-reload
-            sudo loginctl enable-linger ubuntu
           "
 
       # Start
@@ -167,11 +152,8 @@ jobs:
 
       - name: Start bot on Oracle
         run: |
-          ssh -i ~/.ssh/oracle.key -o StrictHostKeyChecking=no ubuntu@${{ secrets.ORACLE_HOST }} "
-            > ~/bot.log
-            export XDG_RUNTIME_DIR=/run/user/\$(id -u)
-            systemctl --user restart comprobot
-          "
+          ssh -i ~/.ssh/oracle.key -o StrictHostKeyChecking=no ubuntu@${{ secrets.ORACLE_HOST }} \
+            "export PATH=\$HOME/.local/bin:\$PATH && > ~/bot.log && comprobot start --daemon > ~/bot.log 2>&1"
 
       - name: Startup delay
         run: sleep 15
@@ -235,7 +217,5 @@ jobs:
       - name: Stop bot
         if: always()
         run: |
-          ssh -i ~/.ssh/oracle.key -o StrictHostKeyChecking=no ubuntu@${{ secrets.ORACLE_HOST }} "
-            export XDG_RUNTIME_DIR=/run/user/\$(id -u)
-            systemctl --user stop comprobot || true
-          " || true
+          ssh -i ~/.ssh/oracle.key -o StrictHostKeyChecking=no ubuntu@${{ secrets.ORACLE_HOST }} \
+            "pkill -f 'comprobot start' || true" || true
