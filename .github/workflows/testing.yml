@@ -142,7 +142,7 @@ jobs:
           "
 
       # Start
-      - name: Configure and start bot on Oracle
+      - name: Configure bot on Oracle
         run: |
           ssh -i ~/.ssh/oracle.key -o StrictHostKeyChecking=no ubuntu@${{ secrets.ORACLE_HOST }} "
             export PATH=\$HOME/.local/bin:\$PATH
@@ -150,10 +150,12 @@ jobs:
             comprobot config config prefix 'test!'
             comprobot config ai activate_ai false
             comprobot config config bot_admins '${{ secrets.SENDER_BOT_ID }}'
-            nohup comprobot start > ~/bot.log 2>&1 < /dev/null &
-            echo \$! > ~/bot.pid
-            disown
           "
+
+      - name: Start bot on Oracle
+        run: |
+          ssh -i ~/.ssh/oracle.key -o StrictHostKeyChecking=no ubuntu@${{ secrets.ORACLE_HOST }} \
+            "setsid \$HOME/.local/bin/comprobot start > ~/bot.log 2>&1 < /dev/null &"
 
       - name: Startup delay
         run: sleep 15
@@ -216,4 +218,4 @@ jobs:
 
       - name: Stop bot
         if: always()
-        run: ssh -i ~/.ssh/oracle.key -o StrictHostKeyChecking=no ubuntu@${{ secrets.ORACLE_HOST }} "kill \$(cat ~/bot.pid) 2>/dev/null || true" || true
+        run: ssh -i ~/.ssh/oracle.key -o StrictHostKeyChecking=no ubuntu@${{ secrets.ORACLE_HOST }} "pkill -f 'comprobot start' || true" || true
