@@ -136,24 +136,28 @@ jobs:
             rm -rf ~/comprobot_ci
             git clone --depth=1 --branch ${GITHUB_REF_NAME} ${{ github.server_url }}/${{ github.repository }}.git ~/comprobot_ci
             cd ~/comprobot_ci
-            python3 -m pip install -e '.[dev]' -q --break-system-packages
+            python3 -m venv .venv
+            .venv/bin/pip install -e '.[dev]' -q
           "
 
       # Start
       - name: Configure bot on Oracle
         run: |
           ssh -i ~/.ssh/oracle.key -o StrictHostKeyChecking=no ubuntu@${{ secrets.ORACLE_HOST }} "
-            export PATH=\$HOME/.local/bin:\$PATH
-            comprobot config secrets BOT_TOKEN '${{ secrets.BETA_BOT_TOKEN }}'
-            comprobot config config prefix 'test!'
-            comprobot config ai activate_ai false
-            comprobot config config bot_admins '${{ secrets.SENDER_BOT_ID }}'
+            pkill -f 'python -m src' || true
+            cd ~/comprobot_ci
+            source .venv/bin/activate
+            python -m src config secrets BOT_TOKEN '${{ secrets.BETA_BOT_TOKEN }}'
+            python -m src config config prefix 'test!'
+            python -m src config ai activate_ai false
+            python -m src config config bot_admins '${{ secrets.SENDER_BOT_ID }}'
           "
 
       - name: Start bot on Oracle
         run: |
-          ssh -i ~/.ssh/oracle.key -o StrictHostKeyChecking=no ubuntu@${{ secrets.ORACLE_HOST }} \
-            "export PATH=\$HOME/.local/bin:\$PATH && > ~/bot.log && comprobot start --daemon > ~/bot.log 2>&1"
+          ssh -i ~/.ssh/oracle.key -o StrictHostKeyChecking=no ubuntu@${{ secrets.ORACLE_HOST }} "
+            cd ~/comprobot_ci && source .venv/bin/activate && > ~/bot.log && python -m src start --daemon > ~/bot.log 2>&1
+          "
 
       - name: Startup delay
         run: sleep 15
@@ -218,4 +222,4 @@ jobs:
         if: always()
         run: |
           ssh -i ~/.ssh/oracle.key -o StrictHostKeyChecking=no ubuntu@${{ secrets.ORACLE_HOST }} \
-            "pkill -f 'comprobot start' || true" || true
+            "pkill -f 'python -m src start' || true" || true
