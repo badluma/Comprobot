@@ -8,8 +8,7 @@ case "$1" in
             python-dotenv \
             "tomlkit>=0.13.0" \
             ollama \
-            google-genai \
-            groq \
+            httpx \
             InquirerPy
         ;;
 esac
