@@ -14,7 +14,8 @@ def main():
         description="A self-hostable open-source Discord bot built for maximum customization.",
     )
     subparsers = parser.add_subparsers(dest="command", metavar="")
-    subparsers.add_parser("start", help="Start the bot.")
+    start_parser = subparsers.add_parser("start", help="Start the bot.")
+    start_parser.add_argument("--daemon", action="store_true", help="Daemonize the process.")
     subparsers.add_parser("onboard", help="Set up Comprobot for the first time.")
     config_parser = subparsers.add_parser("config", help="Configure the bot's settings.")
     config_parser.add_argument("config_args", nargs=argparse.REMAINDER)
@@ -25,7 +26,7 @@ def main():
 
     match args.command:
         case "start":
-            start()
+            start(daemon=getattr(args, "daemon", False))
         case "onboard":
             settings = onboarding()
 

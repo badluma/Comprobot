@@ -1,3 +1,4 @@
+import os
 import platform
 import sys
 from os import getenv as os_getenv
@@ -48,7 +49,20 @@ async def on_ready():
     para()
 
 
-def start():
+def _daemonize():
+    if os.fork() != 0:
+        os._exit(0)
+    os.setsid()
+    if os.fork() != 0:
+        os._exit(0)
+    devnull = os.open(os.devnull, os.O_RDONLY)
+    os.dup2(devnull, 0)
+    os.close(devnull)
+
+
+def start(daemon=False):
+    if daemon:
+        _daemonize()
     print(
         f"Configuration directory: {appdirs.user_data_dir(appname='Comprobot', appauthor=False)}"
     )
