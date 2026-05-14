@@ -28,9 +28,9 @@ def help(category=None):
             message += f"\n## {category.title()}\n"
             for command in list(keywords[category].keys()):
                 if active.get(command, True):
-                    message += f"\n**{config["prefix"]}{keywords[category][command][0]}** - {descriptions[category][command]}"
+                    message += f"\n**{config['prefix']}{keywords[category][command][0]}** - {descriptions[category][command]}"
                     if len(keywords[category][command]) > 1:
-                        message += f"\n-# Aliases: {config["prefix"]}{', '.join(keywords[category][command][1:])}"
+                        message += f"\n-# Aliases: {config['prefix']}{', '.join(keywords[category][command][1:])}"
                     message += "\n-# \u200b"
         return message
     else:
@@ -39,9 +39,9 @@ def help(category=None):
         message = f"## {category.title()}\n"
         for command in list(keywords[category.lower()].keys()):
             if active.get(command, True):
-                message += f"\n**{config["prefix"]}{keywords[category.lower()][command][0]}** - {descriptions[category.lower()][command]}"
+                message += f"\n**{config['prefix']}{keywords[category.lower()][command][0]}** - {descriptions[category.lower()][command]}"
                 if len(keywords[category.lower()][command]) > 1:
-                    message += f"\n-# Aliases: {config["prefix"]}{', '.join(keywords[category][command][1:])}"
+                    message += f"\n-# Aliases: {config['prefix']}{', '.join(keywords[category][command][1:])}"
                 message += "\n-# "
         return message
 
