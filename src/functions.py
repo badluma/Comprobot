@@ -1,3 +1,4 @@
+import asyncio
 import os
 import re
 import subprocess
@@ -5,10 +6,8 @@ from typing import Any, Dict, List, cast
 
 import appdirs
 import discord
-import groq
+import httpx
 import ollama
-from google import genai
-from google.genai.errors import ClientError
 
 from .bot import client
 from .data import ai, system_prompt_text
@@ -144,7 +143,6 @@ async def chat(message):
         )
         content = response.message.content or ""
     elif provider == "gemini":
-        gemini_client = genai.Client(api_key=os.getenv("GEMINI"))
         formatted_messages = []
         for m in messages:
             formatted_messages.append(
@@ -153,33 +151,55 @@ async def chat(message):
                     "parts": [{"text": m["content"]}],
                 }
             )
-
-        config = None
+        body: Dict[str, Any] = {"contents": formatted_messages}
         if system_prompt_text:
-            config = genai.types.GenerateContentConfig(
-                system_instruction=system_prompt_text
-            )
+            body["systemInstruction"] = {"parts": [{"text": system_prompt_text}]}
 
-        try:
-            response = gemini_client.models.generate_content(
-                model=ai["model"], contents=formatted_messages, config=config
-            )
-            content = response.text or ""
-        except ClientError as e:
-            if "NOT_FOUND" in str(e) or "404" in str(e):
-                available = gemini_client.models.list()
-                print(f"Available models: {[m.name for m in available]}")
-            raise
+        async with httpx.AsyncClient() as http:
+            resp = None
+            for attempt in range(4):
+                resp = await http.post(
+                    f"https://generativelanguage.googleapis.com/v1beta/models/{ai['model']}:generateContent",
+                    params={"key": os.getenv("GEMINI")},
+                    json=body,
+                    timeout=60,
+                )
+                if resp.status_code != 429:
+                    break
+                data = resp.json()
+                retry_delay = None
+                is_daily_quota = False
+                for detail in data.get("error", {}).get("details", []):
+                    if "retryDelay" in detail:
+                        retry_delay = detail["retryDelay"]
+                    if "violations" in detail:
+                        for v in detail["violations"]:
+                            if "PerDay" in v.get("quotaId", ""):
+                                is_daily_quota = True
+                if is_daily_quota or attempt == 3:
+                    resp.raise_for_status()
+                match = re.search(r"(\d+(?:\.\d+)?)", retry_delay or "")
+                wait = float(match.group(1)) if match else min(30 * (2 ** attempt), 120)
+                await asyncio.sleep(wait)
+            if resp is None:
+                raise RuntimeError("Gemini request never sent")
+            if resp.status_code == 404:
+                print(f"Model '{ai['model']}' not found. Check ai.toml for valid model name.")
+            resp.raise_for_status()
+            content = resp.json()["candidates"][0]["content"]["parts"][0]["text"]
     elif provider == "groq":
-        groq_client = groq.Groq(api_key=os.getenv("GROQ"))
         formatted_messages = [
             {"role": "system", "content": system_prompt_text}
         ] + messages
-        response = groq_client.chat.completions.create(
-            model=cast(str, ai["model"]),
-            messages=cast(Any, formatted_messages),
-        )
-        content = response.choices[0].message.content or ""
+        async with httpx.AsyncClient() as http:
+            resp = await http.post(
+                "https://api.groq.com/openai/v1/chat/completions",
+                headers={"Authorization": f"Bearer {os.getenv('GROQ')}"},
+                json={"model": ai["model"], "messages": formatted_messages},
+                timeout=60,
+            )
+        resp.raise_for_status()
+        content = resp.json()["choices"][0]["message"]["content"] or ""
     else:
         raise ValueError(f"Unknown provider: {ai['provider']}")
 

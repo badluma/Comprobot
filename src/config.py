@@ -24,7 +24,8 @@ def make_pretty(string):
         .replace("_", " ") \
         .replace("-", " ") \
         .title() \
-        .replace("Ai", "AI")
+        .replace("Ai", "AI") \
+        .replace("Api", "API")
 
 def pick_file():
     data_dir = appdirs.user_data_dir("Comprobot", appauthor=False)
@@ -101,7 +102,7 @@ def pick_key(content, is_secret=False):
             ).execute()
             content[key] = value
 
-        case str() | int():
+        case str():
             print()
             if is_secret:
                 value = secret.SecretPrompt(
@@ -120,6 +121,30 @@ def pick_key(content, is_secret=False):
                 ).execute()
             content[key] = value
 
+        case int():
+            print()
+            if is_secret:
+                value = secret.SecretPrompt(
+                    message=f"New value for '{make_pretty(key)}'?",
+                    style=style,
+                    amark="!",
+                    vi_mode=True,
+                ).execute()
+            else:
+                value = input.InputPrompt(
+                    message=f"What number do you want to assign to '{make_pretty(key)}'?",
+                    instruction=f"(Current: {content[key]})",
+                    style=style,
+                    amark="!",
+                    vi_mode=True,
+                ).execute()
+
+            if int(value) == None:
+                content[key] = 0
+                return
+            
+            content[key] = int(value)
+
         case list():
             print()
             value = input.InputPrompt(
@@ -129,7 +154,7 @@ def pick_key(content, is_secret=False):
                 amark="!",
                 vi_mode=True,
             ).execute().split(",")
-            content[key] = [item.strip() for item in value]
+            content[key] = [item.strip() for item in value if item.strip()]
 
 
 
