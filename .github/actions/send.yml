@@ -1,0 +1,69 @@
+name: Send and Wait
+description: Send a Discord command and wait for Comprobot Beta to respond
+
+inputs:
+  message:
+    required: true
+    description: Message to send
+  channel_id:
+    required: true
+    description: Discord channel or thread ID to send messages to
+  expected_response:
+    required: false
+    default: ""
+    description: Expected response from Comprobot Beta
+
+runs:
+  using: composite
+  steps:
+    - name: Send message to Discord channel
+      env:
+        GITHUB_BOT_TOKEN: ${{ secrets.GITHUB_BOT_TOKEN }}
+        DISCORD_CHANNEL_ID: ${{ inputs.channel_id }}
+        MESSAGE: ${{ inputs.message }}
+      run: |
+        curl -s -X POST \
+          -H "Authorization: Bot $GITHUB_BOT_TOKEN" \
+          -H "Content-Type: application/json" \
+          -d "{\"content\": \"$MESSAGE\"}" \
+          "https://discord.com/api/v10/channels/$DISCORD_CHANNEL_ID/messages"
+      shell: bash
+
+    - name: Wait for response
+      env:
+        GITHUB_BOT_TOKEN: ${{ secrets.GITHUB_BOT_TOKEN }}
+        BETA_BOT_ID: ${{ secrets.BETA_BOT_ID }}
+        DISCORD_CHANNEL_ID: ${{ inputs.channel_id }}
+        EXPECTED_RESPONSE: ${{ inputs.expected_response }}
+        MAX_RETRIES: 10
+      run: |
+        for i in $(seq 1 $MAX_RETRIES); do
+          echo "Attempt $i of $MAX_RETRIES..."
+          sleep 1
+          RESPONSE=$(curl -s -H "Authorization: Bot $GITHUB_BOT_TOKEN" \
+            "https://discord.com/api/v10/channels/$DISCORD_CHANNEL_ID/messages?limit=1" \
+            | jq '.[0]')
+
+          MESSAGE_CONTENT=$(echo "$RESPONSE" | jq -r '.content')
+          AUTHOR=$(echo "$RESPONSE" | jq -r '.author.username')
+          TIMESTAMP=$(echo "$RESPONSE" | jq -r '.timestamp')
+          MESSAGE_ID=$(echo "$RESPONSE" | jq -r '.id')
+          AUTHOR_ID=$(echo "$RESPONSE" | jq -r '.author.id')
+
+          if [ "$AUTHOR_ID" != "$BETA_BOT_ID" ]; then
+            echo "Expected response from beta bot, but got response from $AUTHOR_ID, retrying..."
+            continue
+          fi
+
+          if [ "$MESSAGE_CONTENT" != "$EXPECTED_RESPONSE" ] && [ "$EXPECTED_RESPONSE" != "" ]; then
+            echo "Expected response: $EXPECTED_RESPONSE, but got: $MESSAGE_CONTENT, retrying..."
+            continue
+          fi
+
+          echo "Response received: $MESSAGE_CONTENT"
+          exit 0
+        done
+
+        echo "Max retries ($MAX_RETRIES) reached without a valid response"
+        exit 1
+      shell: bash

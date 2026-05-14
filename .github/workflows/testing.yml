@@ -5,9 +5,10 @@ name: Test
     paths:
       - "src/**"
       - "pyproject.toml"
+      - ".github/workflows/testing.yml"
 
 jobs:
-  test-linux:
+  linux:
     name: Linux
     runs-on: ubuntu-latest
     steps:
@@ -41,7 +42,7 @@ jobs:
       - name: remove money
         run: comprobot test "!remove testuser 50"
 
-  test-macos:
+  macos:
     name: MacOS
     runs-on: macos-latest
     steps:
@@ -75,7 +76,7 @@ jobs:
       - name: remove money
         run: comprobot test "!remove testuser 50"
 
-  test-windows:
+  windows:
     name: Windows
     runs-on: windows-latest
     steps:
@@ -108,3 +109,84 @@ jobs:
 
       - name: remove money
         run: comprobot test "!remove testuser 50"
+
+  discord:
+    name: Discord
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install package
+        run: pip install -e ".[dev]"
+
+      - name: Set environment variables
+        run: |
+          echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          echo "COMMIT_MSG=$(git log -1 --pretty=%s)" >> $GITHUB_ENV
+          echo "COMMIT_COUNT=$(git rev-list --count HEAD)" >> $GITHUB_ENV
+          echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+      - name: Configure Comprobot Beta
+        run: |
+          comprobot config secrets BOT_TOKEN "${{ secrets.BETA_BOT_TOKEN }}"
+          comprobot config config prefix "test!"
+          comprobot config ai activate_ai false
+          comprobot config config bot_admins "${{ secrets.SENDER_BOT_ID }}"
+
+      # Start
+      - name: Start Comprobot Beta
+        run: |
+          comprobot start >> bot.log 2>&1 &
+          echo $! > bot.pid
+
+      - name: Startup delay
+        run: sleep 10
+
+      # Title
+      - name: Send details
+        env:
+          GITHUB_BOT_TOKEN: ${{ secrets.GITHUB_BOT_TOKEN }}
+          DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
+          VERSION: ${GITHUB_REF#refs/tags/}
+          MESSAGE: "# $COMMIT_MSG\n${{ github.repository }} $VERSION\n-# Pushed by: ${{ github.actor }}\n-# Commit count: ${{ env.COMMIT_COUNT }}\n-# Commit SHA: ${{ env.SHORT_SHA }}"
+        run: |
+          RESPONSE=$(curl -s -X POST \
+            -H "Authorization: Bot $GITHUB_BOT_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"content\": \"$MESSAGE\"}" \
+            "https://discord.com/api/v10/channels/$DISCORD_CHANNEL_ID/messages")
+          MESSAGE_ID=$(echo "$RESPONSE" | jq -r '.id')
+          echo "DISCORD_MESSAGE_ID=$MESSAGE_ID" >> $GITHUB_ENV
+
+      - name: Create thread
+        env:
+          GITHUB_BOT_TOKEN: ${{ secrets.GITHUB_BOT_TOKEN }}
+          DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
+        run: |
+          RESPONSE=$(curl -s -X POST \
+            -H "Authorization: Bot $GITHUB_BOT_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"name\": \"Tests - ${{ env.SHORT_SHA }}\", \"auto_archive_duration\": 60}" \
+            "https://discord.com/api/v10/channels/$DISCORD_CHANNEL_ID/messages/${{ env.DISCORD_MESSAGE_ID }}/threads")
+          THREAD_ID=$(echo "$RESPONSE" | jq -r '.id')
+          echo "DISCORD_THREAD_ID=$THREAD_ID" >> $GITHUB_ENV
+
+      # Test commands
+      - name: Send and wait for response
+        uses: ./.github/actions/send
+        with:
+          message: "test!quote"
+          channel_id: ${{ env.DISCORD_THREAD_ID }}
+
+      # Stop
+      - name: Show bot log
+        if: always()
+        run: cat bot.log
+
+      - name: Stop bot
+        if: always()
+        run: kill "$(cat bot.pid)" 2>/dev/null || true
