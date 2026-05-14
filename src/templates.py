@@ -71,7 +71,9 @@ unknown_command   = "Unknown command."
 unknown_argument  = "Unknown argument."
 missing_argument  = "Missing argument."
 no_attachment     = "No attachment given."
-bot_unavailable   = "Bot not available."'''
+bot_unavailable   = "Bot not available."
+unknown_category  = "Unknown category."
+no_ascii_art      = "No ASCII art available."'''
 
 keywords = r"""[general]
 quote             = ["quote"]
@@ -90,6 +92,7 @@ bitcoin           = ["bitcoin", "btc"]
 currency          = ["currency", "convert", "conv"]
 qr_code           = ["qr_code", "qr"]
 ascii_art         = ["ascii", "art"]
+help              = ["help"]
 
 truth             = ["truth"]
 dare              = ["dare"]
@@ -136,6 +139,7 @@ calculate         = true
 bitcoin           = true
 currency          = true
 qr_code           = true
+help              = true
 
 truth             = true
 dare              = true
@@ -148,7 +152,47 @@ nsfw              = false
 purge             = true
 """
 
-output = r"""[commands]
+descriptions = r"""[general]
+quote             = "Get a random inspirational quote."
+joke              = "Get a random two-part joke"
+meme              = "Get a random meme image"
+waifu             = "Compare two random waifu images"
+image             = "Get a random animal image (duck/dog/cat)"
+duck              = "Get a random duck image"
+dog               = "Get a random dog image"
+cat               = "Get a random cat image"
+chuck_norris      = "Get a random Chuck Norris fact"
+fact              = "Get a random fun fact"
+bible             = "Get a random or specific Bible verse"
+calculate         = "Evaluate a math expression"
+bitcoin           = "Get the current Bitcoin price in a given currency"
+currency          = "Convert an amount between two currencies"
+qr_code           = "Generate a QR code from a URL"
+ascii_art         = "Display the bot's ASCII art"
+help              = "Show available commands"
+
+truth             = "Get a truth question for truth or dare"
+dare              = "Get a dare challenge for truth or dare"
+wyr               = "Get a would you rather question"
+never_have_i_ever = "Get a never have I ever prompt"
+paranoia          = "Get a paranoia question"
+
+purge             = "Delete all messages in the channel (admin only)"
+
+[settings]
+settings          = "Configure the bot"
+profile_picture   = "Change the bot's profile picture"
+banner            = "Change the bot's banner"
+change_name       = "Change the bot's username"
+change_keywords   = "Change a command's trigger keywords"
+
+[money]
+check_balance     = "Check a user's money balance"
+add_money         = "Add money to a user's balance (admin only)"
+remove_money      = "Remove money from a user's balance (admin only)"
+"""
+
+output = r"""[general]
 quote             = ["{{QUOTE}}\n~ {{AUTHOR}}"]
 joke              = ["{{SETUP}} ||{{PUNCHLINE}}||"]
 meme              = ["{{URL}}"]

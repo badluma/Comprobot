@@ -21,5 +21,6 @@ from .data import config  # noqa: E402
 bot = commands.Bot(
     command_prefix=lambda b, m: config["prefix"],
     intents=intents,
+    help_command=None,
 )
 client = bot

@@ -75,6 +75,9 @@ output: Dict[str, Dict[str, List[str]]] = load_or_create(
 moderation: Dict[Any, Any] = load_or_create(
     get_data_path("moderation.toml"), templates.moderation
 )
+descriptions: Dict[str, Dict[str, str]] = load_or_create(
+    get_data_path("descriptions.toml"), templates.descriptions
+)
 
 ensure_file(get_data_path(".env"), templates.env)
 

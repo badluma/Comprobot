@@ -1,6 +1,6 @@
 from random import choice
 
-from .data import config, error_messages, output
+from .data import active, config, error_messages, keywords, output, descriptions
 
 
 def qr(link):
@@ -11,7 +11,7 @@ def qr(link):
 def calculate(calculation):
     try:
         result = eval(calculation)
-        response = choice(output["commands"]["calculate"]).replace(
+        response = choice(output["general"]["calculate"]).replace(
             r"{{RESULT}}", str(result)
         )
     except ZeroDivisionError:
@@ -21,7 +21,34 @@ def calculate(calculation):
     return response
 
 
+def help(category=None):
+    if not category:
+        message = "# Commands"
+        for category in list(keywords.keys()):
+            message += f"\n## {category.title()}\n"
+            for command in list(keywords[category].keys()):
+                if active.get(command, True):
+                    message += f"\n**{config["prefix"]}{keywords[category][command][0]}** - {descriptions[category][command]}"
+                    if len(keywords[category][command]) > 1:
+                        message += f"\n-# Aliases: {config["prefix"]}{', '.join(keywords[category][command][1:])}"
+                    message += "\n-# \u200b"
+        return message
+    else:
+        if not category.lower() in list(keywords.keys()):
+            return error_messages["unknown_category"]
+        message = f"## {category.title()}\n"
+        for command in list(keywords[category.lower()].keys()):
+            if active.get(command, True):
+                message += f"\n**{config["prefix"]}{keywords[category.lower()][command][0]}** - {descriptions[category.lower()][command]}"
+                if len(keywords[category.lower()][command]) > 1:
+                    message += f"\n-# Aliases: {config["prefix"]}{', '.join(keywords[category][command][1:])}"
+                message += "\n-# "
+        return message
+
+
 def ascii():
-    return choice(output["commands"]["ascii_art"]).replace(
+    if not config["ascii_art"]:
+        return error_messages["no_ascii_art"]
+    return choice(output["general"]["ascii_art"]).replace(
         r"{{ASCII_ART}}", choice(config["ascii_art"])
     )
