@@ -149,30 +149,40 @@ jobs:
       # Title
       - name: Send details
         env:
-          GITHUB_BOT_TOKEN: ${{ secrets.GITHUB_BOT_TOKEN }}
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
           DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
           VERSION: ${GITHUB_REF#refs/tags/}
           MESSAGE: "# $COMMIT_MSG\n${{ github.repository }} $VERSION\n-# Pushed by: ${{ github.actor }}\n-# Commit count: ${{ env.COMMIT_COUNT }}\n-# Commit SHA: ${{ env.SHORT_SHA }}"
         run: |
           RESPONSE=$(curl -s -X POST \
-            -H "Authorization: Bot $GITHUB_BOT_TOKEN" \
+            -H "Authorization: Bot $DISCORD_BOT_TOKEN" \
             -H "Content-Type: application/json" \
             -d "{\"content\": \"$MESSAGE\"}" \
             "https://discord.com/api/v10/channels/$DISCORD_CHANNEL_ID/messages")
+          echo "Send details response: $RESPONSE"
           MESSAGE_ID=$(echo "$RESPONSE" | jq -r '.id')
+          if [ "$MESSAGE_ID" = "null" ] || [ -z "$MESSAGE_ID" ]; then
+            echo "Failed to send message. Response: $RESPONSE"
+            exit 1
+          fi
           echo "DISCORD_MESSAGE_ID=$MESSAGE_ID" >> $GITHUB_ENV
 
       - name: Create thread
         env:
-          GITHUB_BOT_TOKEN: ${{ secrets.GITHUB_BOT_TOKEN }}
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
           DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
         run: |
           RESPONSE=$(curl -s -X POST \
-            -H "Authorization: Bot $GITHUB_BOT_TOKEN" \
+            -H "Authorization: Bot $DISCORD_BOT_TOKEN" \
             -H "Content-Type: application/json" \
             -d "{\"name\": \"Tests - ${{ env.SHORT_SHA }}\", \"auto_archive_duration\": 60}" \
             "https://discord.com/api/v10/channels/$DISCORD_CHANNEL_ID/messages/${{ env.DISCORD_MESSAGE_ID }}/threads")
+          echo "Create thread response: $RESPONSE"
           THREAD_ID=$(echo "$RESPONSE" | jq -r '.id')
+          if [ "$THREAD_ID" = "null" ] || [ -z "$THREAD_ID" ]; then
+            echo "Failed to create thread. Response: $RESPONSE"
+            exit 1
+          fi
           echo "DISCORD_THREAD_ID=$THREAD_ID" >> $GITHUB_ENV
 
       # Test commands

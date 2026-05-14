@@ -18,12 +18,12 @@ runs:
   steps:
     - name: Send message to Discord channel
       env:
-        GITHUB_BOT_TOKEN: ${{ secrets.GITHUB_BOT_TOKEN }}
+        DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
         DISCORD_CHANNEL_ID: ${{ inputs.channel_id }}
         MESSAGE: ${{ inputs.message }}
       run: |
         curl -s -X POST \
-          -H "Authorization: Bot $GITHUB_BOT_TOKEN" \
+          -H "Authorization: Bot $DISCORD_BOT_TOKEN" \
           -H "Content-Type: application/json" \
           -d "{\"content\": \"$MESSAGE\"}" \
           "https://discord.com/api/v10/channels/$DISCORD_CHANNEL_ID/messages"
@@ -31,7 +31,7 @@ runs:
 
     - name: Wait for response
       env:
-        GITHUB_BOT_TOKEN: ${{ secrets.GITHUB_BOT_TOKEN }}
+        DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
         BETA_BOT_ID: ${{ secrets.BETA_BOT_ID }}
         DISCORD_CHANNEL_ID: ${{ inputs.channel_id }}
         EXPECTED_RESPONSE: ${{ inputs.expected_response }}
@@ -40,7 +40,7 @@ runs:
         for i in $(seq 1 $MAX_RETRIES); do
           echo "Attempt $i of $MAX_RETRIES..."
           sleep 1
-          RESPONSE=$(curl -s -H "Authorization: Bot $GITHUB_BOT_TOKEN" \
+          RESPONSE=$(curl -s -H "Authorization: Bot $DISCORD_BOT_TOKEN" \
             "https://discord.com/api/v10/channels/$DISCORD_CHANNEL_ID/messages?limit=1" \
             | jq '.[0]')
 
