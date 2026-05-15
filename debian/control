@@ -11,4 +11,4 @@ Architecture: all
 Description: A self-hostable Discord bot built for maximum customization.
  Comprobot is a highly-customizable, open-source Discord bot with AI
  capabilities, moderation tools, and a wide range of built-in commands.
-Depends: ${python3:Depends}, python3-requests, python3-appdirs, python3-pip
+Depends: ${python3:Depends}, python3-pip, python3-dotenv, python3-requests, python3-tomlkit, python3-appdirs, python3-httpx
