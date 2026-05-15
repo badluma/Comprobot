@@ -159,7 +159,7 @@ jobs:
 
   scoop:
     name: "Update Scoop Manifest"
-    needs: release
+    needs: [release, binaries]
     runs-on: ubuntu-latest
     environment: Scoop
     steps:
@@ -168,14 +168,18 @@ jobs:
           VERSION: ${{ needs.release.outputs.version }}
           TAP_TOKEN: ${{ secrets.TAP_TOKEN }}
         run: |
+          SHA256=$(curl -sL "https://github.com/badluma/Comprobot/releases/download/v${VERSION}/comprobot-windows.exe" | sha256sum | cut -d' ' -f1)
+
           git clone "https://x-access-token:${TAP_TOKEN}@github.com/badluma/scoop-bucket.git"
           cd scoop-bucket
 
-          sed -i "s/\"version\": \".*\"/\"version\": \"${VERSION}\"/" comprobot.json
+          sed -i "s/\"version\": \".*\"/\"version\": \"${VERSION}\"/" bucket/comprobot.json
+          sed -i "s|\"url\": \".*\"|\"url\": \"https://github.com/badluma/Comprobot/releases/download/v${VERSION}/comprobot-windows.exe\"|" bucket/comprobot.json
+          sed -i "s/\"hash\": \".*\"/\"hash\": \"${SHA256}\"/" bucket/comprobot.json
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add comprobot.json
+          git add bucket/comprobot.json
           git commit -m "chore: update comprobot to v${VERSION}"
           git push
 
@@ -364,8 +368,8 @@ jobs:
 
   winget:
     name: "Publish to winget"
-    needs: [release, binaries, winget-validate]
-    if: needs.winget-validate.outputs.already-exists == 'false'
+    needs: [release, binaries, validate]
+    if: needs.validate.outputs.already-exists == 'false'
     runs-on: ubuntu-latest
     environment: winget
     steps:
