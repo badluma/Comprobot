@@ -478,12 +478,10 @@ jobs:
           PASSED=$(grep -c "^PASS|" "$RESULTS" || echo 0)
           FAILED=$(grep -c "^FAIL|" "$RESULTS" || echo 0)
 
-          PASSED_CMDS=$(grep "^PASS|" "$RESULTS" | cut -d'|' -f2- | sed 's/^test!//' | paste -sd ', ' || echo "")
-          FAILED_CMDS=$(grep "^FAIL|" "$RESULTS" | cut -d'|' -f2- | sed 's/^test!//' | paste -sd ', ' || echo "")
+          FAILED_CMDS=$(grep "^FAIL|" "$RESULTS" | cut -d'|' -f2- | sed 's/^test!//' | cut -d' ' -f1 | paste -sd ', ' || echo "")
 
-          ZWS=$'​'
-          MSG=$(printf "# Testing done\nSucceeded: %s/%s\n-# %s\n-# %s\nFailed: %s/%s" \
-            "$PASSED" "$TOTAL" "${PASSED_CMDS:-(none)}" "$ZWS" "$FAILED" "$TOTAL")
+          MSG=$(printf "# Testing done\nSucceeded: %s/%s\nFailed: %s/%s" \
+            "$PASSED" "$TOTAL" "$FAILED" "$TOTAL")
           [ -n "$FAILED_CMDS" ] && MSG=$(printf "%s\n-# %s" "$MSG" "$FAILED_CMDS")
 
           PAYLOAD=$(jq -n --arg c "$MSG" '{content: $c}')
