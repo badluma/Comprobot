@@ -1,0 +1,156 @@
+name: Installation Tests
+
+"on":
+  workflow_run:
+    workflows: ["Publish"]
+    types: [completed]
+  workflow_dispatch:
+
+jobs:
+  wait:
+    name: "Wait for propagation"
+    if: github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract version
+        id: version
+        run: |
+          VERSION=$(grep '^version' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Wait for propagation
+        if: github.event_name != 'workflow_dispatch'
+        run: sleep 3600
+
+  pip:
+    name: "Test pip install"
+    needs: wait
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install
+        run: pip install comprobot==${{ needs.wait.outputs.version }}
+
+      - name: Test
+        run: comprobot --help
+
+  apt:
+    name: "Test apt install (Launchpad PPA)"
+    needs: wait
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Add PPA and install
+        run: |
+          sudo add-apt-repository ppa:badluma/ppa -y
+          sudo apt-get update -q
+          sudo apt-get install -y comprobot
+
+      - name: Test
+        run: comprobot --help
+
+  aur:
+    name: "Test AUR install"
+    needs: wait
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    steps:
+      - name: Install build tools
+        run: pacman -Syu --noconfirm base-devel git
+
+      - name: Create unprivileged build user
+        run: |
+          useradd -m builder
+          echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+      - name: Build and install from AUR
+        run: |
+          su builder -c "
+            git clone https://aur.archlinux.org/comprobot.git /tmp/comprobot
+            cd /tmp/comprobot
+            makepkg -si --noconfirm
+          "
+
+      - name: Test
+        run: comprobot --help
+
+  brew:
+    name: "Test Homebrew install"
+    needs: wait
+    runs-on: macos-latest
+    steps:
+      - name: Install
+        run: |
+          brew tap badluma/tap
+          brew install comprobot
+
+      - name: Test
+        run: comprobot --help
+
+  scoop:
+    name: "Test Scoop install"
+    needs: wait
+    runs-on: windows-latest
+    steps:
+      - name: Install Scoop
+        shell: powershell
+        run: |
+          Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
+          irm get.scoop.sh | iex
+
+      - name: Install
+        shell: powershell
+        run: |
+          scoop bucket add badluma https://github.com/badluma/scoop-bucket
+          scoop install comprobot
+
+      - name: Test
+        shell: powershell
+        run: comprobot --help
+
+  docker:
+    name: "Test Docker pull"
+    needs: wait
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull and test
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          VERSION: ${{ needs.wait.outputs.version }}
+        run: |
+          docker pull "$DOCKERHUB_USERNAME/comprobot:$VERSION"
+          docker run --rm "$DOCKERHUB_USERNAME/comprobot:$VERSION" comprobot --help
+
+  winget-check:
+    name: "Check winget availability"
+    needs: wait
+    runs-on: windows-latest
+    outputs:
+      available: ${{ steps.check.outputs.available }}
+    steps:
+      - name: Check if version in winget-pkgs
+        id: check
+        env:
+          VERSION: ${{ needs.wait.outputs.version }}
+        run: |
+          $status = (Invoke-WebRequest -Uri "https://api.github.com/repos/microsoft/winget-pkgs/contents/manifests/b/badluma/Comprobot/$env:VERSION" -UseBasicParsing -SkipHttpErrorCheck).StatusCode
+          if ($status -eq 200) {
+            echo "available=true" >> $env:GITHUB_OUTPUT
+          } else {
+            Write-Output "Version $env:VERSION not yet in winget-pkgs, skipping."
+            echo "available=false" >> $env:GITHUB_OUTPUT
+          }
+
+  winget:
+    name: "Test winget install"
+    needs: [wait, winget-check]
+    if: needs.winget-check.outputs.available == 'true'
+    runs-on: windows-latest
+    steps:
+      - name: Install
+        run: winget install badluma.Comprobot --silent --accept-package-agreements --accept-source-agreements
+
+      - name: Test
+        run: comprobot --help
