@@ -172,10 +172,19 @@ jobs:
 
           git clone "https://x-access-token:${TAP_TOKEN}@github.com/badluma/scoop-bucket.git"
           cd scoop-bucket
+          mkdir -p bucket
 
-          sed -i "s/\"version\": \".*\"/\"version\": \"${VERSION}\"/" bucket/comprobot.json
-          sed -i "s|\"url\": \".*\"|\"url\": \"https://github.com/badluma/Comprobot/releases/download/v${VERSION}/comprobot-windows.exe\"|" bucket/comprobot.json
-          sed -i "s/\"hash\": \".*\"/\"hash\": \"${SHA256}\"/" bucket/comprobot.json
+          cat > bucket/comprobot.json <<EOF
+          {
+              "version": "${VERSION}",
+              "description": "A self-hostable Discord bot built for maximum customization.",
+              "homepage": "https://github.com/badluma/Comprobot",
+              "license": "MIT",
+              "url": "https://github.com/badluma/Comprobot/releases/download/v${VERSION}/comprobot-windows.exe",
+              "hash": "${SHA256}",
+              "bin": "comprobot-windows.exe"
+          }
+          EOF
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
