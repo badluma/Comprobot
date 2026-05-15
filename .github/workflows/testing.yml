@@ -148,6 +148,8 @@ jobs:
             cd ~/comprobot-beta
             pip install --user -e ".[dev]" -q
             mkdir -p ~/.local/share/Comprobot
+            export PATH="$HOME/.local/bin:$PATH"
+            comprobot config config prefix "test!"
           REMOTE
           printf 'BOT_TOKEN=%s\n' "$BETA_BOT_TOKEN" | \
             ssh -i ~/.ssh/oracle.key ubuntu@$ORACLE_IP 'cat > ~/.local/share/Comprobot/.env'
