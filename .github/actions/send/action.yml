@@ -71,3 +71,18 @@ runs:
         echo "Max retries ($MAX_RETRIES) reached without a valid response"
         exit 1
       shell: bash
+
+    - name: Report failure
+      if: failure()
+      env:
+        DISCORD_BOT_TOKEN: ${{ inputs.discord_bot_token }}
+        DISCORD_CHANNEL_ID: ${{ inputs.channel_id }}
+        MESSAGE: ${{ inputs.message }}
+      run: |
+        PAYLOAD=$(jq -n --arg content "❌ \`$MESSAGE\` — command timed out" '{content: $content}')
+        curl -s -X POST \
+          -H "Authorization: Bot $DISCORD_BOT_TOKEN" \
+          -H "Content-Type: application/json" \
+          -d "$PAYLOAD" \
+          "https://discord.com/api/v10/channels/$DISCORD_CHANNEL_ID/messages"
+      shell: bash

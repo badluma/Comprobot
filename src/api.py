@@ -143,8 +143,8 @@ def bible(
                     choice(output["general"]["bible"])
                     .replace(r"{{PASSAGE}}", verse["text"].strip())
                     .replace(r"{{BOOK}}", verse["book"].strip())
-                    .replace(r"{{CHAPTER}}", str(verse["chapter"].strip()))
-                    .replace(r"{{VERSE}}", str(verse["verse"].strip()))
+                    .replace(r"{{CHAPTER}}", str(verse["chapter"]).strip())
+                    .replace(r"{{VERSE}}", str(verse["verse"]).strip())
                 )
             elif "text" in data and "reference" in data:
                 parts = data["reference"].split()

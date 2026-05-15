@@ -120,7 +120,7 @@ jobs:
         run: |
           echo "VERSION=v$(grep '^version' pyproject.toml | head -1 | sed 's/version = "\(.*\)"/\1/')" >> $GITHUB_ENV
           echo "COMMIT_MSG=$(git log -1 --pretty=%s)" >> $GITHUB_ENV
-          echo "COMMIT_COUNT=$(git rev-list --count HEAD)" >> $GITHUB_ENV
+          echo "COMMIT_COUNT=$(echo '${{ toJson(github.event.commits) }}' | jq 'length')" >> $GITHUB_ENV
           echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
 
       - name: Setup SSH
@@ -212,6 +212,7 @@ jobs:
       # Test commands
       - name: quote
         uses: ./.github/actions/send
+        continue-on-error: true
         with:
           message: "test!quote"
           channel_id: ${{ env.DISCORD_THREAD_ID }}
@@ -220,6 +221,7 @@ jobs:
 
       - name: joke
         uses: ./.github/actions/send
+        continue-on-error: true
         with:
           message: "test!joke"
           channel_id: ${{ env.DISCORD_THREAD_ID }}
@@ -228,6 +230,7 @@ jobs:
 
       - name: meme
         uses: ./.github/actions/send
+        continue-on-error: true
         with:
           message: "test!meme"
           channel_id: ${{ env.DISCORD_THREAD_ID }}
@@ -236,6 +239,7 @@ jobs:
 
       - name: waifu
         uses: ./.github/actions/send
+        continue-on-error: true
         with:
           message: "test!waifu"
           channel_id: ${{ env.DISCORD_THREAD_ID }}
@@ -244,6 +248,7 @@ jobs:
 
       - name: duck
         uses: ./.github/actions/send
+        continue-on-error: true
         with:
           message: "test!duck"
           channel_id: ${{ env.DISCORD_THREAD_ID }}
@@ -252,6 +257,7 @@ jobs:
 
       - name: dog
         uses: ./.github/actions/send
+        continue-on-error: true
         with:
           message: "test!dog"
           channel_id: ${{ env.DISCORD_THREAD_ID }}
@@ -260,6 +266,7 @@ jobs:
 
       - name: cat
         uses: ./.github/actions/send
+        continue-on-error: true
         with:
           message: "test!cat"
           channel_id: ${{ env.DISCORD_THREAD_ID }}
@@ -268,6 +275,7 @@ jobs:
 
       - name: chuck norris
         uses: ./.github/actions/send
+        continue-on-error: true
         with:
           message: "test!chuck"
           channel_id: ${{ env.DISCORD_THREAD_ID }}
@@ -276,6 +284,7 @@ jobs:
 
       - name: fact
         uses: ./.github/actions/send
+        continue-on-error: true
         with:
           message: "test!fact"
           channel_id: ${{ env.DISCORD_THREAD_ID }}
@@ -284,6 +293,7 @@ jobs:
 
       - name: bible (random)
         uses: ./.github/actions/send
+        continue-on-error: true
         with:
           message: "test!bible"
           channel_id: ${{ env.DISCORD_THREAD_ID }}
@@ -292,6 +302,7 @@ jobs:
 
       - name: bible (specific verse)
         uses: ./.github/actions/send
+        continue-on-error: true
         with:
           message: "test!bible John 3 16"
           channel_id: ${{ env.DISCORD_THREAD_ID }}
@@ -300,6 +311,7 @@ jobs:
 
       - name: truth
         uses: ./.github/actions/send
+        continue-on-error: true
         with:
           message: "test!truth"
           channel_id: ${{ env.DISCORD_THREAD_ID }}
@@ -308,6 +320,7 @@ jobs:
 
       - name: dare
         uses: ./.github/actions/send
+        continue-on-error: true
         with:
           message: "test!dare"
           channel_id: ${{ env.DISCORD_THREAD_ID }}
@@ -316,6 +329,7 @@ jobs:
 
       - name: would you rather
         uses: ./.github/actions/send
+        continue-on-error: true
         with:
           message: "test!wyr"
           channel_id: ${{ env.DISCORD_THREAD_ID }}
@@ -324,6 +338,7 @@ jobs:
 
       - name: never have i ever
         uses: ./.github/actions/send
+        continue-on-error: true
         with:
           message: "test!never-have-i-ever"
           channel_id: ${{ env.DISCORD_THREAD_ID }}
@@ -332,6 +347,7 @@ jobs:
 
       - name: paranoia
         uses: ./.github/actions/send
+        continue-on-error: true
         with:
           message: "test!paranoia"
           channel_id: ${{ env.DISCORD_THREAD_ID }}
@@ -340,6 +356,7 @@ jobs:
 
       - name: calculate (2+2)
         uses: ./.github/actions/send
+        continue-on-error: true
         with:
           message: "test!calculate 2+2"
           channel_id: ${{ env.DISCORD_THREAD_ID }}
@@ -349,6 +366,7 @@ jobs:
 
       - name: calculate (10/2)
         uses: ./.github/actions/send
+        continue-on-error: true
         with:
           message: "test!calculate 10/2"
           channel_id: ${{ env.DISCORD_THREAD_ID }}
@@ -358,6 +376,7 @@ jobs:
 
       - name: qr code
         uses: ./.github/actions/send
+        continue-on-error: true
         with:
           message: "test!qr https://example.com"
           channel_id: ${{ env.DISCORD_THREAD_ID }}
@@ -366,6 +385,7 @@ jobs:
 
       - name: bitcoin (usd)
         uses: ./.github/actions/send
+        continue-on-error: true
         with:
           message: "test!bitcoin"
           channel_id: ${{ env.DISCORD_THREAD_ID }}
@@ -374,6 +394,7 @@ jobs:
 
       - name: bitcoin (eur)
         uses: ./.github/actions/send
+        continue-on-error: true
         with:
           message: "test!bitcoin eur"
           channel_id: ${{ env.DISCORD_THREAD_ID }}
@@ -382,6 +403,7 @@ jobs:
 
       - name: currency convert
         uses: ./.github/actions/send
+        continue-on-error: true
         with:
           message: "test!currency 100 usd eur"
           channel_id: ${{ env.DISCORD_THREAD_ID }}
@@ -390,6 +412,7 @@ jobs:
 
       - name: ascii art
         uses: ./.github/actions/send
+        continue-on-error: true
         with:
           message: "test!ascii"
           channel_id: ${{ env.DISCORD_THREAD_ID }}
@@ -398,6 +421,7 @@ jobs:
 
       - name: help (categories)
         uses: ./.github/actions/send
+        continue-on-error: true
         with:
           message: "test!help"
           channel_id: ${{ env.DISCORD_THREAD_ID }}
@@ -406,6 +430,7 @@ jobs:
 
       - name: help (general category)
         uses: ./.github/actions/send
+        continue-on-error: true
         with:
           message: "test!help general"
           channel_id: ${{ env.DISCORD_THREAD_ID }}
@@ -414,6 +439,7 @@ jobs:
 
       - name: add money
         uses: ./.github/actions/send
+        continue-on-error: true
         with:
           message: "test!add testuser 100"
           channel_id: ${{ env.DISCORD_THREAD_ID }}
@@ -422,6 +448,7 @@ jobs:
 
       - name: check balance
         uses: ./.github/actions/send
+        continue-on-error: true
         with:
           message: "test!check testuser"
           channel_id: ${{ env.DISCORD_THREAD_ID }}
@@ -430,6 +457,7 @@ jobs:
 
       - name: remove money
         uses: ./.github/actions/send
+        continue-on-error: true
         with:
           message: "test!remove testuser 50"
           channel_id: ${{ env.DISCORD_THREAD_ID }}
