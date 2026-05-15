@@ -61,17 +61,7 @@ class Comprobot(ext_commands.Cog):
     @ext_commands.check(lambda ctx: active["waifu"])
     async def waifu_cmd(self, ctx):
         await ctx.send(api.waifu())
-
-    @ext_commands.group(
-        name=keywords["general"]["image"][0],
-        aliases=keywords["general"]["image"][1:],
-        invoke_without_command=True,
-    )
-    @ext_commands.check(lambda ctx: active["image"])
-    async def image_cmd(self, ctx):
-        await ctx.send(error_messages["missing_argument"])
-
-    @image_cmd.command(
+    @ext_commands.command(
         name=keywords["general"]["duck"][0],
         aliases=keywords["general"]["duck"][1:],
     )
@@ -79,7 +69,7 @@ class Comprobot(ext_commands.Cog):
     async def duck_cmd(self, ctx):
         await ctx.send(api.duck())
 
-    @image_cmd.command(
+    @ext_commands.command(
         name=keywords["general"]["dog"][0],
         aliases=keywords["general"]["dog"][1:],
     )
@@ -87,7 +77,7 @@ class Comprobot(ext_commands.Cog):
     async def dog_cmd(self, ctx):
         await ctx.send(api.dog())
 
-    @image_cmd.command(
+    @ext_commands.command(
         name=keywords["general"]["cat"][0],
         aliases=keywords["general"]["cat"][1:],
     )
