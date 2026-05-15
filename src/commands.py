@@ -23,15 +23,10 @@ def calculate(calculation):
 
 def help(category=None):
     if not category:
-        message = "# Commands"
+        message = "# Categories"
+
         for category in list(keywords.keys()):
-            message += f"\n## {category.title()}\n"
-            for command in list(keywords[category].keys()):
-                if active.get(command, True):
-                    message += f"\n**{config['prefix']}{keywords[category][command][0]}** - {descriptions[category][command]}"
-                    if len(keywords[category][command]) > 1:
-                        message += f"\n-# Aliases: {config['prefix']}{', '.join(keywords[category][command][1:])}"
-                    message += "\n-# \u200b"
+            message += f"\n**{category.title()}**\n!help {category}\n-# \u200b"
         return message
     else:
         if not category.lower() in list(keywords.keys()):
@@ -41,8 +36,8 @@ def help(category=None):
             if active.get(command, True):
                 message += f"\n**{config['prefix']}{keywords[category.lower()][command][0]}** - {descriptions[category.lower()][command]}"
                 if len(keywords[category.lower()][command]) > 1:
-                    message += f"\n-# Aliases: {config['prefix']}{', '.join(keywords[category][command][1:])}"
-                message += "\n-# "
+                    message += f"\n-# Aliases: {config['prefix']}{', '.join(config['prefix'] + alias for alias in keywords[category.lower()][command][1:])}"
+                message += "\n-# \u200b"
         return message
 
 
