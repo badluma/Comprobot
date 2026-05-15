@@ -36,7 +36,7 @@ def help(category=None):
             if active.get(command, True):
                 message += f"\n**{config['prefix']}{keywords[category.lower()][command][0]}** - {descriptions[category.lower()][command]}"
                 if len(keywords[category.lower()][command]) > 1:
-                    message += f"\n-# Aliases: {config['prefix']}{', '.join(config['prefix'] + alias for alias in keywords[category.lower()][command][1:])}"
+                    message += f"\n-# Aliases: {', '.join(config['prefix'] + alias for alias in keywords[category.lower()][command][1:])}"
                 message += "\n-# \u200b"
         return message
 

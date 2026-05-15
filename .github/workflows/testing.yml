@@ -464,6 +464,35 @@ jobs:
           discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
           beta_bot_id: ${{ secrets.BETA_BOT_ID }}
 
+      # Summary
+      - name: Send test summary
+        if: always()
+        env:
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          DISCORD_CHANNEL_ID: ${{ env.DISCORD_THREAD_ID }}
+        run: |
+          RESULTS="${RUNNER_TEMP}/comprobot_results.txt"
+          [ -f "$RESULTS" ] || { echo "No results file"; exit 0; }
+
+          TOTAL=$(wc -l < "$RESULTS" | tr -d ' ')
+          PASSED=$(grep -c "^PASS|" "$RESULTS" || echo 0)
+          FAILED=$(grep -c "^FAIL|" "$RESULTS" || echo 0)
+
+          PASSED_CMDS=$(grep "^PASS|" "$RESULTS" | cut -d'|' -f2- | sed 's/^test!//' | paste -sd ', ' || echo "")
+          FAILED_CMDS=$(grep "^FAIL|" "$RESULTS" | cut -d'|' -f2- | sed 's/^test!//' | paste -sd ', ' || echo "")
+
+          ZWS=$'​'
+          MSG=$(printf "# Testing done\nSucceeded: %s/%s\n-# %s\n-# %s\nFailed: %s/%s" \
+            "$PASSED" "$TOTAL" "${PASSED_CMDS:-(none)}" "$ZWS" "$FAILED" "$TOTAL")
+          [ -n "$FAILED_CMDS" ] && MSG=$(printf "%s\n-# %s" "$MSG" "$FAILED_CMDS")
+
+          PAYLOAD=$(jq -n --arg c "$MSG" '{content: $c}')
+          curl -s -X POST \
+            -H "Authorization: Bot $DISCORD_BOT_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD" \
+            "https://discord.com/api/v10/channels/$DISCORD_CHANNEL_ID/messages"
+
       # Stop
       - name: Show bot log
         if: always()

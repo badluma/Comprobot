@@ -42,6 +42,7 @@ runs:
         BETA_BOT_ID: ${{ inputs.beta_bot_id }}
         DISCORD_CHANNEL_ID: ${{ inputs.channel_id }}
         EXPECTED_RESPONSE: ${{ inputs.expected_response }}
+        MESSAGE: ${{ inputs.message }}
         MAX_RETRIES: 10
       run: |
         for i in $(seq 1 $MAX_RETRIES); do
@@ -65,10 +66,12 @@ runs:
           fi
 
           echo "Response received: $MESSAGE_CONTENT"
+          echo "PASS|${MESSAGE}" >> "${RUNNER_TEMP}/comprobot_results.txt"
           exit 0
         done
 
         echo "Max retries ($MAX_RETRIES) reached without a valid response"
+        echo "FAIL|${MESSAGE}" >> "${RUNNER_TEMP}/comprobot_results.txt"
         exit 1
       shell: bash
 
