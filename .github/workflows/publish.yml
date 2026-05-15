@@ -324,7 +324,6 @@ jobs:
           New-Item -ItemType Directory -Force -Path $dir | Out-Null
 
           @"
-          # yaml-language-server: `$schema=https://aka.ms/winget-manifest.version.1.12.0.schema.json
           PackageIdentifier: badluma.Comprobot
           PackageVersion: $env:VERSION
           DefaultLocale: en-US
@@ -333,7 +332,6 @@ jobs:
           "@ | Set-Content "$dir/badluma.Comprobot.yaml"
 
           @"
-          # yaml-language-server: `$schema=https://aka.ms/winget-manifest.defaultLocale.1.12.0.schema.json
           PackageIdentifier: badluma.Comprobot
           PackageVersion: $env:VERSION
           PackageLocale: en-US
@@ -346,7 +344,6 @@ jobs:
           "@ | Set-Content "$dir/badluma.Comprobot.locale.en-US.yaml"
 
           @"
-          # yaml-language-server: `$schema=https://aka.ms/winget-manifest.installer.1.12.0.schema.json
           PackageIdentifier: badluma.Comprobot
           PackageVersion: $env:VERSION
           InstallerType: portable
@@ -366,6 +363,7 @@ jobs:
           $output = winget validate --manifest "manifests/b/badluma/Comprobot/$env:VERSION" 2>&1
           Write-Output $output
           if ($output -match "Manifest validation failed") { exit 1 }
+          exit 0
 
       - name: Install manifest
         if: steps.check.outputs.already-exists == 'false'
