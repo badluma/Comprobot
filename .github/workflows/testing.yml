@@ -210,10 +210,228 @@ jobs:
           echo "DISCORD_THREAD_ID=$THREAD_ID" >> $GITHUB_ENV
 
       # Test commands
-      - name: Send and wait for response
+      - name: quote
         uses: ./.github/actions/send
         with:
           message: "test!quote"
+          channel_id: ${{ env.DISCORD_THREAD_ID }}
+          discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
+          beta_bot_id: ${{ secrets.BETA_BOT_ID }}
+
+      - name: joke
+        uses: ./.github/actions/send
+        with:
+          message: "test!joke"
+          channel_id: ${{ env.DISCORD_THREAD_ID }}
+          discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
+          beta_bot_id: ${{ secrets.BETA_BOT_ID }}
+
+      - name: meme
+        uses: ./.github/actions/send
+        with:
+          message: "test!meme"
+          channel_id: ${{ env.DISCORD_THREAD_ID }}
+          discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
+          beta_bot_id: ${{ secrets.BETA_BOT_ID }}
+
+      - name: waifu
+        uses: ./.github/actions/send
+        with:
+          message: "test!waifu"
+          channel_id: ${{ env.DISCORD_THREAD_ID }}
+          discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
+          beta_bot_id: ${{ secrets.BETA_BOT_ID }}
+
+      - name: duck
+        uses: ./.github/actions/send
+        with:
+          message: "test!duck"
+          channel_id: ${{ env.DISCORD_THREAD_ID }}
+          discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
+          beta_bot_id: ${{ secrets.BETA_BOT_ID }}
+
+      - name: dog
+        uses: ./.github/actions/send
+        with:
+          message: "test!dog"
+          channel_id: ${{ env.DISCORD_THREAD_ID }}
+          discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
+          beta_bot_id: ${{ secrets.BETA_BOT_ID }}
+
+      - name: cat
+        uses: ./.github/actions/send
+        with:
+          message: "test!cat"
+          channel_id: ${{ env.DISCORD_THREAD_ID }}
+          discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
+          beta_bot_id: ${{ secrets.BETA_BOT_ID }}
+
+      - name: chuck norris
+        uses: ./.github/actions/send
+        with:
+          message: "test!chuck"
+          channel_id: ${{ env.DISCORD_THREAD_ID }}
+          discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
+          beta_bot_id: ${{ secrets.BETA_BOT_ID }}
+
+      - name: fact
+        uses: ./.github/actions/send
+        with:
+          message: "test!fact"
+          channel_id: ${{ env.DISCORD_THREAD_ID }}
+          discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
+          beta_bot_id: ${{ secrets.BETA_BOT_ID }}
+
+      - name: bible (random)
+        uses: ./.github/actions/send
+        with:
+          message: "test!bible"
+          channel_id: ${{ env.DISCORD_THREAD_ID }}
+          discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
+          beta_bot_id: ${{ secrets.BETA_BOT_ID }}
+
+      - name: bible (specific verse)
+        uses: ./.github/actions/send
+        with:
+          message: "test!bible John 3 16"
+          channel_id: ${{ env.DISCORD_THREAD_ID }}
+          discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
+          beta_bot_id: ${{ secrets.BETA_BOT_ID }}
+
+      - name: truth
+        uses: ./.github/actions/send
+        with:
+          message: "test!truth"
+          channel_id: ${{ env.DISCORD_THREAD_ID }}
+          discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
+          beta_bot_id: ${{ secrets.BETA_BOT_ID }}
+
+      - name: dare
+        uses: ./.github/actions/send
+        with:
+          message: "test!dare"
+          channel_id: ${{ env.DISCORD_THREAD_ID }}
+          discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
+          beta_bot_id: ${{ secrets.BETA_BOT_ID }}
+
+      - name: would you rather
+        uses: ./.github/actions/send
+        with:
+          message: "test!wyr"
+          channel_id: ${{ env.DISCORD_THREAD_ID }}
+          discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
+          beta_bot_id: ${{ secrets.BETA_BOT_ID }}
+
+      - name: never have i ever
+        uses: ./.github/actions/send
+        with:
+          message: "test!never-have-i-ever"
+          channel_id: ${{ env.DISCORD_THREAD_ID }}
+          discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
+          beta_bot_id: ${{ secrets.BETA_BOT_ID }}
+
+      - name: paranoia
+        uses: ./.github/actions/send
+        with:
+          message: "test!paranoia"
+          channel_id: ${{ env.DISCORD_THREAD_ID }}
+          discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
+          beta_bot_id: ${{ secrets.BETA_BOT_ID }}
+
+      - name: calculate (2+2)
+        uses: ./.github/actions/send
+        with:
+          message: "test!calculate 2+2"
+          channel_id: ${{ env.DISCORD_THREAD_ID }}
+          discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
+          beta_bot_id: ${{ secrets.BETA_BOT_ID }}
+          expected_response: "4"
+
+      - name: calculate (10/2)
+        uses: ./.github/actions/send
+        with:
+          message: "test!calculate 10/2"
+          channel_id: ${{ env.DISCORD_THREAD_ID }}
+          discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
+          beta_bot_id: ${{ secrets.BETA_BOT_ID }}
+          expected_response: "5.0"
+
+      - name: qr code
+        uses: ./.github/actions/send
+        with:
+          message: "test!qr https://example.com"
+          channel_id: ${{ env.DISCORD_THREAD_ID }}
+          discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
+          beta_bot_id: ${{ secrets.BETA_BOT_ID }}
+
+      - name: bitcoin (usd)
+        uses: ./.github/actions/send
+        with:
+          message: "test!bitcoin"
+          channel_id: ${{ env.DISCORD_THREAD_ID }}
+          discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
+          beta_bot_id: ${{ secrets.BETA_BOT_ID }}
+
+      - name: bitcoin (eur)
+        uses: ./.github/actions/send
+        with:
+          message: "test!bitcoin eur"
+          channel_id: ${{ env.DISCORD_THREAD_ID }}
+          discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
+          beta_bot_id: ${{ secrets.BETA_BOT_ID }}
+
+      - name: currency convert
+        uses: ./.github/actions/send
+        with:
+          message: "test!currency 100 usd eur"
+          channel_id: ${{ env.DISCORD_THREAD_ID }}
+          discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
+          beta_bot_id: ${{ secrets.BETA_BOT_ID }}
+
+      - name: ascii art
+        uses: ./.github/actions/send
+        with:
+          message: "test!ascii"
+          channel_id: ${{ env.DISCORD_THREAD_ID }}
+          discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
+          beta_bot_id: ${{ secrets.BETA_BOT_ID }}
+
+      - name: help (categories)
+        uses: ./.github/actions/send
+        with:
+          message: "test!help"
+          channel_id: ${{ env.DISCORD_THREAD_ID }}
+          discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
+          beta_bot_id: ${{ secrets.BETA_BOT_ID }}
+
+      - name: help (general category)
+        uses: ./.github/actions/send
+        with:
+          message: "test!help general"
+          channel_id: ${{ env.DISCORD_THREAD_ID }}
+          discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
+          beta_bot_id: ${{ secrets.BETA_BOT_ID }}
+
+      - name: add money
+        uses: ./.github/actions/send
+        with:
+          message: "test!add testuser 100"
+          channel_id: ${{ env.DISCORD_THREAD_ID }}
+          discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
+          beta_bot_id: ${{ secrets.BETA_BOT_ID }}
+
+      - name: check balance
+        uses: ./.github/actions/send
+        with:
+          message: "test!check testuser"
+          channel_id: ${{ env.DISCORD_THREAD_ID }}
+          discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
+          beta_bot_id: ${{ secrets.BETA_BOT_ID }}
+
+      - name: remove money
+        uses: ./.github/actions/send
+        with:
+          message: "test!remove testuser 50"
           channel_id: ${{ env.DISCORD_THREAD_ID }}
           discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
           beta_bot_id: ${{ secrets.BETA_BOT_ID }}
