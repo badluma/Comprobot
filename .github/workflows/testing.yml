@@ -124,40 +124,43 @@ jobs:
           echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
 
       - name: Setup SSH
+        env:
+          ORACLE_IP: ${{ secrets.ORACLE_IP }}
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.ORACLE_SSH_KEY }}" > ~/.ssh/oracle.key
           chmod 600 ~/.ssh/oracle.key
+          ssh-keyscan -H "$ORACLE_IP" >> ~/.ssh/known_hosts
 
-      - name: Deploy bot to Oracle
+      - name: Deploy bot
+        env:
+          ORACLE_IP: ${{ secrets.ORACLE_IP }}
+          BETA_BOT_TOKEN: ${{ secrets.BETA_BOT_TOKEN }}
         run: |
-          ssh -i ~/.ssh/oracle.key -o StrictHostKeyChecking=no ubuntu@${{ secrets.ORACLE_HOST }} "
+          ssh -i ~/.ssh/oracle.key ubuntu@$ORACLE_IP 'bash -s' << 'REMOTE'
             set -e
-            rm -rf ~/comprobot_ci
-            git clone --depth=1 --branch ${GITHUB_REF_NAME} ${{ github.server_url }}/${{ github.repository }}.git ~/comprobot_ci
-            cd ~/comprobot_ci
-            python3 -m venv .venv
-            .venv/bin/pip install -e '.[dev]' -q
-          "
+            if [ -d ~/comprobot-beta ]; then
+              cd ~/comprobot-beta
+              git fetch origin && git reset --hard origin/main
+            else
+              git clone --depth 1 https://github.com/${{ github.repository }}.git ~/comprobot-beta
+            fi
+            cd ~/comprobot-beta
+            pip install --user -e ".[dev]" -q
+            mkdir -p ~/.local/share/Comprobot
+          REMOTE
+          printf 'BOT_TOKEN=%s\n' "$BETA_BOT_TOKEN" | \
+            ssh -i ~/.ssh/oracle.key ubuntu@$ORACLE_IP 'cat > ~/.local/share/Comprobot/.env'
 
-      # Start
-      - name: Configure bot on Oracle
+      - name: Start bot
+        env:
+          ORACLE_IP: ${{ secrets.ORACLE_IP }}
         run: |
-          ssh -i ~/.ssh/oracle.key -o StrictHostKeyChecking=no ubuntu@${{ secrets.ORACLE_HOST }} "
-            pkill -f 'python -m src' || true
-            cd ~/comprobot_ci
-            source .venv/bin/activate
-            python -m src config secrets BOT_TOKEN '${{ secrets.BETA_BOT_TOKEN }}'
-            python -m src config config prefix 'test!'
-            python -m src config ai activate_ai false
-            python -m src config config bot_admins '${{ secrets.SENDER_BOT_ID }}'
-          "
-
-      - name: Start bot on Oracle
-        run: |
-          ssh -i ~/.ssh/oracle.key -o StrictHostKeyChecking=no ubuntu@${{ secrets.ORACLE_HOST }} "
-            cd ~/comprobot_ci && source .venv/bin/activate && > ~/bot.log && python -m src start --daemon > ~/bot.log 2>&1
-          "
+          ssh -i ~/.ssh/oracle.key ubuntu@$ORACLE_IP '
+            export PATH="$HOME/.local/bin:$PATH"
+            nohup comprobot start > /tmp/comprobot-beta.log 2>&1 &
+            echo $! > /tmp/comprobot-beta.pid
+          '
 
       - name: Startup delay
         run: sleep 15
@@ -216,10 +219,19 @@ jobs:
       # Stop
       - name: Show bot log
         if: always()
-        run: ssh -i ~/.ssh/oracle.key -o StrictHostKeyChecking=no ubuntu@${{ secrets.ORACLE_HOST }} "cat ~/bot.log" || true
+        env:
+          ORACLE_IP: ${{ secrets.ORACLE_IP }}
+        run: |
+          ssh -i ~/.ssh/oracle.key ubuntu@$ORACLE_IP 'cat /tmp/comprobot-beta.log' || true
 
       - name: Stop bot
         if: always()
+        env:
+          ORACLE_IP: ${{ secrets.ORACLE_IP }}
         run: |
-          ssh -i ~/.ssh/oracle.key -o StrictHostKeyChecking=no ubuntu@${{ secrets.ORACLE_HOST }} \
-            "pkill -f 'python -m src start' || true" || true
+          ssh -i ~/.ssh/oracle.key ubuntu@$ORACLE_IP '
+            if [ -f /tmp/comprobot-beta.pid ]; then
+              kill "$(cat /tmp/comprobot-beta.pid)" 2>/dev/null || true
+              rm /tmp/comprobot-beta.pid
+            fi
+          '
