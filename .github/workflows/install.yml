@@ -2,7 +2,7 @@ name: Installation Tests
 
 "on":
   workflow_run:
-    workflows: ["Publish"]
+    workflows: ["Publishing"]
     types: [completed]
   workflow_dispatch:
 
@@ -58,7 +58,11 @@ jobs:
     container: archlinux:latest
     steps:
       - name: Install build tools
-        run: pacman -Syu --noconfirm base-devel git
+        run: |
+          pacman-key --init
+          pacman-key --populate archlinux
+          pacman -Sy --noconfirm archlinux-keyring
+          pacman -Syu --noconfirm base-devel git
 
       - name: Create unprivileged build user
         run: |
@@ -85,6 +89,7 @@ jobs:
         run: |
           brew tap badluma/tap
           brew install comprobot
+          echo "$(brew --prefix)/bin" >> $GITHUB_PATH
 
       - name: Test
         run: comprobot --help
@@ -99,6 +104,7 @@ jobs:
         run: |
           Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
           irm get.scoop.sh | iex
+          echo "$env:USERPROFILE\scoop\shims" >> $env:GITHUB_PATH
 
       - name: Install
         shell: powershell
@@ -121,7 +127,7 @@ jobs:
           VERSION: ${{ needs.wait.outputs.version }}
         run: |
           docker pull "$DOCKERHUB_USERNAME/comprobot:$VERSION"
-          docker run --rm "$DOCKERHUB_USERNAME/comprobot:$VERSION" comprobot --help
+          docker run --rm "$DOCKERHUB_USERNAME/comprobot:$VERSION" --help
 
   winget-check:
     name: "Check winget availability"
