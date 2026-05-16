@@ -25,6 +25,15 @@ def _is_admin_or_bot_admin():
 
 class Comprobot(ext_commands.Cog):
 
+    async def cog_check(self, ctx):
+        if config["whitelist_mode"] and config["whitelist"]:
+            allowed = config["allowed_channels"]
+            channel = ctx.channel
+            if isinstance(channel, discord.Thread):
+                return channel.id in allowed or channel.parent_id in allowed
+            return channel.id in allowed
+        return True
+
     async def cog_before_invoke(self, ctx):
         await ctx.bot.http.send_typing(ctx.channel.id)
 

@@ -39,11 +39,12 @@ user_prompt_structure = """
 config = r"""
 prefix =  "!"
 
-money_symbol    = "$"
-bot_admins      = []
-ascii_art       = ["¯\\_(ツ)_/¯"]
-
-debug_mode      = false
+money_symbol      = "$"
+ascii_art         = ["¯\\_(ツ)_/¯"]
+bot_admins        = []
+debug_mode        = false
+whitelist         = []
+whitelist_mode    = false
 """
 
 error_messages = r'''quote      = "Failed to get a quote."
