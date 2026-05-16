@@ -224,7 +224,7 @@ jobs:
     needs: [release, brew]
     strategy:
       matrix:
-        os: [macos-13, macos-14, macos-15, macos-26]
+        os: [macos-14, macos-15, macos-26]
     runs-on: ${{ matrix.os }}
     permissions:
       contents: write
@@ -359,8 +359,10 @@ jobs:
         id: check
         env:
           VERSION: ${{ needs.release.outputs.version }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          $status = (Invoke-WebRequest -Uri "https://api.github.com/repos/microsoft/winget-pkgs/contents/manifests/b/badluma/Comprobot/$env:VERSION" -UseBasicParsing -SkipHttpErrorCheck).StatusCode
+          $headers = @{ "Authorization" = "Bearer $env:GITHUB_TOKEN" }
+          $status = (Invoke-WebRequest -Uri "https://api.github.com/repos/microsoft/winget-pkgs/contents/manifests/b/badluma/Comprobot/$env:VERSION" -Headers $headers -UseBasicParsing -SkipHttpErrorCheck).StatusCode
           if ($status -eq 200) {
             Write-Output "Version $env:VERSION already exists in winget-pkgs, skipping."
             echo "already-exists=true" >> $env:GITHUB_OUTPUT
