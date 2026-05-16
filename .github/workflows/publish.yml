@@ -2,7 +2,7 @@ name: Publishing
 
 "on":
   workflow_run:
-    workflows: ["Test"]
+    workflows: ["Running Tests"]
     types: [completed]
     branches: [main]
   workflow_dispatch:
@@ -10,6 +10,7 @@ name: Publishing
 jobs:
   check:
     name: "Check if version changed"
+    if: github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     outputs:
       changed: ${{ steps.check.outputs.changed }}
