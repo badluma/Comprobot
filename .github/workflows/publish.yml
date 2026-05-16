@@ -218,6 +218,66 @@ jobs:
           git commit -m "chore: update comprobot to v${VERSION}"
           git push
 
+  bottle:
+    name: "Build Homebrew bottle"
+    needs: [release, brew]
+    strategy:
+      matrix:
+        os: [macos-13, macos-14, macos-15, macos-26]
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
+    steps:
+      - name: Build bottle
+        env:
+          VERSION: ${{ needs.release.outputs.version }}
+        run: |
+          brew tap badluma/tap
+          brew install --build-bottle badluma/tap/comprobot
+          brew bottle --json \
+            --root-url "https://github.com/badluma/Comprobot/releases/download/v${VERSION}" \
+            badluma/tap/comprobot
+
+      - name: Upload bottle to release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ needs.release.outputs.version }}
+          files: "*.bottle.tar.gz"
+
+      - name: Upload bottle JSON
+        uses: actions/upload-artifact@v4
+        with:
+          name: bottle-json-${{ matrix.os }}
+          path: "*.bottle.json"
+
+  merge-bottles:
+    name: "Add bottle info to formula"
+    needs: [release, bottle]
+    runs-on: macos-latest
+    environment: Homebrew
+    steps:
+      - name: Download bottle JSONs
+        uses: actions/download-artifact@v4
+        with:
+          pattern: bottle-json-*
+          merge-multiple: true
+
+      - name: Update formula with bottle block
+        env:
+          VERSION: ${{ needs.release.outputs.version }}
+          TAP_TOKEN: ${{ secrets.TAP_TOKEN }}
+        run: |
+          BREW_TAPS="$(brew --repository)/Library/Taps"
+          git clone "https://x-access-token:${TAP_TOKEN}@github.com/badluma/homebrew-tap.git" \
+            "$BREW_TAPS/badluma/homebrew-tap"
+          brew bottle --merge --write --no-commit *.bottle.json
+          cd "$BREW_TAPS/badluma/homebrew-tap"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Formula/comprobot.rb
+          git commit -m "chore: add bottles for v${VERSION}"
+          git push
+
   binaries:
     name: "Build standalone binaries"
     needs: release
