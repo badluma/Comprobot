@@ -60,12 +60,12 @@ def _daemonize():
     os.close(devnull)
 
 
-def start(daemon=False):
+def start(
+    daemon=False, data_dir=appdirs.user_data_dir(appname="Comprobot", appauthor=False)
+):
     if daemon:
         _daemonize()
-    print(
-        f"Configuration directory: {appdirs.user_data_dir(appname='Comprobot', appauthor=False)}"
-    )
+    print(f"Configuration directory: {data_dir}")
     token = os_getenv("BOT_TOKEN")
     if token:
         client.run(token)

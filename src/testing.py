@@ -85,7 +85,7 @@ async def _run(message: str) -> int:
         print(f"Error: message must start with prefix '{prefix}'")
         return 1
 
-    parts = message[len(prefix):].split()
+    parts = message[len(prefix) :].split()
     if not parts:
         print("Error: empty command")
         return 1
@@ -118,6 +118,7 @@ async def _run(message: str) -> int:
 
 def run_test(message: str) -> None:
     import io
+
     if isinstance(sys.stdout, io.TextIOWrapper):
         sys.stdout.reconfigure(encoding="utf-8")
     sys.exit(asyncio.run(_run(message)))

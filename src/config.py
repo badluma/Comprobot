@@ -10,22 +10,27 @@ from InquirerPy.prompts import checkbox, confirm, input, secret
 from InquirerPy.prompts import list as inquirer_list
 from tomlkit.items import Key
 
-style = InquirerPy.utils.InquirerPyStyle({
-    "instruction": "#aaaaaa italic",
-    "questionmark": "#5865F2 bold",
-    "answermark": "#5865F2",
-    "answer": "#5865F2",
-    "question": "#ffffff",
-})
+style = InquirerPy.utils.InquirerPyStyle(
+    {
+        "instruction": "#aaaaaa italic",
+        "questionmark": "#5865F2 bold",
+        "answermark": "#5865F2",
+        "answer": "#5865F2",
+        "question": "#ffffff",
+    }
+)
+
 
 def make_pretty(string):
-    return string \
-        .replace(".toml", "") \
-        .replace("_", " ") \
-        .replace("-", " ") \
-        .title() \
-        .replace("Ai", "AI") \
+    return (
+        string.replace(".toml", "")
+        .replace("_", " ")
+        .replace("-", " ")
+        .title()
+        .replace("Ai", "AI")
         .replace("Api", "API")
+    )
+
 
 def pick_file():
     data_dir = appdirs.user_data_dir("Comprobot", appauthor=False)
@@ -47,7 +52,10 @@ def pick_file():
 
     file_to_edit = inquirer_list.ListPrompt(
         message="Which file do you want to edit?",
-        choices=[Choice(value=files[file]["path"], name=files[file]["display"]) for file in files]
+        choices=[
+            Choice(value=files[file]["path"], name=files[file]["display"])
+            for file in files
+        ]
         + ([Choice(value=env_path, name="Secrets")] if os.path.exists(env_path) else [])
         + [Choice(value="exit", name="Exit")],
         style=style,
@@ -61,6 +69,7 @@ def pick_file():
 
     if file_to_edit == env_path:
         from dotenv import dotenv_values
+
         content = {k: v or "" for k, v in dotenv_values(file_to_edit).items()}
         return (file_to_edit, content)
 
@@ -76,7 +85,9 @@ def pick_key(content, is_secret=False):
 
     key = inquirer_list.ListPrompt(
         message="Which key do you want to edit?",
-        choices=[Choice(value=key, name=make_pretty(key)) for key in list(content.keys())]
+        choices=[
+            Choice(value=key, name=make_pretty(key)) for key in list(content.keys())
+        ]
         + [Choice(value="exit", name="Exit")],
         style=style,
         amark="!",
@@ -142,20 +153,23 @@ def pick_key(content, is_secret=False):
             if int(value) == None:
                 content[key] = 0
                 return
-            
+
             content[key] = int(value)
 
         case list():
             print()
-            value = input.InputPrompt(
-                message=f"What values do you want to assign to '{make_pretty(key)}'?",
-                instruction=f"(separate by commas) (Current: {', '.join(content[key]) if content[key] else 'None'})",
-                style=style,
-                amark="!",
-                vi_mode=True,
-            ).execute().split(",")
+            value = (
+                input.InputPrompt(
+                    message=f"What values do you want to assign to '{make_pretty(key)}'?",
+                    instruction=f"(separate by commas) (Current: {', '.join(content[key]) if content[key] else 'None'})",
+                    style=style,
+                    amark="!",
+                    vi_mode=True,
+                )
+                .execute()
+                .split(",")
+            )
             content[key] = [item.strip() for item in value if item.strip()]
-
 
 
 def configure(args):
@@ -183,8 +197,11 @@ def configure(args):
 
             if is_secret:
                 from dotenv import set_key as dotenv_set_key
+
                 for k, v in content.items():
-                    dotenv_set_key(dotenv_path=file_to_edit, key_to_set=k, value_to_set=v)
+                    dotenv_set_key(
+                        dotenv_path=file_to_edit, key_to_set=k, value_to_set=v
+                    )
             else:
                 with open(file_to_edit, "w") as f:
                     tomlkit.dump(content, f)
@@ -199,6 +216,7 @@ def configure(args):
 
         if file_name == "secrets":
             from dotenv import set_key as dotenv_set_key
+
             env_path = os.path.join(data_dir, ".env")
             if not os.path.exists(env_path):
                 print(".env file not found.")
@@ -228,7 +246,9 @@ def configure(args):
             case bool():
                 v = values[0].lower()
                 if v not in ("true", "false"):
-                    print(f"Invalid value '{values[0]}' for bool. Use 'true' or 'false'.")
+                    print(
+                        f"Invalid value '{values[0]}' for bool. Use 'true' or 'false'."
+                    )
                     sys.exit(1)
                 content[key] = v == "true"
             case list():

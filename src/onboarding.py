@@ -79,7 +79,10 @@ def onboarding():
 
         # 3. Activate AI features
         ai_activated = confirm.ConfirmPrompt(
-            message="Do you want to activate AI features?", style=style, amark="!", default=True
+            message="Do you want to activate AI features?",
+            style=style,
+            amark="!",
+            default=True,
         ).execute()
         if ai_activated:
             print()

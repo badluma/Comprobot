@@ -8,14 +8,17 @@ import tomlkit.exceptions
 
 from . import templates
 
+DATA_DIR: str = os.environ.get("COMPROBOT_DATA_DIR") or appdirs.user_data_dir(
+    "Comprobot"
+)
+
 Migration = Union[Tuple[str, str], Callable]
 
 RENAME_COMMANDS: List[Migration] = [("commands", "general")]
 
 
 def get_data_path(filename: str) -> str:
-    base_dir = appdirs.user_data_dir(appname="Comprobot", appauthor=False)
-    return os.path.join(base_dir, filename)
+    return os.path.join(DATA_DIR, filename)
 
 
 def _write(path: str, data) -> None:
@@ -52,12 +55,16 @@ def _merge_defaults(data, defaults) -> bool:
 
 def _reorder(data, defaults) -> bool:
     in_data = set(data.keys())
-    target = [k for k in defaults if k in in_data] + [k for k in in_data if k not in defaults]
+    target = [k for k in defaults if k in in_data] + [
+        k for k in in_data if k not in defaults
+    ]
 
     if list(data.keys()) == target:
         changed = False
         for key in defaults:
-            if isinstance(defaults[key], Mapping) and isinstance(data.get(key), Mapping):
+            if isinstance(defaults[key], Mapping) and isinstance(
+                data.get(key), Mapping
+            ):
                 changed |= _reorder(data[key], defaults[key])
         return changed
 
@@ -102,7 +109,9 @@ def load_or_create(
     except tomlkit.exceptions.TOMLKitError:
         backup = path + ".bak"
         os.replace(path, backup)
-        print(f"[Comprobot] Corrupt TOML at {path!r} — backed up to {backup!r}, resetting to defaults.")
+        print(
+            f"[Comprobot] Corrupt TOML at {path!r} — backed up to {backup!r}, resetting to defaults."
+        )
         _write(path, defaults)
         return defaults
 
@@ -126,22 +135,16 @@ def save_toml(data, path: str) -> None:
 error_messages: Dict[str, str] = load_or_create(
     get_data_path("error-messages.toml"), templates.error_messages
 )
-config: Dict[str, Any] = load_or_create(
-    get_data_path("config.toml"), templates.config
-)
+config: Dict[str, Any] = load_or_create(get_data_path("config.toml"), templates.config)
 keywords: Dict[str, Dict[str, List[str]]] = load_or_create(
     get_data_path("keywords.toml"), templates.keywords, migrations=RENAME_COMMANDS
 )
-ai: Dict[str, Any] = load_or_create(
-    get_data_path("ai.toml"), templates.ai
-)
+ai: Dict[str, Any] = load_or_create(get_data_path("ai.toml"), templates.ai)
 system_prompt_text: str = str(ai["system_prompt"])
 money: Dict[str, Dict[str, int]] = load_or_create(
     get_data_path("money.toml"), "[members]\n", prune_obsolete=False
 )
-active: Dict[str, bool] = load_or_create(
-    get_data_path("active.toml"), templates.active
-)
+active: Dict[str, bool] = load_or_create(get_data_path("active.toml"), templates.active)
 output: Dict[str, Dict[str, List[str]]] = load_or_create(
     get_data_path("output.toml"), templates.output, migrations=RENAME_COMMANDS
 )
@@ -149,7 +152,9 @@ moderation: Dict[Any, Any] = load_or_create(
     get_data_path("moderation.toml"), templates.moderation
 )
 descriptions: Dict[str, Dict[str, str]] = load_or_create(
-    get_data_path("descriptions.toml"), templates.descriptions, migrations=RENAME_COMMANDS
+    get_data_path("descriptions.toml"),
+    templates.descriptions,
+    migrations=RENAME_COMMANDS,
 )
 
 env_path = get_data_path(".env")

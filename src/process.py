@@ -20,11 +20,11 @@ def _is_admin_or_bot_admin():
             ctx.author.guild_permissions.administrator
             or ctx.author.id in config["bot_admins"]
         )
+
     return ext_commands.check(predicate)
 
 
 class Comprobot(ext_commands.Cog):
-
     async def cog_check(self, ctx):
         if config["whitelist_mode"] and config["whitelist"]:
             allowed = config["allowed_channels"]
@@ -70,6 +70,7 @@ class Comprobot(ext_commands.Cog):
     @ext_commands.check(lambda ctx: active["waifu"])
     async def waifu_cmd(self, ctx):
         await ctx.send(api.waifu())
+
     @ext_commands.command(
         name=keywords["general"]["duck"][0],
         aliases=keywords["general"]["duck"][1:],
@@ -115,7 +116,13 @@ class Comprobot(ext_commands.Cog):
         aliases=keywords["general"]["bible"][1:],
     )
     @ext_commands.check(lambda ctx: active["bible"])
-    async def bible_cmd(self, ctx, book: str | None = None, chapter: int | None = None, verse: int | None = None):
+    async def bible_cmd(
+        self,
+        ctx,
+        book: str | None = None,
+        chapter: int | None = None,
+        verse: int | None = None,
+    ):
         if book is None:
             await ctx.send(api.bible(True))
         elif chapter is not None and verse is not None:
@@ -131,7 +138,9 @@ class Comprobot(ext_commands.Cog):
     async def truth_cmd(self, ctx, rating: str | None = None):
         result = api.tord("https://api.truthordarebot.xyz/v1/truth", rating)
         if result:
-            await ctx.send(choice(output["general"]["truth"]).replace("{{QUESTION}}", result))
+            await ctx.send(
+                choice(output["general"]["truth"]).replace("{{QUESTION}}", result)
+            )
         else:
             await ctx.send(error_messages["truth"])
 
@@ -143,7 +152,9 @@ class Comprobot(ext_commands.Cog):
     async def dare_cmd(self, ctx, rating: str | None = None):
         result = api.tord("https://api.truthordarebot.xyz/api/dare", rating)
         if result:
-            await ctx.send(choice(output["general"]["dare"]).replace("{{QUESTION}}", result))
+            await ctx.send(
+                choice(output["general"]["dare"]).replace("{{QUESTION}}", result)
+            )
         else:
             await ctx.send(error_messages["dare"])
 
@@ -155,7 +166,9 @@ class Comprobot(ext_commands.Cog):
     async def wyr_cmd(self, ctx, rating: str | None = None):
         result = api.tord("https://api.truthordarebot.xyz/api/wyr", rating)
         if result:
-            await ctx.send(choice(output["general"]["wyr"]).replace("{{QUESTION}}", result))
+            await ctx.send(
+                choice(output["general"]["wyr"]).replace("{{QUESTION}}", result)
+            )
         else:
             await ctx.send(error_messages["wyr"])
 
@@ -167,7 +180,11 @@ class Comprobot(ext_commands.Cog):
     async def nhie_cmd(self, ctx, rating: str | None = None):
         result = api.tord("https://api.truthordarebot.xyz/api/nhie", rating)
         if result:
-            await ctx.send(choice(output["general"]["never_have_i_ever"]).replace("{{QUESTION}}", result))
+            await ctx.send(
+                choice(output["general"]["never_have_i_ever"]).replace(
+                    "{{QUESTION}}", result
+                )
+            )
         else:
             await ctx.send(error_messages["never-hie"])
 
@@ -179,7 +196,9 @@ class Comprobot(ext_commands.Cog):
     async def paranoia_cmd(self, ctx, rating: str | None = None):
         result = api.tord("https://api.truthordarebot.xyz/api/paranoia", rating)
         if result:
-            await ctx.send(choice(output["general"]["paranoia"]).replace("{{QUESTION}}", result))
+            await ctx.send(
+                choice(output["general"]["paranoia"]).replace("{{QUESTION}}", result)
+            )
         else:
             await ctx.send(error_messages["paranoia"])
 
@@ -233,7 +252,13 @@ class Comprobot(ext_commands.Cog):
         aliases=keywords["general"]["currency"][1:],
     )
     @ext_commands.check(lambda ctx: active["currency"])
-    async def currency_cmd(self, ctx, amount: str | None = None, from_currency: str | None = None, to_currency: str | None = None):
+    async def currency_cmd(
+        self,
+        ctx,
+        amount: str | None = None,
+        from_currency: str | None = None,
+        to_currency: str | None = None,
+    ):
         if not all([amount, from_currency, to_currency]):
             await ctx.send(error_messages["missing_argument"])
             return
@@ -256,7 +281,9 @@ class Comprobot(ext_commands.Cog):
         aliases=keywords["money"]["add_money"][1:],
     )
     @_is_admin_or_bot_admin()
-    async def add_money_cmd(self, ctx, username: str | None = None, amount: str | None = None):
+    async def add_money_cmd(
+        self, ctx, username: str | None = None, amount: str | None = None
+    ):
         if not username or not amount:
             await ctx.send(error_messages["missing_argument"])
             return
@@ -270,7 +297,9 @@ class Comprobot(ext_commands.Cog):
         aliases=keywords["money"]["remove_money"][1:],
     )
     @_is_admin_or_bot_admin()
-    async def remove_money_cmd(self, ctx, username: str | None = None, amount: str | None = None):
+    async def remove_money_cmd(
+        self, ctx, username: str | None = None, amount: str | None = None
+    ):
         if not username or not amount:
             await ctx.send(error_messages["missing_argument"])
             return
@@ -346,7 +375,9 @@ class Comprobot(ext_commands.Cog):
             await ctx.send(error_messages["bot_unavailable"])
             return
         await bot.user.edit(username=name)
-        await ctx.send(choice(output["settings"]["nickname_applied"]).replace("{{NAME}}", name))
+        await ctx.send(
+            choice(output["settings"]["nickname_applied"]).replace("{{NAME}}", name)
+        )
 
     @settings_cmd.command(
         name=keywords["settings"]["change_keywords"][0],
@@ -401,7 +432,9 @@ class Comprobot(ext_commands.Cog):
         is_reply_to_bot = False
         if message.reference and message.reference.message_id and user_id:
             try:
-                ref_msg = await message.channel.fetch_message(message.reference.message_id)
+                ref_msg = await message.channel.fetch_message(
+                    message.reference.message_id
+                )
                 is_reply_to_bot = ref_msg.author.id == user_id
             except discord.NotFound:
                 pass
@@ -414,5 +447,7 @@ class Comprobot(ext_commands.Cog):
                 response = await chat(message)
                 if response:
                     content = str(response)
-                    for chunk in [content[i : i + 2000] for i in range(0, len(content), 2000)]:
+                    for chunk in [
+                        content[i : i + 2000] for i in range(0, len(content), 2000)
+                    ]:
                         await message.channel.send(chunk)

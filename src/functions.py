@@ -179,12 +179,14 @@ async def chat(message):
                 if is_daily_quota or attempt == 3:
                     resp.raise_for_status()
                 match = re.search(r"(\d+(?:\.\d+)?)", retry_delay or "")
-                wait = float(match.group(1)) if match else min(30 * (2 ** attempt), 120)
+                wait = float(match.group(1)) if match else min(30 * (2**attempt), 120)
                 await asyncio.sleep(wait)
             if resp is None:
                 raise RuntimeError("Gemini request never sent")
             if resp.status_code == 404:
-                print(f"Model '{ai['model']}' not found. Check ai.toml for valid model name.")
+                print(
+                    f"Model '{ai['model']}' not found. Check ai.toml for valid model name."
+                )
             resp.raise_for_status()
             content = resp.json()["candidates"][0]["content"]["parts"][0]["text"]
     elif provider == "groq":
