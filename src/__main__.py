@@ -58,11 +58,10 @@ def main():
                 value_to_set=str(settings["token"]),
             )
 
-            for key in active:
-                if key in settings["commands_activated"]:
-                    active[key] = True
-                else:
-                    active[key] = False
+            for category in active:
+                if isinstance(active[category], dict):
+                    for key in active[category]:
+                        active[category][key] = key in settings["commands_activated"]
 
             ai["activated"] = settings["ai_activated"]
 

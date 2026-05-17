@@ -21,7 +21,12 @@ def onboarding():
     from . import templates
 
     active_data = tomlkit.loads(templates.active)
-    all_commands = list(active_data.keys())
+    all_commands = [
+        cmd
+        for cat in active_data.values()
+        if isinstance(cat, dict)
+        for cmd in cat.keys()
+    ]
     active_choices = [Choice(value, enabled=True) for value in all_commands]
 
     print(f"\n{ACCENT}Welcome to Comprobot{RESET}")

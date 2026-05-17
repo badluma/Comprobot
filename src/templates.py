@@ -110,7 +110,14 @@ change_keywords   = ["keywords", "key"]
 [money]
 add_money         = ["add", "add_money"]
 remove_money      = ["remove", "rm", "remove_money"]
-check_balance     = ["check", "check_balance", "balance"]"""
+check_balance     = ["check", "check_balance", "balance"]
+
+[music]
+play              = ["play"]
+pause             = ["pause"]
+leave             = ["leave", "disconnect", "dc"]
+search            = ["search"]
+insert            = ["insert", "queue", "add"]"""
 
 moderation = r"""delete = []
 kick   = []
@@ -124,7 +131,8 @@ GEMINI=
 GROQ=
 """
 
-active = r"""quote             = true
+active = r"""[general]
+quote             = true
 joke              = true
 meme              = true
 waifu             = true
@@ -139,15 +147,12 @@ bitcoin           = true
 currency          = true
 qr_code           = true
 help              = true
-
 truth             = true
 dare              = true
 wyr               = true
 never_have_i_ever = true
 paranoia          = true
-
 nsfw              = false
-
 purge             = true
 """
 

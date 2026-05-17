@@ -8,6 +8,7 @@ from discord.ext import commands as ext_commands
 from . import api
 from . import commands as cmd_module
 from . import money_system
+from . import music as music_module
 from .bot import bot
 from .data import active, ai, config, error_messages, keywords, output
 from .functions import chat
@@ -43,7 +44,7 @@ class Comprobot(ext_commands.Cog):
         name=keywords["general"]["quote"][0],
         aliases=keywords["general"]["quote"][1:],
     )
-    @ext_commands.check(lambda ctx: active["quote"])
+    @ext_commands.check(lambda ctx: active["general"]["quote"])
     async def quote_cmd(self, ctx):
         await ctx.send(api.quote())
 
@@ -51,7 +52,7 @@ class Comprobot(ext_commands.Cog):
         name=keywords["general"]["joke"][0],
         aliases=keywords["general"]["joke"][1:],
     )
-    @ext_commands.check(lambda ctx: active["joke"])
+    @ext_commands.check(lambda ctx: active["general"]["joke"])
     async def joke_cmd(self, ctx):
         await ctx.send(api.joke())
 
@@ -59,7 +60,7 @@ class Comprobot(ext_commands.Cog):
         name=keywords["general"]["meme"][0],
         aliases=keywords["general"]["meme"][1:],
     )
-    @ext_commands.check(lambda ctx: active["meme"])
+    @ext_commands.check(lambda ctx: active["general"]["meme"])
     async def meme_cmd(self, ctx):
         await ctx.send(api.meme())
 
@@ -67,7 +68,7 @@ class Comprobot(ext_commands.Cog):
         name=keywords["general"]["waifu"][0],
         aliases=keywords["general"]["waifu"][1:],
     )
-    @ext_commands.check(lambda ctx: active["waifu"])
+    @ext_commands.check(lambda ctx: active["general"]["waifu"])
     async def waifu_cmd(self, ctx):
         await ctx.send(api.waifu())
 
@@ -75,7 +76,7 @@ class Comprobot(ext_commands.Cog):
         name=keywords["general"]["duck"][0],
         aliases=keywords["general"]["duck"][1:],
     )
-    @ext_commands.check(lambda ctx: active["duck"])
+    @ext_commands.check(lambda ctx: active["general"]["duck"])
     async def duck_cmd(self, ctx):
         await ctx.send(api.duck())
 
@@ -83,7 +84,7 @@ class Comprobot(ext_commands.Cog):
         name=keywords["general"]["dog"][0],
         aliases=keywords["general"]["dog"][1:],
     )
-    @ext_commands.check(lambda ctx: active["dog"])
+    @ext_commands.check(lambda ctx: active["general"]["dog"])
     async def dog_cmd(self, ctx):
         await ctx.send(api.dog())
 
@@ -91,7 +92,7 @@ class Comprobot(ext_commands.Cog):
         name=keywords["general"]["cat"][0],
         aliases=keywords["general"]["cat"][1:],
     )
-    @ext_commands.check(lambda ctx: active["cat"])
+    @ext_commands.check(lambda ctx: active["general"]["cat"])
     async def cat_cmd(self, ctx):
         await ctx.send(api.cat())
 
@@ -99,7 +100,7 @@ class Comprobot(ext_commands.Cog):
         name=keywords["general"]["chuck_norris"][0],
         aliases=keywords["general"]["chuck_norris"][1:],
     )
-    @ext_commands.check(lambda ctx: active["chuck_norris"])
+    @ext_commands.check(lambda ctx: active["general"]["chuck_norris"])
     async def chuck_cmd(self, ctx):
         await ctx.send(api.chuck())
 
@@ -107,7 +108,7 @@ class Comprobot(ext_commands.Cog):
         name=keywords["general"]["fact"][0],
         aliases=keywords["general"]["fact"][1:],
     )
-    @ext_commands.check(lambda ctx: active["fact"])
+    @ext_commands.check(lambda ctx: active["general"]["fact"])
     async def fact_cmd(self, ctx):
         await ctx.send(api.fact())
 
@@ -115,7 +116,7 @@ class Comprobot(ext_commands.Cog):
         name=keywords["general"]["bible"][0],
         aliases=keywords["general"]["bible"][1:],
     )
-    @ext_commands.check(lambda ctx: active["bible"])
+    @ext_commands.check(lambda ctx: active["general"]["bible"])
     async def bible_cmd(
         self,
         ctx,
@@ -134,7 +135,7 @@ class Comprobot(ext_commands.Cog):
         name=keywords["general"]["truth"][0],
         aliases=keywords["general"]["truth"][1:],
     )
-    @ext_commands.check(lambda ctx: active["truth"])
+    @ext_commands.check(lambda ctx: active["general"]["truth"])
     async def truth_cmd(self, ctx, rating: str | None = None):
         result = api.tord("https://api.truthordarebot.xyz/v1/truth", rating)
         if result:
@@ -148,7 +149,7 @@ class Comprobot(ext_commands.Cog):
         name=keywords["general"]["dare"][0],
         aliases=keywords["general"]["dare"][1:],
     )
-    @ext_commands.check(lambda ctx: active["dare"])
+    @ext_commands.check(lambda ctx: active["general"]["dare"])
     async def dare_cmd(self, ctx, rating: str | None = None):
         result = api.tord("https://api.truthordarebot.xyz/api/dare", rating)
         if result:
@@ -162,7 +163,7 @@ class Comprobot(ext_commands.Cog):
         name=keywords["general"]["wyr"][0],
         aliases=keywords["general"]["wyr"][1:],
     )
-    @ext_commands.check(lambda ctx: active["wyr"])
+    @ext_commands.check(lambda ctx: active["general"]["wyr"])
     async def wyr_cmd(self, ctx, rating: str | None = None):
         result = api.tord("https://api.truthordarebot.xyz/api/wyr", rating)
         if result:
@@ -176,7 +177,7 @@ class Comprobot(ext_commands.Cog):
         name=keywords["general"]["never_have_i_ever"][0],
         aliases=keywords["general"]["never_have_i_ever"][1:],
     )
-    @ext_commands.check(lambda ctx: active["never_have_i_ever"])
+    @ext_commands.check(lambda ctx: active["general"]["never_have_i_ever"])
     async def nhie_cmd(self, ctx, rating: str | None = None):
         result = api.tord("https://api.truthordarebot.xyz/api/nhie", rating)
         if result:
@@ -192,7 +193,7 @@ class Comprobot(ext_commands.Cog):
         name=keywords["general"]["paranoia"][0],
         aliases=keywords["general"]["paranoia"][1:],
     )
-    @ext_commands.check(lambda ctx: active["paranoia"])
+    @ext_commands.check(lambda ctx: active["general"]["paranoia"])
     async def paranoia_cmd(self, ctx, rating: str | None = None):
         result = api.tord("https://api.truthordarebot.xyz/api/paranoia", rating)
         if result:
@@ -206,7 +207,7 @@ class Comprobot(ext_commands.Cog):
         name=keywords["general"]["qr_code"][0],
         aliases=keywords["general"]["qr_code"][1:],
     )
-    @ext_commands.check(lambda ctx: active["qr_code"])
+    @ext_commands.check(lambda ctx: active["general"]["qr_code"])
     async def qr_cmd(self, ctx, link: str | None = None):
         if link:
             await ctx.send(cmd_module.qr(link))
@@ -217,7 +218,7 @@ class Comprobot(ext_commands.Cog):
         name=keywords["general"]["calculate"][0],
         aliases=keywords["general"]["calculate"][1:],
     )
-    @ext_commands.check(lambda ctx: active["calculate"])
+    @ext_commands.check(lambda ctx: active["general"]["calculate"])
     async def calculate_cmd(self, ctx, *, expression: str | None = None):
         if expression:
             await ctx.send(cmd_module.calculate(expression))
@@ -228,7 +229,7 @@ class Comprobot(ext_commands.Cog):
         name=keywords["general"]["bitcoin"][0],
         aliases=keywords["general"]["bitcoin"][1:],
     )
-    @ext_commands.check(lambda ctx: active["bitcoin"])
+    @ext_commands.check(lambda ctx: active["general"]["bitcoin"])
     async def bitcoin_cmd(self, ctx, currency: str = "usd"):
         await ctx.send(api.bitcoin(currency))
 
@@ -236,7 +237,7 @@ class Comprobot(ext_commands.Cog):
         name=keywords["general"]["help"][0],
         aliases=keywords["general"]["help"][1:],
     )
-    @ext_commands.check(lambda ctx: active["help"])
+    @ext_commands.check(lambda ctx: active["general"]["help"])
     async def help_cmd(self, ctx, category: str | None = None):
         await ctx.send(cmd_module.help(category))
 
@@ -251,7 +252,7 @@ class Comprobot(ext_commands.Cog):
         name=keywords["general"]["currency"][0],
         aliases=keywords["general"]["currency"][1:],
     )
-    @ext_commands.check(lambda ctx: active["currency"])
+    @ext_commands.check(lambda ctx: active["general"]["currency"])
     async def currency_cmd(
         self,
         ctx,
@@ -309,7 +310,7 @@ class Comprobot(ext_commands.Cog):
             await ctx.send(f"Invalid amount: {amount}")
 
     @ext_commands.command(name="purge")
-    @ext_commands.check(lambda ctx: active["purge"])
+    @ext_commands.check(lambda ctx: active["general"]["purge"])
     @ext_commands.has_permissions(administrator=True)
     async def purge_cmd(self, ctx):
         await ctx.channel.purge()

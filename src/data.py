@@ -144,7 +144,7 @@ system_prompt_text: str = str(ai["system_prompt"])
 money: Dict[str, Dict[str, int]] = load_or_create(
     get_data_path("money.toml"), "[members]\n", prune_obsolete=False
 )
-active: Dict[str, bool] = load_or_create(get_data_path("active.toml"), templates.active)
+active: Dict[str, Any] = load_or_create(get_data_path("active.toml"), templates.active)
 output: Dict[str, Dict[str, List[str]]] = load_or_create(
     get_data_path("output.toml"), templates.output, migrations=RENAME_COMMANDS
 )
