@@ -117,7 +117,7 @@ play              = ["play"]
 pause             = ["pause"]
 leave             = ["leave", "disconnect", "dc"]
 search            = ["search"]
-insert            = ["insert", "queue", "add"]"""
+insert            = ["insert", "queue"]"""
 
 moderation = r"""delete = []
 kick   = []
@@ -154,6 +154,13 @@ never_have_i_ever = true
 paranoia          = true
 nsfw              = false
 purge             = true
+
+[music]
+play              = true
+pause             = true
+leave             = true
+search            = true
+insert            = true
 """
 
 descriptions = r"""[general]
@@ -193,6 +200,13 @@ change_keywords   = "Change a command's trigger keywords"
 check_balance     = "Check a user's money balance"
 add_money         = "Add money to a user's balance (admin only)"
 remove_money      = "Remove money from a user's balance (admin only)"
+
+[music]
+play              = "Play a song or URL in a voice channel"
+pause             = "Pause the current song"
+leave             = "Disconnect the bot from the voice channel"
+search            = "Search for a song by name"
+insert            = "Insert a song at a specific position in the queue"
 """
 
 output = r"""[general]
@@ -229,6 +243,13 @@ add_money          = ["{{AMOUNT}}{{MONEY_SYMBOL}} added to to the account of {{U
 remove_money       = ["{{AMOUNT}} subtracted from the account of {{USERNAME}}. They now have {{BALANCE}}{{MONEY_SYMBOL}}."]
 check_balance      = ["The balance of the account from {{USERNAME}} is currently {{BALANCE}}{{MONEY_SYMBOL}}."]
 insufficient_funds = ["{{USERNAME}} doesn't have enough money. They now have {{BALANCE}}{{MONEY_SYMBOL}}."]
+
+[music]
+play              = ["Now playing: {{TITLE}}"]
+pause             = ["Paused."]
+leave             = ["Disconnected from voice channel."]
+search            = ["Search results for '{{QUERY}}':\n{{RESULTS}}"]
+insert            = ["Inserted '{{TITLE}}' at position {{POSITION}}."]
 
 [moderation]
 delete = ["Your message was deleted because it contains banned text: {{TEXT}}"]
