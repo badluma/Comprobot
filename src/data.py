@@ -1,8 +1,8 @@
 import os
-from collections.abc import Mapping
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List
 
 import appdirs
+import json
 import tomlkit
 import tomlkit.exceptions
 
@@ -12,150 +12,70 @@ DATA_DIR: str = os.environ.get("COMPROBOT_DATA_DIR") or appdirs.user_data_dir(
     "Comprobot"
 )
 
-Migration = Union[Tuple[str, str], Callable]
+ORDER = ["general", "games", "music", "settings"]
 
-RENAME_COMMANDS: List[Migration] = [("commands", "general")]
 
 
 def get_data_path(filename: str) -> str:
-    return os.path.join(DATA_DIR, filename)
+    return os.path.join(os.path.dirname(DATA_DIR), filename)
 
+def _load_or_create(filename: str, template: dict) -> dict:
+    file_path = get_data_path(filename)
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
-def _write(path: str, data) -> None:
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w", encoding="utf-8") as f:
+    if not os.path.isfile(file_path):
+        with open(file_path, "w", encoding="utf-8") as f:
+            tomlkit.dump(template, f)
+
+    with open(file_path, "r", encoding="utf-8") as f:
+        return tomlkit.load(f)
+
+def save_toml(data: dict, file_path: str) -> None:
+    with open(file_path, "w", encoding="utf-8") as f:
         tomlkit.dump(data, f)
 
 
-def _apply_migrations(data, migrations: List[Migration]) -> bool:
-    changed = False
-    for migration in migrations:
-        if callable(migration):
-            changed |= bool(migration(data))
-        else:
-            old_key, new_key = migration
-            if old_key in data:
-                if new_key not in data:
-                    data[new_key] = data[old_key]
-                del data[old_key]
-                changed = True
-    return changed
+def _cleanup(file_path: str, template: dict, order=ORDER) -> dict:
+
+    result = _load_or_create(file_path, template)
+    template = json.loads(json.dumps(template))
+
+    for category in list(result.keys()):
+        if category not in template:
+            del result[category]
+            continue
+        if not isinstance(template[category], dict):
+            continue
+        for key in list(result[category].keys()):
+            if key not in template[category]:
+                del result[category][key]
+
+    for category in template:
+        if category not in result:
+            result[category] = {}
+
+    result = {k: result[k] for k in order if k in result} | {k: v for k, v in result.items() if k not in order}
+
+    print(result)
+
+    with open(file_path, "w", encoding="utf-8") as f:
+        tomlkit.dump(result, f)
+
+    return result
+
+def _load_data(file_path: str, template: dict, order: list = ORDER) -> dict:
+    return _cleanup(get_data_path(file_path), template, order)
 
 
-def _merge_defaults(data, defaults) -> bool:
-    changed = False
-    for key, value in defaults.items():
-        if key not in data:
-            data[key] = value
-            changed = True
-        elif isinstance(value, Mapping) and isinstance(data.get(key), Mapping):
-            changed |= _merge_defaults(data[key], value)
-    return changed
-
-
-def _reorder(data, defaults) -> bool:
-    in_data = set(data.keys())
-    target = [k for k in defaults if k in in_data] + [
-        k for k in in_data if k not in defaults
-    ]
-
-    if list(data.keys()) == target:
-        changed = False
-        for key in defaults:
-            if isinstance(defaults[key], Mapping) and isinstance(
-                data.get(key), Mapping
-            ):
-                changed |= _reorder(data[key], defaults[key])
-        return changed
-
-    snapshot = {k: data[k] for k in in_data}
-    for key in list(in_data):
-        del data[key]
-    for key in target:
-        data[key] = snapshot[key]
-
-    for key in defaults:
-        if isinstance(defaults[key], Mapping) and isinstance(data.get(key), Mapping):
-            _reorder(data[key], defaults[key])
-
-    return True
-
-
-def _prune(data, defaults) -> bool:
-    changed = False
-    for key in [k for k in data if k not in defaults]:
-        del data[key]
-        changed = True
-    for key, value in defaults.items():
-        if isinstance(value, Mapping) and isinstance(data.get(key), Mapping):
-            changed |= _prune(data[key], value)
-    return changed
-
-
-def load_or_create(
-    path: str,
-    template_content: str,
-    migrations: Optional[List[Migration]] = None,
-    prune_obsolete: bool = True,
-) -> dict:
-    defaults = tomlkit.loads(template_content)
-
-    try:
-        with open(path, "r", encoding="utf-8") as f:
-            data = tomlkit.loads(f.read())
-    except FileNotFoundError:
-        _write(path, defaults)
-        return defaults
-    except tomlkit.exceptions.TOMLKitError:
-        backup = path + ".bak"
-        os.replace(path, backup)
-        print(
-            f"[Comprobot] Corrupt TOML at {path!r} — backed up to {backup!r}, resetting to defaults."
-        )
-        _write(path, defaults)
-        return defaults
-
-    changed = _apply_migrations(data, migrations or [])
-    changed |= _merge_defaults(data, defaults)
-    if prune_obsolete:
-        changed |= _prune(data, defaults)
-    changed |= _reorder(data, defaults)
-
-    if changed:
-        _write(path, data)
-
-    return data
-
-
-def save_toml(data, path: str) -> None:
-    with open(path, "w", encoding="utf-8") as f:
-        tomlkit.dump(data, f)
-
-
-error_messages: Dict[str, str] = load_or_create(
-    get_data_path("error-messages.toml"), templates.error_messages
-)
-config: Dict[str, Any] = load_or_create(get_data_path("config.toml"), templates.config)
-keywords: Dict[str, Dict[str, List[str]]] = load_or_create(
-    get_data_path("keywords.toml"), templates.keywords, migrations=RENAME_COMMANDS
-)
-ai: Dict[str, Any] = load_or_create(get_data_path("ai.toml"), templates.ai)
-system_prompt_text: str = str(ai["system_prompt"])
-money: Dict[str, Dict[str, int]] = load_or_create(
-    get_data_path("money.toml"), "[members]\n", prune_obsolete=False
-)
-active: Dict[str, Any] = load_or_create(get_data_path("active.toml"), templates.active)
-output: Dict[str, Dict[str, List[str]]] = load_or_create(
-    get_data_path("output.toml"), templates.output, migrations=RENAME_COMMANDS
-)
-moderation: Dict[Any, Any] = load_or_create(
-    get_data_path("moderation.toml"), templates.moderation
-)
-descriptions: Dict[str, Dict[str, str]] = load_or_create(
-    get_data_path("descriptions.toml"),
-    templates.descriptions,
-    migrations=RENAME_COMMANDS,
-)
+error_messages: Dict[str, str] = _load_data("error_messages.toml", templates.error_messages)
+config: Dict[str, Any] = _load_data("config.toml", templates.config)
+keywords: Dict[str, Dict[str, List[str]]] = _load_data("keywords.toml", templates.keywords)
+ai: Dict[str, Any] = _load_data("ai.toml", templates.ai)
+money: Dict[str, Dict[str, int]] = _load_data(".money.toml", {})
+active: Dict[str, Any] = _load_data("active.toml", templates.active)
+output: Dict[str, Dict[str, List[str]]] = _load_data("output.toml", templates.output)
+moderation: Dict[Any, Any] = _load_data("moderation.toml", templates.moderation)
+descriptions: Dict[str, Dict[str, str]] = _load_data("descriptions.toml", templates.descriptions)
 
 env_path = get_data_path(".env")
 if not os.path.isfile(env_path):

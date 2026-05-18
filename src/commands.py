@@ -29,7 +29,7 @@ def help(category=None):
             message += f"\n**{category.title()}**\n!help {category}\n-# \u200b"
         return message
     else:
-        if not category.lower() in list(keywords.keys()):
+        if category.lower() not in list(keywords.keys()):
             return error_messages["unknown_category"]
         message = f"## {category.title()}\n"
         for command in list(keywords[category.lower()].keys()):

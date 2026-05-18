@@ -265,6 +265,57 @@ class Comprobot(ext_commands.Cog):
             return
         await ctx.send(api.currency(from_currency, to_currency, amount))
 
+    # ── Music ─────────────────────────────────────────────────────────────────
+
+    @ext_commands.command(
+        name=keywords["music"]["play"][0],
+        aliases=keywords["music"]["play"][1:],
+    )
+    @ext_commands.check(lambda ctx: active["music"]["play"])
+    async def play_cmd(self, ctx, *, query: str | None = None):
+        if not query:
+            await ctx.send(error_messages["missing_argument"])
+            return
+        await music_module.play(ctx, query)
+
+    @ext_commands.command(
+        name=keywords["music"]["pause"][0],
+        aliases=keywords["music"]["pause"][1:],
+    )
+    @ext_commands.check(lambda ctx: active["music"]["pause"])
+    async def pause_cmd(self, ctx):
+        await music_module.pause(ctx)
+
+    @ext_commands.command(
+        name=keywords["music"]["leave"][0],
+        aliases=keywords["music"]["leave"][1:],
+    )
+    @ext_commands.check(lambda ctx: active["music"]["leave"])
+    async def leave_cmd(self, ctx):
+        await music_module.leave(ctx)
+
+    @ext_commands.command(
+        name=keywords["music"]["search"][0],
+        aliases=keywords["music"]["search"][1:],
+    )
+    @ext_commands.check(lambda ctx: active["music"]["search"])
+    async def search_cmd(self, ctx, *, query: str | None = None):
+        if not query:
+            await ctx.send(error_messages["missing_argument"])
+            return
+        await music_module.search(ctx, query)
+
+    @ext_commands.command(
+        name=keywords["music"]["insert"][0],
+        aliases=keywords["music"]["insert"][1:],
+    )
+    @ext_commands.check(lambda ctx: active["music"]["insert"])
+    async def insert_cmd(self, ctx, position: int | None = None, *, query: str | None = None):
+        if position is None or not query:
+            await ctx.send(error_messages["missing_argument"])
+            return
+        await music_module.insert(ctx, position, query)
+
     # ── Money ─────────────────────────────────────────────────────────────────
 
     @ext_commands.command(

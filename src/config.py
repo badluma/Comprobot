@@ -6,9 +6,8 @@ import tomlkit
 
 import InquirerPy.utils
 from InquirerPy.base.control import Choice
-from InquirerPy.prompts import checkbox, confirm, input, secret
+from InquirerPy.prompts import confirm, input, secret
 from InquirerPy.prompts import list as inquirer_list
-from tomlkit.items import Key
 
 style = InquirerPy.utils.InquirerPyStyle(
     {
@@ -150,7 +149,7 @@ def pick_key(content, is_secret=False):
                     vi_mode=True,
                 ).execute()
 
-            if int(value) == None:
+            if not int(value):
                 content[key] = 0
                 return
 

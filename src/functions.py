@@ -8,9 +8,11 @@ import appdirs
 import discord
 import httpx
 import ollama
+import io
+from PIL import Image
 
 from .bot import client
-from .data import ai, system_prompt_text
+from .data import ai
 
 context_memory: Dict[int, List[Dict[str, Any]]] = {}
 
@@ -136,7 +138,7 @@ async def chat(message):
 
     if provider == "ollama":
         formatted_messages = [
-            {"role": "system", "content": system_prompt_text}
+            {"role": "system", "content": ai["system_prompt_text"]}
         ] + messages
         response = ollama.chat(
             model=cast(str, ai["model"]), messages=formatted_messages
@@ -152,8 +154,8 @@ async def chat(message):
                 }
             )
         body: Dict[str, Any] = {"contents": formatted_messages}
-        if system_prompt_text:
-            body["systemInstruction"] = {"parts": [{"text": system_prompt_text}]}
+        if ai["system_prompt_text"]:
+            body["systemInstruction"] = {"parts": [{"text": ai["system_prompt_text"]}]}
 
         async with httpx.AsyncClient() as http:
             resp = None
@@ -191,7 +193,7 @@ async def chat(message):
             content = resp.json()["candidates"][0]["content"]["parts"][0]["text"]
     elif provider == "groq":
         formatted_messages = [
-            {"role": "system", "content": system_prompt_text}
+            {"role": "system", "content": ai["system_prompt_text"]}
         ] + messages
         async with httpx.AsyncClient() as http:
             resp = await http.post(
@@ -236,3 +238,13 @@ def create(path, content, is_dir=False):
         if not os.path.isfile(final_path):
             with open(final_path, "w") as file:
                 file.write(content)
+
+
+def square(url: str) -> Image.Image:
+    data = httpx.get(url).content
+    img = Image.open(io.BytesIO(data))
+    w, h = img.size
+    size = min(w, h)
+    left = (w - size) // 2
+    top = (h - size) // 2
+    return img.crop((left, top, left + size, top + size))

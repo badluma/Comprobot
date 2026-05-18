@@ -1,261 +1,243 @@
-ai = r'''activate_ai          = false
+ai = {
+    "activate_ai": False,
+    "provider": "groq",
+    "model": "qwen/qwen3-32b",
+    "max_messages_context": 10,
+    "remove_emojis": True,
+    "lower_response": True,
+    "answer_to_reply": False,
+    "include_username": True,
+    "include_reply": True,
+    "include_attachment": True,
+    "system_prompt": "You are a helpful assistant that gives short, helpful answers.\nYour answers can maximally be 1000 characters long.\n",
+    "user_prompt": "{{USERNAME}} wrote the following message: {{MESSAGE}}\n",
+    "user_reply_prompt": "They added the following context: {{REPLY}}\n",
+    "user_attachement_prompt": "The user attached the following file: {{FILE}}\n",
+    "user_prompt_structure": "{{PROMPT}}\n\n{{REPLY_PROMPT}}\n\n{{ATTACHMENT_PROMPT}}\n",
+}
 
-provider             = "groq" # Available providers: "ollama", "gemini", "groq"
-model                = "qwen/qwen3-32b"
-max_messages_context = 10
-remove_emojis        = true
-lower_response       = true
-answer_to_reply      = false
-include_username     = true
-include_reply        = true
-include_attachment   = true
+config = {
+    "prefix": "!",
+    "money_symbol": "$",
+    "ascii_art": ["¯\\_(ツ)_/¯"],
+    "bot_admins": [],
+    "debug_mode": False,
+    "whitelist": [],
+    "whitelist_mode": False,
+}
 
-system_prompt = """
-You are a helpful assistant that gives short, helpful answers.
-Your answers can maximally be 1000 characters long.
-"""
+error_messages = {
+    "quote": "Failed to get a quote.",
+    "joke": "Failed to get a joke.",
+    "meme": "Failed to get a meme.",
+    "waifu": "Failed to get a waifu image.",
+    "duck": "Failed to get a duck image.",
+    "dog": "Failed to get a dog image.",
+    "cat": "Failed to get a cat image.",
+    "chuck": "Failed to get a Chuck Norris joke.",
+    "fact": "Failed to get a fact.",
+    "bible": "Failed to get a bible verse.",
+    "passage_not_found": "Couldn't find bible passage: {{PASSAGE}}",
+    "truth": "Failed to get a truth question.",
+    "dare": "Failed to get a dare question.",
+    "wyr": "Failed to get a Would You Rather question.",
+    "never-hie": "Failed to get a Never Have I Ever question.",
+    "paranoia": "Failed to get a paranoia question.",
+    "calculate": "Invalid calculation. Use +-*/",
+    "bitcoin": "Failed to get the current bitcoin price.",
+    "currency": "Unknown currency.",
+    "unavailable": "API unavailable.",
+    "unknown_command": "Unknown command.",
+    "unknown_argument": "Unknown argument.",
+    "missing_argument": "Missing argument.",
+    "no_attachment": "No attachment given.",
+    "bot_unavailable": "Bot not available.",
+    "unknown_category": "Unknown category.",
+    "no_ascii_art": "No ASCII art available.",
+}
 
-user_prompt = """
-{{USERNAME}} wrote the following message: {{MESSAGE}}
-"""
+keywords = {
+    "general": {
+        "quote": ["quote"],
+        "joke": ["joke"],
+        "meme": ["meme"],
+        "waifu": ["waifu"],
+        "duck": ["duck"],
+        "dog": ["dog"],
+        "cat": ["cat"],
+        "chuck_norris": ["chuck", "norris", "chucknorris"],
+        "fact": ["fact"],
+        "bible": ["bible"],
+        "calculate": ["calculate", "calc"],
+        "bitcoin": ["bitcoin", "btc"],
+        "currency": ["currency", "convert", "conv"],
+        "qr_code": ["qr_code", "qr"],
+        "ascii_art": ["ascii", "art"],
+        "help": ["help"],
+        "truth": ["truth"],
+        "dare": ["dare"],
+        "wyr": ["wyr"],
+        "never_have_i_ever": ["never-have-i-ever", "nhie"],
+        "paranoia": ["paranoia"],
+    },
+    "settings": {
+        "settings": ["config", "set", "settings"],
+        "profile_picture": ["pfp", "picture", "pic"],
+        "banner": ["banner"],
+        "change_name": ["name", "nickname"],
+        "change_keywords": ["keywords", "key"],
+    },
+    "money": {
+        "add_money": ["add", "add_money"],
+        "remove_money": ["remove", "rm", "remove_money"],
+        "check_balance": ["check", "check_balance", "balance"],
+    },
+    "music": {
+        "play": ["play"],
+        "pause": ["pause"],
+        "leave": ["leave", "disconnect", "dc"],
+        "search": ["search"],
+        "insert": ["insert", "queue"],
+    },
+}
 
-user_reply_prompt = """
-They added the following context: {{REPLY}}
-"""
+moderation = {
+    "delete": [],
+    "kick": [],
+    "ban": [],
+    "mute": [],
+    "time_to_mute": 5,
+}
 
-user_attachement_prompt = """
-The user attached the following file: {{FILE}}
-"""
+active = {
+    "general": {
+        "quote": True,
+        "joke": True,
+        "meme": True,
+        "waifu": True,
+        "duck": True,
+        "dog": True,
+        "cat": True,
+        "chuck_norris": True,
+        "fact": True,
+        "bible": True,
+        "calculate": True,
+        "bitcoin": True,
+        "currency": True,
+        "qr_code": True,
+        "help": True,
+        "truth": True,
+        "dare": True,
+        "wyr": True,
+        "never_have_i_ever": True,
+        "paranoia": True,
+        "nsfw": False,
+        "purge": True,
+    },
+    "music": {
+        "play": True,
+        "pause": True,
+        "leave": True,
+        "search": True,
+        "insert": True,
+    },
+}
 
-user_prompt_structure = """
-{{PROMPT}}
+descriptions = {
+    "general": {
+        "quote": "Get a random inspirational quote.",
+        "joke": "Get a random two-part joke",
+        "meme": "Get a random meme image",
+        "waifu": "Compare two random waifu images",
+        "duck": "Get a random duck image",
+        "dog": "Get a random dog image",
+        "cat": "Get a random cat image",
+        "chuck_norris": "Get a random Chuck Norris fact",
+        "fact": "Get a random fun fact",
+        "bible": "Get a random or specific Bible verse",
+        "calculate": "Evaluate a math expression",
+        "bitcoin": "Get the current Bitcoin price in a given currency",
+        "currency": "Convert an amount between two currencies",
+        "qr_code": "Generate a QR code from a URL",
+        "ascii_art": "Display the bot's ASCII art",
+        "help": "Show available commands",
+        "truth": "Get a truth question for truth or dare",
+        "dare": "Get a dare challenge for truth or dare",
+        "wyr": "Get a would you rather question",
+        "never_have_i_ever": "Get a never have I ever prompt",
+        "paranoia": "Get a paranoia question",
+        "purge": "Delete all messages in the channel (admin only)",
+    },
+    "settings": {
+        "settings": "Configure the bot",
+        "profile_picture": "Change the bot's profile picture",
+        "banner": "Change the bot's banner",
+        "change_name": "Change the bot's username",
+        "change_keywords": "Change a command's trigger keywords",
+    },
+    "money": {
+        "check_balance": "Check a user's money balance",
+        "add_money": "Add money to a user's balance (admin only)",
+        "remove_money": "Remove money from a user's balance (admin only)",
+    },
+    "music": {
+        "play": "Play a song or URL in a voice channel",
+        "pause": "Pause the current song",
+        "leave": "Disconnect the bot from the voice channel",
+        "search": "Search for a song by name",
+        "insert": "Insert a song at a specific position in the queue",
+    },
+}
 
-{{REPLY_PROMPT}}
+output = {
+    "general": {
+        "quote": ["{{QUOTE}}\n~ {{AUTHOR}}"],
+        "joke": ["{{SETUP}} ||{{PUNCHLINE}}||"],
+        "meme": ["{{URL}}"],
+        "waifu": ["### Which one is the better waifu? \n ![]({{URL1}}) ![]({{URL2}})"],
+        "duck": ["{{URL}}"],
+        "dog": ["{{URL}}"],
+        "cat": ["{{URL}}"],
+        "chuck_norris": ["{{JOKE}}"],
+        "fact": ["{{FACT}}"],
+        "bible": ["{{PASSAGE}}\n{{BOOK}} {{CHAPTER}}:{{VERSE}}"],
+        "calculate": ["{{RESULT}}"],
+        "bitcoin": ["The bitcoin price is currently at {{AMOUNT}} {{CURRENCY}}."],
+        "currency": ["{{FROM_AMOUNT}} {{FROM_CURRENCY}} = {{TO_AMOUNT}} {{TO_CURRENCY}}"],
+        "qr_code": ["{{URL}}"],
+        "ascii_art": ["{{ASCII_ART}}"],
+        "truth": ["{{QUESTION}}"],
+        "dare": ["{{QUESTION}}"],
+        "wyr": ["{{QUESTION}}"],
+        "never_have_i_ever": ["{{QUESTION}}"],
+        "paranoia": ["{{QUESTION}}"],
+    },
+    "settings": {
+        "profile_picture_applied": ["Profile picture applied successfully."],
+        "banner_applied": ["Banner applied successfully."],
+        "nickname_applied": ["Name '{{NAME}}' applied successfully."],
+        "keywords_applied": ["Custom keywords '{{KEYWORDS}}' for the command '{{COMMAND}}' applied successfully!"],
+    },
+    "money": {
+        "add_money": ["{{AMOUNT}}{{MONEY_SYMBOL}} added to to the account of {{USERNAME}}. They now have {{BALANCE}}{{MONEY_SYMBOL}}."],
+        "remove_money": ["{{AMOUNT}} subtracted from the account of {{USERNAME}}. They now have {{BALANCE}}{{MONEY_SYMBOL}}."],
+        "check_balance": ["The balance of the account from {{USERNAME}} is currently {{BALANCE}}{{MONEY_SYMBOL}}."],
+        "insufficient_funds": ["{{USERNAME}} doesn't have enough money. They now have {{BALANCE}}{{MONEY_SYMBOL}}."],
+    },
+    "music": {
+        "play": ["Now playing: {{TITLE}}"],
+        "pause": ["Paused."],
+        "leave": ["Disconnected from voice channel."],
+        "search": ["Search results for '{{QUERY}}':\n{{RESULTS}}"],
+        "insert": ["Inserted '{{TITLE}}' at position {{POSITION}}."],
+    },
+    "moderation": {
+        "delete": ["Your message was deleted because it contains banned text: {{TEXT}}"],
+        "kick": ["Your account was kicked because your message contains banned text: {{TEXT}}"],
+        "ban": ["Your account was banned because your message contains banned text: {{TEXT}}"],
+        "mute": ["Your account was muted for {{MINUTES}} minutes because your message contains banned text: {{TEXT}}"],
+        "reason": "Sending banned text",
+    },
+}
 
-{{ATTACHMENT_PROMPT}}
-"""
-'''
-
-config = r"""
-prefix =  "!"
-
-money_symbol      = "$"
-ascii_art         = ["¯\\_(ツ)_/¯"]
-bot_admins        = []
-debug_mode        = false
-whitelist         = []
-whitelist_mode    = false
-"""
-
-error_messages = r'''quote      = "Failed to get a quote."
-joke              = "Failed to get a joke."
-meme              = "Failed to get a meme."
-waifu             = "Failed to get a waifu image."
-duck              = "Failed to get a duck image."
-dog               = "Failed to get a dog image."
-cat               = "Failed to get a cat image."
-chuck             = "Failed to get a Chuck Norris joke."
-fact              = "Failed to get a fact."
-bible             = "Failed to get a bible verse."
-passage_not_found = "Couldn't find bible passage: {{PASSAGE}}"
-truth             = "Failed to get a truth question."
-dare              = "Failed to get a dare question."
-wyr               = "Failed to get a Would You Rather question."
-never-hie         = "Failed to get a Never Have I Ever question."
-paranoia          = "Failed to get a paranoia question."
-calculate         = "Invalid calculation. Use +-*/"
-bitcoin           = "Failed to get the current bitcoin price."
-currency          = "Unknown currency."
-unavailable       = "API unavailable."
-
-unknown_command   = "Unknown command."
-unknown_argument  = "Unknown argument."
-missing_argument  = "Missing argument."
-no_attachment     = "No attachment given."
-bot_unavailable   = "Bot not available."
-unknown_category  = "Unknown category."
-no_ascii_art      = "No ASCII art available."'''
-
-keywords = r"""[general]
-quote             = ["quote"]
-joke              = ["joke"]
-meme              = ["meme"]
-waifu             = ["waifu"]
-duck              = ["duck"]
-dog               = ["dog"]
-cat               = ["cat"]
-chuck_norris      = ["chuck", "norris", "chucknorris"]
-fact              = ["fact"]
-bible             = ["bible"]
-calculate         = ["calculate", "calc"]
-bitcoin           = ["bitcoin", "btc"]
-currency          = ["currency", "convert", "conv"]
-qr_code           = ["qr_code", "qr"]
-ascii_art         = ["ascii", "art"]
-help              = ["help"]
-
-truth             = ["truth"]
-dare              = ["dare"]
-wyr               = ["wyr"]
-never_have_i_ever = ["never-have-i-ever", "nhie"]
-paranoia          = ["paranoia"]
-
-[settings]
-settings          = ["config", "set", "settings"]
-profile_picture   = ["pfp", "picture", "pic"]
-banner            = ["banner"]
-change_name       = ["name", "nickname"]
-change_keywords   = ["keywords", "key"]
-
-[money]
-add_money         = ["add", "add_money"]
-remove_money      = ["remove", "rm", "remove_money"]
-check_balance     = ["check", "check_balance", "balance"]
-
-[music]
-play              = ["play"]
-pause             = ["pause"]
-leave             = ["leave", "disconnect", "dc"]
-search            = ["search"]
-insert            = ["insert", "queue"]"""
-
-moderation = r"""delete = []
-kick   = []
-ban    = []
-mute   = []
-time_to_mute = 5 # In minutes
-"""
-
-env = r"""BOT_TOKEN=
-GEMINI=
-GROQ=
-"""
-
-active = r"""[general]
-quote             = true
-joke              = true
-meme              = true
-waifu             = true
-duck              = true
-dog               = true
-cat               = true
-chuck_norris      = true
-fact              = true
-bible             = true
-calculate         = true
-bitcoin           = true
-currency          = true
-qr_code           = true
-help              = true
-truth             = true
-dare              = true
-wyr               = true
-never_have_i_ever = true
-paranoia          = true
-nsfw              = false
-purge             = true
-
-[music]
-play              = true
-pause             = true
-leave             = true
-search            = true
-insert            = true
-"""
-
-descriptions = r"""[general]
-quote             = "Get a random inspirational quote."
-joke              = "Get a random two-part joke"
-meme              = "Get a random meme image"
-waifu             = "Compare two random waifu images"
-duck              = "Get a random duck image"
-dog               = "Get a random dog image"
-cat               = "Get a random cat image"
-chuck_norris      = "Get a random Chuck Norris fact"
-fact              = "Get a random fun fact"
-bible             = "Get a random or specific Bible verse"
-calculate         = "Evaluate a math expression"
-bitcoin           = "Get the current Bitcoin price in a given currency"
-currency          = "Convert an amount between two currencies"
-qr_code           = "Generate a QR code from a URL"
-ascii_art         = "Display the bot's ASCII art"
-help              = "Show available commands"
-
-truth             = "Get a truth question for truth or dare"
-dare              = "Get a dare challenge for truth or dare"
-wyr               = "Get a would you rather question"
-never_have_i_ever = "Get a never have I ever prompt"
-paranoia          = "Get a paranoia question"
-
-purge             = "Delete all messages in the channel (admin only)"
-
-[settings]
-settings          = "Configure the bot"
-profile_picture   = "Change the bot's profile picture"
-banner            = "Change the bot's banner"
-change_name       = "Change the bot's username"
-change_keywords   = "Change a command's trigger keywords"
-
-[money]
-check_balance     = "Check a user's money balance"
-add_money         = "Add money to a user's balance (admin only)"
-remove_money      = "Remove money from a user's balance (admin only)"
-
-[music]
-play              = "Play a song or URL in a voice channel"
-pause             = "Pause the current song"
-leave             = "Disconnect the bot from the voice channel"
-search            = "Search for a song by name"
-insert            = "Insert a song at a specific position in the queue"
-"""
-
-output = r"""[general]
-quote             = ["{{QUOTE}}\n~ {{AUTHOR}}"]
-joke              = ["{{SETUP}} ||{{PUNCHLINE}}||"]
-meme              = ["{{URL}}"]
-waifu             = ["### Which one is the better waifu? \n ![]({{URL1}}) ![]({{URL2}})"]
-duck              = ["{{URL}}"]
-dog               = ["{{URL}}"]
-cat               = ["{{URL}}"]
-chuck_norris      = ["{{JOKE}}"]
-fact              = ["{{FACT}}"]
-bible             = ["{{PASSAGE}}\n{{BOOK}} {{CHAPTER}}:{{VERSE}}"]
-calculate         = ["{{RESULT}}"]
-bitcoin           = ["The bitcoin price is currently at {{AMOUNT}} {{CURRENCY}}."]
-currency          = ["{{FROM_AMOUNT}} {{FROM_CURRENCY}} = {{TO_AMOUNT}} {{TO_CURRENCY}}"]
-qr_code           = ["{{URL}}"]
-ascii_art         = ["{{ASCII_ART}}"]
-
-truth             = ["{{QUESTION}}"]
-dare              = ["{{QUESTION}}"]
-wyr               = ["{{QUESTION}}"]
-never_have_i_ever = ["{{QUESTION}}"]
-paranoia          = ["{{QUESTION}}"]
-
-[settings]
-profile_picture_applied = ["Profile picture applied successfully."]
-banner_applied          = ["Banner applied successfully."]
-nickname_applied        = ["Name '{{NAME}}' applied successfully."]
-keywords_applied        = ["Custom keywords '{{KEYWORDS}}' for the command '{{COMMAND}}' applied successfully!"]
-
-[money]
-add_money          = ["{{AMOUNT}}{{MONEY_SYMBOL}} added to to the account of {{USERNAME}}. They now have {{BALANCE}}{{MONEY_SYMBOL}}."]
-remove_money       = ["{{AMOUNT}} subtracted from the account of {{USERNAME}}. They now have {{BALANCE}}{{MONEY_SYMBOL}}."]
-check_balance      = ["The balance of the account from {{USERNAME}} is currently {{BALANCE}}{{MONEY_SYMBOL}}."]
-insufficient_funds = ["{{USERNAME}} doesn't have enough money. They now have {{BALANCE}}{{MONEY_SYMBOL}}."]
-
-[music]
-play              = ["Now playing: {{TITLE}}"]
-pause             = ["Paused."]
-leave             = ["Disconnected from voice channel."]
-search            = ["Search results for '{{QUERY}}':\n{{RESULTS}}"]
-insert            = ["Inserted '{{TITLE}}' at position {{POSITION}}."]
-
-[moderation]
-delete = ["Your message was deleted because it contains banned text: {{TEXT}}"]
-kick   = ["Your account was kicked because your message contains banned text: {{TEXT}}"]
-ban    = ["Your account was banned because your message contains banned text: {{TEXT}}"]
-mute   = ["Your account was muted for {{MINUTES}} minutes because your message contains banned text: {{TEXT}}"]
-
-reason = "Sending banned text"
-"""
+env = "BOT_TOKEN=\nGEMINI=\nGROQ=\n"
