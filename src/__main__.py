@@ -1,5 +1,6 @@
 import argparse
 import os
+import tomlkit
 from os import path
 
 
@@ -9,6 +10,7 @@ def main():
         description="A self-hostable open-source Discord bot built for maximum customization.",
     )
     subparsers = parser.add_subparsers(dest="command", metavar="")
+    parser.add_argument("-v", "--version", action="store_true", help="Show the current version number.")
     start_parser = subparsers.add_parser("start", help="Start the bot.")
     start_parser.add_argument(
         "-d", "--daemon", action="store_true", help="Daemonize the process."
@@ -35,6 +37,14 @@ def main():
 
     if getattr(args, "path", None):
         os.environ["COMPROBOT_DATA_DIR"] = args.path
+
+    if getattr(args, "version", False):
+        with open(Path(__file__).resolve().parent.parent.joinpath("pyproject.toml"), "r", encoding="utf-8") as f:
+            pyproject = tomlkit.load(f)
+            version = pyproject["project"]["version"]
+            full = f"\n█▀▀▀▀▀█\n█ █ █ █  {pyproject['project']['name'].title()} v{version}\n█▄▄▄▄▄█"
+        print(full)
+        return
 
     match args.command:
         case "start":
