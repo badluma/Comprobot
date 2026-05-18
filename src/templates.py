@@ -89,15 +89,8 @@ keywords = {
     },
     "money": {
         "add_money": ["add", "add_money"],
-        "remove_money": ["remove", "rm", "remove_money"],
+        "remove_money": ["subtract", "sub", "remove_money"],
         "check_balance": ["check", "check_balance", "balance"],
-    },
-    "music": {
-        "play": ["play"],
-        "pause": ["pause"],
-        "leave": ["leave", "disconnect", "dc"],
-        "search": ["search"],
-        "insert": ["insert", "queue"],
     },
 }
 
@@ -133,13 +126,6 @@ active = {
         "paranoia": True,
         "nsfw": False,
         "purge": True,
-    },
-    "music": {
-        "play": True,
-        "pause": True,
-        "leave": True,
-        "search": True,
-        "insert": True,
     },
 }
 
@@ -180,13 +166,6 @@ descriptions = {
         "add_money": "Add money to a user's balance (admin only)",
         "remove_money": "Remove money from a user's balance (admin only)",
     },
-    "music": {
-        "play": "Play a song or URL in a voice channel",
-        "pause": "Pause the current song",
-        "leave": "Disconnect the bot from the voice channel",
-        "search": "Search for a song by name",
-        "insert": "Insert a song at a specific position in the queue",
-    },
 }
 
 output = {
@@ -223,13 +202,6 @@ output = {
         "remove_money": ["{{AMOUNT}} subtracted from the account of {{USERNAME}}. They now have {{BALANCE}}{{MONEY_SYMBOL}}."],
         "check_balance": ["The balance of the account from {{USERNAME}} is currently {{BALANCE}}{{MONEY_SYMBOL}}."],
         "insufficient_funds": ["{{USERNAME}} doesn't have enough money. They now have {{BALANCE}}{{MONEY_SYMBOL}}."],
-    },
-    "music": {
-        "play": ["Now playing: {{TITLE}}"],
-        "pause": ["Paused."],
-        "leave": ["Disconnected from voice channel."],
-        "search": ["Search results for '{{QUERY}}':\n{{RESULTS}}"],
-        "insert": ["Inserted '{{TITLE}}' at position {{POSITION}}."],
     },
     "moderation": {
         "delete": ["Your message was deleted because it contains banned text: {{TEXT}}"],

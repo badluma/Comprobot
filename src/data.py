@@ -12,7 +12,7 @@ DATA_DIR: str = os.environ.get("COMPROBOT_DATA_DIR") or appdirs.user_data_dir(
     "Comprobot"
 )
 
-ORDER = ["general", "games", "music", "settings"]
+ORDER = ["general", "games", "settings"]
 
 
 
@@ -50,13 +50,15 @@ def _cleanup(file_path: str, template: dict, order=ORDER) -> dict:
             if key not in template[category]:
                 del result[category][key]
 
-    for category in template:
+    for category, cat_template in template.items():
         if category not in result:
-            result[category] = {}
+            result[category] = cat_template if not isinstance(cat_template, dict) else {}
+        if isinstance(cat_template, dict):
+            for key, value in cat_template.items():
+                if key not in result[category]:
+                    result[category][key] = value
 
     result = {k: result[k] for k in order if k in result} | {k: v for k, v in result.items() if k not in order}
-
-    print(result)
 
     with open(file_path, "w", encoding="utf-8") as f:
         tomlkit.dump(result, f)
