@@ -3,6 +3,9 @@ import os
 import tomlkit
 from os import path
 
+from pathlib import Path
+
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -11,6 +14,7 @@ def main():
     )
     subparsers = parser.add_subparsers(dest="command", metavar="")
     parser.add_argument("-v", "--version", action="store_true", help="Show the current version number.")
+    subparsers.add_parser("reset", help="Reset the bot's configuration.")
     start_parser = subparsers.add_parser("start", help="Start the bot.")
     start_parser.add_argument(
         "-d", "--daemon", action="store_true", help="Daemonize the process."
@@ -120,6 +124,27 @@ def main():
             from .testing import run_test
 
             run_test(args.message)
+            
+        case "reset":
+            from .data import ai, config, error_messages, keywords, moderation, active, descriptions, output, get_data_path
+
+            with open(get_data_path("ai.toml"), "w") as f:
+                tomlkit.dump(ai, f)
+            with open(get_data_path("active.toml"), "w") as f:
+                tomlkit.dump(active, f)
+            with open(get_data_path("config.toml"), "w") as f:
+                tomlkit.dump(config, f)
+            with open(get_data_path("error_messages.toml"), "w") as f:
+                tomlkit.dump(error_messages, f)
+            with open(get_data_path("keywords.toml"), "w") as f:
+                tomlkit.dump(keywords, f)
+            with open(get_data_path("moderation.toml"), "w") as f:
+                tomlkit.dump(moderation, f)
+            with open(get_data_path("descriptions.toml"), "w") as f:
+                tomlkit.dump(descriptions, f)
+            with open(get_data_path("output.toml"), "w") as f:
+                tomlkit.dump(output, f)
+            
 
         case _:
             print(parser.format_help())

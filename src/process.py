@@ -454,3 +454,5 @@ class Comprobot(ext_commands.Cog):
                         content[i : i + 2000] for i in range(0, len(content), 2000)
                     ]:
                         await message.channel.send(chunk)
+
+        await bot.process_commands(message)

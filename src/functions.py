@@ -8,8 +8,6 @@ import appdirs
 import discord
 import httpx
 import ollama
-import io
-from PIL import Image
 
 from .bot import client
 from .data import ai
@@ -238,13 +236,3 @@ def create(path, content, is_dir=False):
         if not os.path.isfile(final_path):
             with open(final_path, "w") as file:
                 file.write(content)
-
-
-def square(url: str) -> Image.Image:
-    data = httpx.get(url).content
-    img = Image.open(io.BytesIO(data))
-    w, h = img.size
-    size = min(w, h)
-    left = (w - size) // 2
-    top = (h - size) // 2
-    return img.crop((left, top, left + size, top + size))

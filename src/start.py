@@ -34,13 +34,6 @@ async def _setup_hook():
 client.setup_hook = _setup_hook
 
 
-@client.event
-async def on_message(message):
-    if message.author == client.user:
-        return
-    ctx = await client.get_context(message)
-    await client.invoke(ctx)
-
 
 @client.event
 async def on_ready():

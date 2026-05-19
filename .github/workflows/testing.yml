@@ -39,8 +39,8 @@ jobs:
       - name: add money
         run: comprobot test "!add testuser 100"
 
-      - name: remove money
-        run: comprobot test "!remove testuser 50"
+      - name: subtract money
+        run: comprobot test "!subtract testuser 50"
 
   macos:
     name: MacOS
@@ -73,8 +73,8 @@ jobs:
       - name: add money
         run: comprobot test "!add testuser 100"
 
-      - name: remove money
-        run: comprobot test "!remove testuser 50"
+      - name: subtract money
+        run: comprobot test "!subtract testuser 50"
 
   windows:
     name: Windows
@@ -107,8 +107,8 @@ jobs:
       - name: add money
         run: comprobot test "!add testuser 100"
 
-      - name: remove money
-        run: comprobot test "!remove testuser 50"
+      - name: subtract money
+        run: comprobot test "!subtract testuser 50"
 
   discord:
     name: Discord
@@ -455,11 +455,11 @@ jobs:
           discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
           beta_bot_id: ${{ secrets.BETA_BOT_ID }}
 
-      - name: remove money
+      - name: subtract money
         uses: ./.github/actions/send
         continue-on-error: true
         with:
-          message: "test!remove testuser 50"
+          message: "test!subtract testuser 50"
           channel_id: ${{ env.DISCORD_THREAD_ID }}
           discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
           beta_bot_id: ${{ secrets.BETA_BOT_ID }}

@@ -17,7 +17,7 @@ ORDER = ["general", "games", "settings"]
 
 
 def get_data_path(filename: str) -> str:
-    return os.path.join(os.path.dirname(DATA_DIR), filename)
+    return os.path.join(DATA_DIR, filename)
 
 def _load_or_create(filename: str, template: dict) -> dict:
     file_path = get_data_path(filename)
@@ -47,7 +47,7 @@ def _cleanup(file_path: str, template: dict, order=ORDER) -> dict:
         if not isinstance(template[category], dict):
             continue
         for key in list(result[category].keys()):
-            if key not in template[category]:
+            if template[category] and key not in template[category]:
                 del result[category][key]
 
     for category, cat_template in template.items():
@@ -73,7 +73,7 @@ error_messages: Dict[str, str] = _load_data("error_messages.toml", templates.err
 config: Dict[str, Any] = _load_data("config.toml", templates.config)
 keywords: Dict[str, Dict[str, List[str]]] = _load_data("keywords.toml", templates.keywords)
 ai: Dict[str, Any] = _load_data("ai.toml", templates.ai)
-money: Dict[str, Dict[str, int]] = _load_data(".money.toml", {})
+money: Dict[str, Dict[str, int]] = _load_data(".money.toml", {"members": {}})
 active: Dict[str, Any] = _load_data("active.toml", templates.active)
 output: Dict[str, Dict[str, List[str]]] = _load_data("output.toml", templates.output)
 moderation: Dict[Any, Any] = _load_data("moderation.toml", templates.moderation)
