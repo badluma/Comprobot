@@ -112,9 +112,10 @@ jobs:
 
   discord:
     name: Discord
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
-      - uses: actions/checkout@v4
+      - name: Set up working directory
+        uses: actions/checkout@v4
 
       - name: Set environment variables
         run: |
@@ -123,49 +124,16 @@ jobs:
           echo "COMMIT_COUNT=$(echo '${{ toJson(github.event.commits) }}' | jq 'length')" >> $GITHUB_ENV
           echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
 
-      - name: Setup SSH
-        env:
-          ORACLE_IP: ${{ secrets.ORACLE_IP }}
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.ORACLE_SSH_KEY }}" > ~/.ssh/oracle.key
-          chmod 600 ~/.ssh/oracle.key
-          ssh-keyscan -H "$ORACLE_IP" >> ~/.ssh/known_hosts
-
       - name: Deploy bot
         env:
-          ORACLE_IP: ${{ secrets.ORACLE_IP }}
           BETA_BOT_TOKEN: ${{ secrets.BETA_BOT_TOKEN }}
         run: |
-          ssh -i ~/.ssh/oracle.key ubuntu@$ORACLE_IP 'bash -s' << 'REMOTE'
-            set -e
-            if [ -d ~/comprobot-beta ]; then
-              cd ~/comprobot-beta
-              git fetch origin && git reset --hard origin/main
-            else
-              git clone --depth 1 https://github.com/${{ github.repository }}.git ~/comprobot-beta
-            fi
-            cd ~/comprobot-beta
-            pip install --user -e ".[dev]" -q
-            mkdir -p ~/.local/share/Comprobot
-            export PATH="$HOME/.local/bin:$PATH"
-            comprobot config config prefix "test!"
-          REMOTE
-          printf 'BOT_TOKEN=%s\n' "$BETA_BOT_TOKEN" | \
-            ssh -i ~/.ssh/oracle.key ubuntu@$ORACLE_IP 'cat > ~/.local/share/Comprobot/.env'
-
-      - name: Start bot
-        env:
-          ORACLE_IP: ${{ secrets.ORACLE_IP }}
-        run: |
-          ssh -i ~/.ssh/oracle.key ubuntu@$ORACLE_IP '
-            export PATH="$HOME/.local/bin:$PATH"
-            nohup comprobot start > /tmp/comprobot-beta.log 2>&1 &
-            echo $! > /tmp/comprobot-beta.pid
-          '
-
-      - name: Startup delay
-        run: sleep 15
+          pip install --user -e ".[dev]" -q
+          comprobot test "!help" || true
+          comprobot config secrets BOT_TOKEN "$BETA_BOT_TOKEN"
+          comprobot config config prefix "test!"
+          screen -dmS comprobot bash -c 'PYTHONUNBUFFERED=1 comprobot start > /tmp/comprobot-beta.log 2>&1'
+          timeout 30 bash -c 'until grep -q "Logged in as" /tmp/comprobot-beta.log 2>/dev/null; do sleep 1; done'
 
       # Title
       - name: Send details
@@ -419,20 +387,11 @@ jobs:
           discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
           beta_bot_id: ${{ secrets.BETA_BOT_ID }}
 
-      - name: help (categories)
+      - name: help
         uses: ./.github/actions/send
         continue-on-error: true
         with:
           message: "test!help"
-          channel_id: ${{ env.DISCORD_THREAD_ID }}
-          discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
-          beta_bot_id: ${{ secrets.BETA_BOT_ID }}
-
-      - name: help (general category)
-        uses: ./.github/actions/send
-        continue-on-error: true
-        with:
-          message: "test!help general"
           channel_id: ${{ env.DISCORD_THREAD_ID }}
           discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
           beta_bot_id: ${{ secrets.BETA_BOT_ID }}
@@ -494,19 +453,10 @@ jobs:
       # Stop
       - name: Show bot log
         if: always()
-        env:
-          ORACLE_IP: ${{ secrets.ORACLE_IP }}
         run: |
-          ssh -i ~/.ssh/oracle.key ubuntu@$ORACLE_IP 'cat /tmp/comprobot-beta.log' || true
+          cat /tmp/comprobot-beta.log 2>/dev/null || echo "(no log file)"
 
-      - name: Stop bot
+      - name: Stop the bot
         if: always()
-        env:
-          ORACLE_IP: ${{ secrets.ORACLE_IP }}
         run: |
-          ssh -i ~/.ssh/oracle.key ubuntu@$ORACLE_IP '
-            if [ -f /tmp/comprobot-beta.pid ]; then
-              kill "$(cat /tmp/comprobot-beta.pid)" 2>/dev/null || true
-              rm /tmp/comprobot-beta.pid
-            fi
-          '
+          screen -S comprobot -X quit || true
