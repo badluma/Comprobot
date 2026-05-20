@@ -455,4 +455,5 @@ class Comprobot(ext_commands.Cog):
                     ]:
                         await message.channel.send(chunk)
 
-        await bot.process_commands(message)
+        ctx = await bot.get_context(message)
+        await bot.invoke(ctx)
