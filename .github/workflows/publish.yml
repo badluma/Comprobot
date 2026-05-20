@@ -153,7 +153,7 @@ jobs:
           pkgname: comprobot
           pkgbuild: ./aur/PKGBUILD
           commit_username: badluma
-          commit_email: tarmac_quarrel_7f@icloud.com
+          commit_email: 226042779+badluma@users.noreply.github.com
           ssh_private_key: ${{ secrets.AUR_SSH_KEY }}
           commit_message: "Update to v${{ needs.release.outputs.version }}"
           updpkgsums: true
@@ -348,98 +348,9 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/comprobot:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/comprobot:${{ needs.release.outputs.version }}
 
-  validate:
-    name: "Validate winget manifest"
-    needs: [release, binaries]
-    runs-on: windows-latest
-    outputs:
-      already-exists: ${{ steps.check.outputs.already-exists }}
-    steps:
-      - name: Check if version already in winget-pkgs
-        id: check
-        env:
-          VERSION: ${{ needs.release.outputs.version }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          $headers = @{ "Authorization" = "Bearer $env:GITHUB_TOKEN" }
-          $status = (Invoke-WebRequest -Uri "https://api.github.com/repos/microsoft/winget-pkgs/contents/manifests/b/badluma/Comprobot/$env:VERSION" -Headers $headers -UseBasicParsing -SkipHttpErrorCheck).StatusCode
-          if ($status -eq 200) {
-            Write-Output "Version $env:VERSION already exists in winget-pkgs, skipping."
-            echo "already-exists=true" >> $env:GITHUB_OUTPUT
-          } else {
-            echo "already-exists=false" >> $env:GITHUB_OUTPUT
-          }
-
-      - name: Download windows binary
-        if: steps.check.outputs.already-exists == 'false'
-        env:
-          VERSION: ${{ needs.release.outputs.version }}
-        run: |
-          Invoke-WebRequest -Uri "https://github.com/badluma/Comprobot/releases/download/v$env:VERSION/comprobot-windows.exe" -OutFile comprobot-windows.exe
-
-      - name: Create manifests
-        if: steps.check.outputs.already-exists == 'false'
-        env:
-          VERSION: ${{ needs.release.outputs.version }}
-        run: |
-          $sha256 = (Get-FileHash comprobot-windows.exe -Algorithm SHA256).Hash.ToLower()
-          $dir = "manifests/b/badluma/Comprobot/$env:VERSION"
-          New-Item -ItemType Directory -Force -Path $dir | Out-Null
-
-          @"
-          PackageIdentifier: badluma.Comprobot
-          PackageVersion: $env:VERSION
-          DefaultLocale: en-US
-          ManifestType: version
-          ManifestVersion: 1.12.0
-          "@ | Set-Content "$dir/badluma.Comprobot.yaml"
-
-          @"
-          PackageIdentifier: badluma.Comprobot
-          PackageVersion: $env:VERSION
-          PackageLocale: en-US
-          Publisher: badluma
-          PackageName: Comprobot
-          License: MIT
-          ShortDescription: A self-hostable Discord bot built for maximum customization.
-          ManifestType: defaultLocale
-          ManifestVersion: 1.12.0
-          "@ | Set-Content "$dir/badluma.Comprobot.locale.en-US.yaml"
-
-          @"
-          PackageIdentifier: badluma.Comprobot
-          PackageVersion: $env:VERSION
-          InstallerType: portable
-          Installers:
-            - Architecture: x64
-              InstallerUrl: https://github.com/badluma/Comprobot/releases/download/v$env:VERSION/comprobot-windows.exe
-              InstallerSha256: $sha256
-          ManifestType: installer
-          ManifestVersion: 1.12.0
-          "@ | Set-Content "$dir/badluma.Comprobot.installer.yaml"
-
-      - name: Validate manifest
-        if: steps.check.outputs.already-exists == 'false'
-        env:
-          VERSION: ${{ needs.release.outputs.version }}
-        run: |
-          $output = winget validate --manifest "manifests/b/badluma/Comprobot/$env:VERSION" 2>&1
-          Write-Output $output
-          if ($output -match "Manifest validation failed") { exit 1 }
-          exit 0
-
-      - name: Install manifest
-        if: steps.check.outputs.already-exists == 'false'
-        env:
-          VERSION: ${{ needs.release.outputs.version }}
-        run: |
-          winget settings --enable LocalManifestFiles
-          winget install --manifest "manifests/b/badluma/Comprobot/$env:VERSION" --silent --accept-package-agreements
-
   winget:
     name: "Publish to winget"
-    needs: [release, binaries, validate]
-    if: needs.validate.outputs.already-exists == 'false'
+    needs: [release, binaries]
     runs-on: ubuntu-latest
     environment: winget
     steps:
@@ -449,3 +360,106 @@ jobs:
           release-tag: v${{ needs.release.outputs.version }}
           installers-regex: 'comprobot-windows\.exe$'
           token: ${{ secrets.WINGET_TOKEN }}
+
+  update-docs:
+    name: "Update Documentation"
+    needs:
+      [
+        release,
+        pypi,
+        launchpad,
+        aur,
+        scoop,
+        merge-bottles,
+        binaries,
+        docker,
+        winget,
+      ]
+    if: |
+      needs.release.result == 'success' &&
+      needs.pypi.result == 'success' &&
+      needs.launchpad.result == 'success' &&
+      needs.aur.result == 'success' &&
+      needs.scoop.result == 'success' &&
+      needs.merge-bottles.result == 'success' &&
+      needs.binaries.result == 'success' &&
+      needs.docker.result == 'success' &&
+      (needs.winget.result == 'success' || needs.winget.result == 'skipped')
+    runs-on: ubuntu-latest
+    environment: Docs
+    steps:
+      - name: Checkout docs
+        uses: actions/checkout@v4
+        with:
+          repository: badluma/Comprobot-Docs
+          token: ${{ secrets.DOCS_PAT }}
+
+      - name: Install tree
+        run: sudo apt-get install -y tree
+
+      - name: Configure git and create branch
+        env:
+          VERSION: ${{ needs.release.outputs.version }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b "docs/v${VERSION}"
+
+      - name: Get release notes
+        id: notes
+        env:
+          GH_TOKEN: ${{ secrets.DOCS_PAT }}
+          VERSION: ${{ needs.release.outputs.version }}
+        run: |
+          {
+            echo 'content<<EOF'
+            gh api "repos/badluma/Comprobot/releases/tags/v${VERSION}" --jq .body
+            echo 'EOF'
+          } >> $GITHUB_OUTPUT
+
+      - name: Get doc file tree
+        id: tree
+        run: |
+          {
+            echo 'content<<EOF'
+            tree --gitignore source/content
+            echo 'EOF'
+          } >> $GITHUB_OUTPUT
+
+      - name: Update docs with Claude
+        uses: anthropics/claude-code-action@beta
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            Update the Comprobot documentation for the new release v${{ needs.release.outputs.version }}.
+
+            Release notes:
+            ${{ steps.notes.outputs.content }}
+
+            Current documentation file tree:
+            ${{ steps.tree.outputs.content }}
+
+            Tasks:
+            1. Add v${{ needs.release.outputs.version }} to the version history file with the release notes above
+            2. Validate that all documentation is consistent and accurate for this version
+            3. Update any markdown files that reference old version numbers or describe features/commands that changed in this release
+
+            Be minimal — only edit files that genuinely need changes.
+
+      - name: Create pull request
+        env:
+          VERSION: ${{ needs.release.outputs.version }}
+          GH_TOKEN: ${{ secrets.DOCS_PAT }}
+        run: |
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No documentation changes needed"
+            exit 0
+          fi
+          git commit -m "docs: update for v${VERSION}"
+          git push origin "docs/v${VERSION}"
+          gh pr create \
+            --repo badluma/Comprobot-Docs \
+            --title "v${VERSION}" \
+            --body "Update documentation for Comprobot v${VERSION}" \
+            --base main
