@@ -375,6 +375,8 @@ jobs:
         docker,
         winget,
       ]
+    permissions:
+      id-token: write
     if: |
       needs.release.result == 'success' &&
       needs.pypi.result == 'success' &&
