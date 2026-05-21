@@ -130,7 +130,7 @@ jobs:
       - name: Upload to PPA
         env:
           VERSION: ${{ needs.release.outputs.version }}
-        run: dput ppa:badluma/ppa ../comprobot_${VERSION}_source.changes
+        run: dput ppa:badluma/ppa comprobot_${VERSION}_source.changes
 
   aur:
     name: "Publish to AUR"
@@ -169,7 +169,7 @@ jobs:
           VERSION: ${{ needs.release.outputs.version }}
           TAP_TOKEN: ${{ secrets.TAP_TOKEN }}
         run: |
-          SHA256=$(curl -sL "https://github.com/badluma/Comprobot/releases/download/v${VERSION}/comprobot-windows.exe" | sha256sum | cut -d' ' -f1)
+          SHA256=$(curl -sL "https://github.com/badluma/Comprobot/releases/download/v${VERSION}/comprobot.exe" | sha256sum | cut -d' ' -f1)
 
           git clone "https://x-access-token:${TAP_TOKEN}@github.com/badluma/scoop-bucket.git"
           cd scoop-bucket
@@ -181,9 +181,9 @@ jobs:
               "description": "A self-hostable Discord bot built for maximum customization.",
               "homepage": "https://github.com/badluma/Comprobot",
               "license": "MIT",
-              "url": "https://github.com/badluma/Comprobot/releases/download/v${VERSION}/comprobot-windows.exe",
+              "url": "https://github.com/badluma/Comprobot/releases/download/v${VERSION}/comprobot.exe",
               "hash": "${SHA256}",
-              "bin": "comprobot-windows.exe"
+              "bin": "comprobot.exe"
           }
           EOF
 
@@ -210,8 +210,8 @@ jobs:
           git clone "https://x-access-token:${TAP_TOKEN}@github.com/badluma/homebrew-tap.git"
           cd homebrew-tap
 
-          sed -i "s|url \".*\"|url \"${URL}\"|" Formula/comprobot.rb
-          sed -i "s|sha256 \".*\"|sha256 \"${SHA256}\"|" Formula/comprobot.rb
+          sed -i "s|^  url \".*\"|  url \"${URL}\"|" Formula/comprobot.rb
+          sed -i "s|^  sha256 \".*\"|  sha256 \"${SHA256}\"|" Formula/comprobot.rb
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -243,7 +243,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ needs.release.outputs.version }}
-          files: "*.bottle.tar.gz"
+          files: "*.bottle*.tar.gz"
 
       - name: Upload bottle JSON
         uses: actions/upload-artifact@v4
@@ -290,7 +290,7 @@ jobs:
           - os: macos-latest
             artifact: comprobot-macos
           - os: windows-latest
-            artifact: comprobot-windows
+            artifact: comprobot
     runs-on: ${{ matrix.os }}
     permissions:
       contents: write
@@ -358,7 +358,7 @@ jobs:
         with:
           identifier: badluma.Comprobot
           release-tag: v${{ needs.release.outputs.version }}
-          installers-regex: 'comprobot-windows\.exe$'
+          installers-regex: 'comprobot\.exe$'
           token: ${{ secrets.WINGET_TOKEN }}
 
   update-docs:

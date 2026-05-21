@@ -70,8 +70,6 @@ jobs:
         run: scoop bucket add badluma https://github.com/badluma/scoop-bucket
       - name: Install
         run: scoop install comprobot
-      - name: Add to PATH
-        run: echo "$env:USERPROFILE\scoop\shims" >> $env:GITHUB_PATH
       - name: Test
         run: comprobot --version
 
@@ -82,9 +80,7 @@ jobs:
       - name: Install
         run: winget install badluma.comprobot --accept-source-agreements --accept-package-agreements
       - name: Add to PATH
-        run: |
-          echo ([System.Environment]::GetEnvironmentVariable("PATH","User")) >> $env:GITHUB_PATH
-          echo ([System.Environment]::GetEnvironmentVariable("PATH","Machine")) >> $env:GITHUB_PATH
+        run: Add-Content -Path $env:GITHUB_PATH -Value "$env:LOCALAPPDATA\Microsoft\WinGet\Links"
       - name: Test
         run: comprobot --version
 
