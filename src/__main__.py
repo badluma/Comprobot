@@ -3,7 +3,7 @@ import os
 import tomlkit
 from os import path
 
-from pathlib import Path
+from importlib.metadata import metadata as pkg_metadata
 
 
 
@@ -43,10 +43,10 @@ def main():
         os.environ["COMPROBOT_DATA_DIR"] = args.path
 
     if getattr(args, "version", False):
-        with open(Path(__file__).resolve().parent.parent.joinpath("pyproject.toml"), "r", encoding="utf-8") as f:
-            pyproject = tomlkit.load(f)
-            version = pyproject["project"]["version"]
-            full = f"\n█▀▀▀▀▀█\n█ █ █ █  {pyproject['project']['name'].title()} v{version}\n█▄▄▄▄▄█"
+        meta = pkg_metadata("comprobot")
+        version = meta["Version"]
+        name = meta["Name"]
+        full = f"\n█▀▀▀▀▀█\n█ █ █ █  {name.title()} v{version}\n█▄▄▄▄▄█"
         print(full)
         return
 
@@ -124,7 +124,7 @@ def main():
             from .testing import run_test
 
             run_test(args.message)
-            
+
         case "reset":
             from .data import ai, config, error_messages, keywords, moderation, active, descriptions, output, get_data_path
 
@@ -144,7 +144,7 @@ def main():
                 tomlkit.dump(descriptions, f)
             with open(get_data_path("output.toml"), "w") as f:
                 tomlkit.dump(output, f)
-            
+
 
         case _:
             print(parser.format_help())
