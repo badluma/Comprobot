@@ -135,6 +135,9 @@ jobs:
           screen -dmS comprobot bash -c 'PYTHONUNBUFFERED=1 comprobot start > /tmp/comprobot-beta.log 2>&1'
           timeout 30 bash -c 'until grep -q "Logged in as" /tmp/comprobot-beta.log 2>/dev/null; do sleep 1; done'
 
+      - name: Startup delay
+        run: sleep 15
+
       # Title
       - name: Send details
         env:
