@@ -27,25 +27,37 @@ def access_api(url, parameter, error_message, headers=None):
 
 
 # ---------- Commands ----------
+def _fetch_quote_zenquotes():
+    r = requests.get("https://zenquotes.io/api/random", timeout=10)
+    if r.status_code != 200:
+        return None
+    data = r.json()
+    return data[0]["q"], data[0]["a"]
+
+
+def _fetch_quote_quotable():
+    r = requests.get("https://api.quotable.io/random", timeout=10)
+    if r.status_code != 200:
+        return None
+    data = r.json()
+    return data["content"], data["author"]
+
+
 def quote():
-    try:
-        quote_response = requests.get("https://zenquotes.io/api/random", timeout=10)
-    except requests.exceptions.RequestException as e:
-        return f"{error_messages['quote']} ({e})"
-    if quote_response.status_code != 200:
-        return f"{error_messages['quote']} (HTTP {quote_response.status_code})"
-    try:
-        data = quote_response.json()
-        fetched_quote = data[0]["q"]
-        author = data[0]["a"]
-        response = (
-            choice(output["general"]["quote"])
-            .replace(r"{{QUOTE}}", fetched_quote)
-            .replace(r"{{AUTHOR}}", author)
-        )
-    except (requests.exceptions.JSONDecodeError, KeyError, IndexError):
-        response = error_messages["quote"]
-    return response
+    for fetcher in (_fetch_quote_zenquotes, _fetch_quote_quotable):
+        try:
+            result = fetcher()
+            if result is None:
+                continue
+            fetched_quote, author = result
+            return (
+                choice(output["general"]["quote"])
+                .replace(r"{{QUOTE}}", fetched_quote)
+                .replace(r"{{AUTHOR}}", author)
+            )
+        except (requests.exceptions.RequestException, KeyError, IndexError):
+            continue
+    return error_messages["quote"]
 
 
 def meme():
@@ -57,21 +69,33 @@ def meme():
     return choice(output["general"]["meme"]).replace(r"{{URL}}", url)
 
 
+def _fetch_waifu_url():
+    try:
+        r = requests.get("https://api.waifu.pics/sfw/waifu", timeout=10)
+        if r.status_code == 200:
+            return r.json()["url"]
+    except (requests.exceptions.RequestException, KeyError):
+        pass
+    try:
+        r = requests.get("https://api.waifu.im/search/?included_tags=waifu", timeout=10)
+        if r.status_code == 200:
+            return r.json()["images"][0]["url"]
+    except (requests.exceptions.RequestException, KeyError, IndexError):
+        pass
+    return None
+
+
 def waifu():
-    success1, waifu1 = access_api(
-        "https://api.waifu.pics/sfw/waifu", "url", error_messages["waifu"]
-    )
-    if not success1:
-        return waifu1
-    success2, waifu2 = access_api(
-        "https://api.waifu.pics/sfw/waifu", "url", error_messages["waifu"]
-    )
-    if not success2:
-        return waifu2
+    url1 = _fetch_waifu_url()
+    if url1 is None:
+        return error_messages["waifu"]
+    url2 = _fetch_waifu_url()
+    if url2 is None:
+        return error_messages["waifu"]
     return (
         choice(output["general"]["waifu"])
-        .replace(r"{{URL1}}", waifu1)
-        .replace(r"{{URL2}}", waifu2)
+        .replace(r"{{URL1}}", url1)
+        .replace(r"{{URL2}}", url2)
     )
 
 
