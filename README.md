@@ -30,8 +30,13 @@ yay -S --noconfirm --nodiffmenu comprobot
 
 **Homebrew** (macOS)
 ```sh
-brew tap badluma/homebrew
+brew tap badluma/tap
 brew install comprobot
+```
+
+**Winget** (Windows)
+```sh
+winget install badluma.comprobot
 ```
 
 **Scoop** (Windows)
@@ -40,19 +45,21 @@ scoop bucket add badluma https://github.com/badluma/scoop-bucket
 scoop install comprobot
 ```
 
-**Docker**
+**Docker** (All platforms)
+
+Set up credentials first:
+```sh
+docker run -it --rm \
+  -v comprobot-data:/root/.local/share/Comprobot \
+  badluma/comprobot:latest onboard
+```
+
+Then start the bot:
 ```sh
 docker run -d \
   -v comprobot-data:/root/.local/share/Comprobot \
   --name comprobot \
   badluma/comprobot:latest
-```
-
-First run, set up credentials:
-```sh
-docker run -it --rm \
-  -v comprobot-data:/root/.local/share/Comprobot \
-  badluma/comprobot:latest onboard
 ```
 
 ## Documentation
