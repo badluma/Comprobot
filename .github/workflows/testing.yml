@@ -325,6 +325,15 @@ jobs:
           discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
           beta_bot_id: ${{ secrets.BETA_BOT_ID }}
 
+      - name: trivia
+        uses: ./.github/actions/send
+        continue-on-error: true
+        with:
+          message: "test!trivia"
+          channel_id: ${{ env.DISCORD_THREAD_ID }}
+          discord_bot_token: ${{ secrets.DISCORD_BOT_TOKEN }}
+          beta_bot_id: ${{ secrets.BETA_BOT_ID }}
+
       - name: calculate (2+2)
         uses: ./.github/actions/send
         continue-on-error: true

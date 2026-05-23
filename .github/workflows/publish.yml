@@ -130,7 +130,7 @@ jobs:
       - name: Upload to PPA
         env:
           VERSION: ${{ needs.release.outputs.version }}
-        run: dput ppa:badluma/ppa comprobot_${VERSION}_source.changes
+        run: dput ppa:badluma/ppa ../comprobot_${VERSION}_source.changes
 
   aur:
     name: "Publish to AUR"

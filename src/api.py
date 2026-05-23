@@ -1,4 +1,5 @@
-from random import choice
+import html
+from random import choice, shuffle
 
 import requests
 
@@ -99,7 +100,7 @@ def waifu():
     )
 
 
-def duck():  # TODO: Fix function (command doesnt respond)
+def duck():
     success, url = access_api(
         "https://random-d.uk/api/random", "url", error_messages["duck"]
     )
@@ -232,6 +233,37 @@ def tord(url, rating, max_retries=10):
         if not rating or data.get("rating") == rating:
             return data["question"]
     return None
+
+
+def trivia():
+    try:
+        raw = requests.get("https://opentdb.com/api.php?amount=1&type=multiple", timeout=10)
+    except requests.exceptions.RequestException:
+        return None
+    if raw.status_code != 200:
+        return None
+    try:
+        data = raw.json()
+    except requests.exceptions.JSONDecodeError:
+        return None
+    if data.get("response_code") != 0 or not data.get("results"):
+        return None
+
+    result = data["results"][0]
+    correct = html.unescape(result["correct_answer"])
+    incorrect = [html.unescape(a) for a in result["incorrect_answers"]]
+    choices = incorrect + [correct]
+    shuffle(choices)
+    correct_index = choices.index(correct) + 1  # 1-based
+
+    return {
+        "question": html.unescape(result["question"]),
+        "choices": choices,
+        "correct_index": correct_index,
+        "correct_answer": correct,
+        "difficulty": result["difficulty"].title(),
+        "category": html.unescape(result["category"]).replace(": ", ", ").title(),
+    }
 
 
 def joke():

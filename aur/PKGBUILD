@@ -1,6 +1,6 @@
 # Maintainer: badluma <tarmac_quarrel_7f@icloud.com>
 pkgname=comprobot
-pkgver=2.4.2
+pkgver=2.5.0
 pkgrel=1
 pkgdesc="A self-hostable Discord bot built for maximum customization."
 arch=('any')

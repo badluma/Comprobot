@@ -8,9 +8,10 @@ from discord.ext import commands as ext_commands
 from . import api
 from . import commands as cmd_module
 from . import money_system
-from .bot import bot
+from .bot import client
 from .data import active, ai, config, error_messages, keywords, output
 
+from .buttons import RevealAnswerView
 from .functions import chat
 from .moderation import check_message
 
@@ -204,6 +205,35 @@ class Comprobot(ext_commands.Cog):
             await ctx.send(error_messages["paranoia"])
 
     @ext_commands.command(
+        name=keywords["general"]["trivia"][0],
+        aliases=keywords["general"]["trivia"][1:],
+    )
+    @ext_commands.check(lambda ctx: active["general"]["trivia"])
+    async def trivia_cmd(self, ctx):
+        data = api.trivia()
+        if not data:
+            await ctx.send(error_messages["trivia"])
+            return
+        text = (
+            choice(output["general"]["trivia"])
+            .replace("{{QUESTION}}", data["question"])
+            .replace("{{CHOICE1}}", data["choices"][0])
+            .replace("{{CHOICE2}}", data["choices"][1])
+            .replace("{{CHOICE3}}", data["choices"][2])
+            .replace("{{CHOICE4}}", data["choices"][3])
+            .replace("{{DIFFICULTY}}", data["difficulty"])
+            .replace("{{CATEGORY}}", data["category"])
+        )
+        view = RevealAnswerView(
+            correct_index=data["correct_index"],
+            correct_answer=data["correct_answer"],
+            invoker_id=ctx.author.id,
+        )
+        msg = await ctx.send(text, view=view)
+        for emoji in ["1️⃣", "2️⃣", "3️⃣", "4️⃣"]:
+            await msg.add_reaction(emoji)
+
+    @ext_commands.command(
         name=keywords["general"]["qr_code"][0],
         aliases=keywords["general"]["qr_code"][1:],
     )
@@ -211,6 +241,19 @@ class Comprobot(ext_commands.Cog):
     async def qr_cmd(self, ctx, link: str | None = None):
         if link:
             await ctx.send(cmd_module.qr(link))
+        else:
+            await ctx.send(error_messages["missing_argument"])
+
+    @ext_commands.command(
+        name=keywords["general"]["reminder"][0],
+        aliases=keywords["general"]["reminder"][1:],
+    )
+    @ext_commands.check(lambda ctx: active["general"]["reminder"])
+    async def reminder_cmd(self, ctx):
+        if len(ctx.message.content.split()) > 1:
+            result = await cmd_module.reminder(ctx.message.content.split()[1:], ctx)
+            if result:
+                await ctx.send(result)
         else:
             await ctx.send(error_messages["missing_argument"])
 
@@ -339,11 +382,11 @@ class Comprobot(ext_commands.Cog):
         cache_dir = user_cache_dir("Comprobot", appauthor=False)
         os.makedirs(cache_dir, exist_ok=True)
         await ctx.message.attachments[0].save(f"{cache_dir}/pfp.png")
-        if bot.user is None:
+        if client.user is None:
             await ctx.send(error_messages["bot_unavailable"])
             return
         with open(f"{cache_dir}/pfp.png", "rb") as f:
-            await bot.user.edit(avatar=f.read())
+            await client.user.edit(avatar=f.read())
         await ctx.send(choice(output["settings"]["profile_picture_applied"]))
 
     @settings_cmd.command(
@@ -358,13 +401,12 @@ class Comprobot(ext_commands.Cog):
         cache_dir = user_cache_dir("Comprobot", appauthor=False)
         os.makedirs(cache_dir, exist_ok=True)
         await ctx.message.attachments[0].save(f"{cache_dir}/banner.png")
-        if bot.user is None:
+        if client.user is None:
             await ctx.send(error_messages["bot_unavailable"])
             return
         with open(f"{cache_dir}/banner.png", "rb") as f:
-            await bot.user.edit(banner=f.read())
+            await client.user.edit(banner=f.read())
         await ctx.send(choice(output["settings"]["banner_applied"]))
-
     @settings_cmd.command(
         name=keywords["settings"]["change_name"][0],
         aliases=keywords["settings"]["change_name"][1:],
@@ -374,10 +416,10 @@ class Comprobot(ext_commands.Cog):
         if not name:
             await ctx.send(error_messages["missing_argument"])
             return
-        if bot.user is None:
+        if client.user is None:
             await ctx.send(error_messages["bot_unavailable"])
             return
-        await bot.user.edit(username=name)
+        await client.user.edit(username=name)
         await ctx.send(
             choice(output["settings"]["nickname_applied"]).replace("{{NAME}}", name)
         )
@@ -425,12 +467,12 @@ class Comprobot(ext_commands.Cog):
             + message.content
         )
 
-        if message.author == bot.user:
+        if message.author == client.user:
             return
 
         await check_message(message)
 
-        user_id = bot.user.id if bot.user else None
+        user_id = client.user.id if client.user else None
 
         is_reply_to_bot = False
         if message.reference and message.reference.message_id and user_id:
@@ -455,5 +497,5 @@ class Comprobot(ext_commands.Cog):
                     ]:
                         await message.channel.send(chunk)
 
-        ctx = await bot.get_context(message)
-        await bot.invoke(ctx)
+        ctx = await client.get_context(message)
+        await client.invoke(ctx)

@@ -18,9 +18,17 @@ intents.message_content = True
 
 from .data import config  # noqa: E402
 
-bot = commands.Bot(
+client = commands.Bot(
     command_prefix=lambda b, m: config["prefix"],
     intents=intents,
     help_command=None,
 )
-client = bot
+
+
+@client.event
+async def on_message(message):
+    # Intentionally empty — Comprobot Cog handles on_message and
+    # calls process_commands explicitly. This overrides the Bot's
+    # default on_message (which also calls process_commands) so
+    # commands don't fire twice.
+    pass

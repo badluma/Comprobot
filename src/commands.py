@@ -1,3 +1,5 @@
+import asyncio
+
 from random import choice
 
 from .data import active, config, error_messages, keywords, output, descriptions
@@ -47,3 +49,25 @@ def ascii():
     return choice(output["general"]["ascii_art"]).replace(
         r"{{ASCII_ART}}", choice(config["ascii_art"])
     )
+
+async def reminder(args, ctx):
+    if len(args) < 2:
+        return error_messages["missing_argument"]
+
+    time_arg = args[0]
+    message = " ".join(args[1:])
+
+    match time_arg[-1]:
+        case "s":
+            time = int(time_arg[:-1])
+        case "m":
+            time = int(time_arg[:-1]) * 60
+        case "h":
+            time = int(time_arg[:-1]) * 3600
+        case _:
+            return error_messages["unknown_unit"]
+
+    await ctx.send(f"Reminder '{message}' sending in {time_arg}.")
+
+    await asyncio.sleep(time)
+    await ctx.author.send(message)
