@@ -9,7 +9,7 @@ ai = {
     "include_username": True,
     "include_reply": True,
     "include_attachment": True,
-    "system_prompt": "You are a helpful assistant that gives short, helpful answers.\nYour answers can maximally be 1000 characters long.\n",
+    "system_prompt_text": "You are a helpful assistant that gives short, helpful answers.\nYour answers can maximally be 1000 characters long.\n",
     "user_prompt": "{{USERNAME}} wrote the following message: {{MESSAGE}}\n",
     "user_reply_prompt": "They added the following context: {{REPLY}}\n",
     "user_attachement_prompt": "The user attached the following file: {{FILE}}\n",
