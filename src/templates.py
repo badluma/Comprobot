@@ -123,6 +123,7 @@ active = {
         "currency": True,
         "qr_code": True,
         "reminder": True,
+        "ascii_art": True,
         "help": True,
         "truth": True,
         "dare": True,
@@ -132,6 +133,18 @@ active = {
         "trivia": True,
         "nsfw": False,
         "purge": True,
+    },
+    "settings": {
+        "settings": True,
+        "profile_picture": True,
+        "banner": True,
+        "change_name": True,
+        "change_keywords": True,
+    },
+    "money": {
+        "add_money": True,
+        "remove_money": True,
+        "check_balance": True,
     },
 }
 
@@ -222,4 +235,4 @@ output = {
     },
 }
 
-env = "BOT_TOKEN=\nGEMINI=\nGROQ=\n"
+env = "BOT_TOKEN=\nDASHBOARD_PORT=\nGEMINI=\nGROQ=\n"

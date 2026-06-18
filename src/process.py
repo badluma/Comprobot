@@ -2,7 +2,7 @@ import os
 from random import choice
 
 import discord
-from appdirs import user_cache_dir, user_data_dir
+from appdirs import user_cache_dir
 from discord.ext import commands as ext_commands
 
 from . import api
@@ -288,6 +288,7 @@ class Comprobot(ext_commands.Cog):
         name=keywords["general"]["ascii_art"][0],
         aliases=keywords["general"]["ascii_art"][1:],
     )
+    @ext_commands.check(lambda ctx: active["general"]["ascii_art"])
     async def ascii_cmd(self, ctx):
         await ctx.send(cmd_module.ascii())
 
@@ -316,6 +317,7 @@ class Comprobot(ext_commands.Cog):
         name=keywords["money"]["check_balance"][0],
         aliases=keywords["money"]["check_balance"][1:],
     )
+    @ext_commands.check(lambda ctx: active["money"]["check_balance"])
     async def check_balance_cmd(self, ctx, username: str | None = None):
         if username:
             await ctx.send(money_system.check_balance(username))
@@ -327,6 +329,7 @@ class Comprobot(ext_commands.Cog):
         aliases=keywords["money"]["add_money"][1:],
     )
     @_is_admin_or_bot_admin()
+    @ext_commands.check(lambda ctx: active["money"]["add_money"])
     async def add_money_cmd(
         self, ctx, username: str | None = None, amount: str | None = None
     ):
@@ -343,6 +346,7 @@ class Comprobot(ext_commands.Cog):
         aliases=keywords["money"]["remove_money"][1:],
     )
     @_is_admin_or_bot_admin()
+    @ext_commands.check(lambda ctx: active["money"]["remove_money"])
     async def remove_money_cmd(
         self, ctx, username: str | None = None, amount: str | None = None
     ):
@@ -367,6 +371,7 @@ class Comprobot(ext_commands.Cog):
         aliases=keywords["settings"]["settings"][1:],
         invoke_without_command=True,
     )
+    @ext_commands.check(lambda ctx: active["settings"]["settings"])
     async def settings_cmd(self, ctx):
         await ctx.send(error_messages["unknown_command"])
 
@@ -375,6 +380,7 @@ class Comprobot(ext_commands.Cog):
         aliases=keywords["settings"]["profile_picture"][1:],
     )
     @_is_admin_or_bot_admin()
+    @ext_commands.check(lambda ctx: active["settings"]["profile_picture"])
     async def pfp_cmd(self, ctx):
         if not ctx.message.attachments:
             await ctx.send(error_messages["no_attachment"])
@@ -394,6 +400,7 @@ class Comprobot(ext_commands.Cog):
         aliases=keywords["settings"]["banner"][1:],
     )
     @_is_admin_or_bot_admin()
+    @ext_commands.check(lambda ctx: active["settings"]["banner"])
     async def banner_cmd(self, ctx):
         if not ctx.message.attachments:
             await ctx.send(error_messages["no_attachment"])
@@ -412,6 +419,7 @@ class Comprobot(ext_commands.Cog):
         aliases=keywords["settings"]["change_name"][1:],
     )
     @_is_admin_or_bot_admin()
+    @ext_commands.check(lambda ctx: active["settings"]["change_name"])
     async def name_cmd(self, ctx, *, name: str | None = None):
         if not name:
             await ctx.send(error_messages["missing_argument"])
@@ -429,6 +437,7 @@ class Comprobot(ext_commands.Cog):
         aliases=keywords["settings"]["change_keywords"][1:],
     )
     @_is_admin_or_bot_admin()
+    @ext_commands.check(lambda ctx: active["settings"]["change_keywords"])
     async def keywords_cmd(self, ctx, command_name: str | None = None, *new_keywords):
         if not command_name or not new_keywords:
             await ctx.send(error_messages["missing_argument"])
@@ -446,7 +455,7 @@ class Comprobot(ext_commands.Cog):
         data_module.keywords[target_category][command_name] = list(new_keywords)
         data_module.save_toml(
             data_module.keywords,
-            f"{user_data_dir('Comprobot')}/keywords.toml",
+            data_module.get_data_path("keywords.toml"),
         )
         await ctx.send(
             choice(output["settings"]["keywords_applied"])

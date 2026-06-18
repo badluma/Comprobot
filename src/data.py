@@ -9,10 +9,10 @@ import tomlkit.exceptions
 from . import templates
 
 DATA_DIR: str = os.environ.get("COMPROBOT_DATA_DIR") or appdirs.user_data_dir(
-    "Comprobot"
+    "Comprobot", appauthor=False
 )
 
-ORDER = ["general", "games", "settings"]
+ORDER = ["general", "games", "settings", "money"]
 
 
 

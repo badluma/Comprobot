@@ -4,13 +4,12 @@ import re
 import subprocess
 from typing import Any, Dict, List, cast
 
-import appdirs
 import discord
 import httpx
 import ollama
 
 from .bot import client
-from .data import ai
+from .data import DATA_DIR, ai
 
 context_memory: Dict[int, List[Dict[str, Any]]] = {}
 
@@ -222,7 +221,7 @@ async def chat(message):
 
 
 def create(path, content, is_dir=False):
-    base_dir = appdirs.user_data_dir(appname="Comprobot", appauthor=False)
+    base_dir = DATA_DIR
 
     if not os.path.isdir(base_dir):
         os.makedirs(base_dir, exist_ok=True)

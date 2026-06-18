@@ -1,14 +1,12 @@
 import json
-import os
 
-import appdirs
 import InquirerPy.utils
 import tomlkit
 from InquirerPy.base.control import Choice
 from InquirerPy.prompts import checkbox, confirm, input, secret
 from InquirerPy.prompts import list as inquirer_list
 
-from .data import config
+from .data import config, get_data_path
 
 ACCENT = "\033[0;36m"
 GRAY = "\u001b[0;37m"
@@ -158,9 +156,7 @@ def onboarding():
     except KeyboardInterrupt:
         quit()
 
-    env_path = os.path.join(
-        appdirs.user_data_dir(appname="Comprobot", appauthor=False), ".env"
-    )
+    env_path = get_data_path(".env")
     with open(env_path, "w") as f:
         f.write(f"BOT_TOKEN={token}\n")
         if api_key:

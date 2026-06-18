@@ -1,10 +1,11 @@
 import sys
 import os
 
-import appdirs
 import tomlkit
 
 import InquirerPy.utils
+
+from .data import DATA_DIR, get_data_path
 from InquirerPy.base.control import Choice
 from InquirerPy.prompts import confirm, input, secret
 from InquirerPy.prompts import list as inquirer_list
@@ -32,7 +33,7 @@ def make_pretty(string):
 
 
 def pick_file():
-    data_dir = appdirs.user_data_dir("Comprobot", appauthor=False)
+    data_dir = DATA_DIR
 
     files = {}
 
@@ -47,7 +48,7 @@ def pick_file():
         print("No configuration files found.")
         sys.exit(1)
 
-    env_path = os.path.join(appdirs.user_data_dir("Comprobot", appauthor=False), ".env")
+    env_path = get_data_path(".env")
 
     file_to_edit = inquirer_list.ListPrompt(
         message="Which file do you want to edit?",
@@ -211,7 +212,7 @@ def configure(args):
 
         file_name, key, *values = args
 
-        data_dir = appdirs.user_data_dir("Comprobot", appauthor=False)
+        data_dir = DATA_DIR
 
         if file_name == "secrets":
             from dotenv import set_key as dotenv_set_key

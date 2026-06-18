@@ -20,6 +20,7 @@ async def ban(message, item):
     try:
         try:
             await member.ban(reason=output["moderation"]["reason"])
+            print(f"Banned {message.author.name}.")
         except discord.Forbidden:
             print(f"Insufficient permissions to ban {message.author.name}.")
         await direct_msg(
@@ -42,6 +43,7 @@ async def kick(message, item):
     try:
         try:
             await member.kick(reason=output["moderation"]["reason"])
+            print(f"Kicked {message.author.name}.")
         except (discord.Forbidden, discord.HTTPException):
             print(f"Insufficient permissions to kick {message.author.name}.")
         await direct_msg(
@@ -68,6 +70,7 @@ async def check_message(message):
     for item in moderation["delete"]:
         if item.lower() in message.content.lower():
             await message.delete()
+            print(f"Deleted message from {message.author.name}.")
             await direct_msg(
                 choice(output["moderation"]["delete"]).replace("{{TEXT}}", item),
                 message,
@@ -97,6 +100,10 @@ async def check_message(message):
                 await member.timeout(
                     timedelta(minutes=moderation["time_to_mute"]),
                     reason=output["moderation"]["reason"],
+                )
+                print(
+                    f"Timed out {message.author.name} "
+                    f"for {moderation['time_to_mute']} minutes."
                 )
             except discord.Forbidden:
                 print(f"Insufficient permissions to mute {message.author.name}.")

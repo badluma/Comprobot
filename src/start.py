@@ -2,22 +2,15 @@ import os
 import platform
 import sys
 from os import getenv as os_getenv
-from os import path as os_path
 
-import appdirs
 import dotenv
 
 from .bot import client
+from .data import DATA_DIR, get_data_path
 from .functions import para
 from .process import Comprobot
 
-dotenv.load_dotenv(
-    dotenv.find_dotenv(
-        os_path.join(
-            appdirs.user_data_dir(appname="Comprobot", appauthor=False), ".env"
-        )
-    )
-)
+dotenv.load_dotenv(dotenv.find_dotenv(get_data_path(".env")))
 
 if sys.platform.startswith("win"):
     print("Running on Windows (cmd)")
@@ -53,14 +46,15 @@ def _daemonize():
     os.close(devnull)
 
 
-def start(
-    daemon=False, data_dir=appdirs.user_data_dir(appname="Comprobot", appauthor=False)
-):
+def start(daemon=False, data_dir=DATA_DIR):
     if daemon:
         _daemonize()
     print(f"Configuration directory: {data_dir}")
     token = os_getenv("BOT_TOKEN")
     if token:
+        from .dashboard import launch as launch_dashboard
+
+        launch_dashboard(foreground=False)
         client.run(token)
     else:
         print("Error: BOT_TOKEN not found in environment variables")
