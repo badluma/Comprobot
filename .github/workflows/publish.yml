@@ -1,13 +1,33 @@
 name: Publishing
 
-"on":
+on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
 
 jobs:
+  verify:
+    name: "Verify versions and deps in sync"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify pyproject.toml matches tag
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          PYPROJECT=$(grep '^version' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
+          if [ "$PYPROJECT" != "$VERSION" ]; then
+            echo "::error::Tag v${VERSION} does not match pyproject.toml version ${PYPROJECT}. Bump pyproject.toml and re-tag."
+            exit 1
+          fi
+
+      - name: Verify packaging files synced with pyproject.toml
+        run: python3 scripts/sync_packaging.py --check
+
   release:
     name: "Create GitHub Release"
+    needs: verify
     runs-on: ubuntu-latest
     permissions:
       contents: write
