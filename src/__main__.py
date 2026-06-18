@@ -14,6 +14,7 @@ def main():
     )
     subparsers = parser.add_subparsers(dest="command", metavar="")
     parser.add_argument("-v", "--version", action="store_true", help="Show the current version number.")
+    parser.add_argument("--dashboard-version", action="store_true", help="Show the compatible dashboard version (used by the installer).")
     subparsers.add_parser("reset", help="Reset the bot's configuration.")
     start_parser = subparsers.add_parser("start", help="Start the bot.")
     start_parser.add_argument(
@@ -24,6 +25,10 @@ def main():
         "--path",
         type=path.abspath,
         help="Choose a custom path for the bot's configuration.",
+    )
+    dashboard_parser = subparsers.add_parser("dashboard", help="Start the web dashboard.")
+    dashboard_parser.add_argument(
+        "-w", "--watch", action="store_true", help="Run dashboard in the foreground."
     )
     subparsers.add_parser("onboard", help="Set up Comprobot for the first time.")
     config_parser = subparsers.add_parser(
@@ -42,6 +47,12 @@ def main():
     if getattr(args, "path", None):
         os.environ["COMPROBOT_DATA_DIR"] = args.path
 
+    if getattr(args, "dashboard_version", False):
+        from .dashboard import DASHBOARD_VERSION
+
+        print(DASHBOARD_VERSION)
+        return
+
     if getattr(args, "version", False):
         meta = pkg_metadata("comprobot")
         version = meta["Version"]
@@ -55,6 +66,11 @@ def main():
             from .start import start
 
             start(daemon=getattr(args, "daemon", False))
+
+        case "dashboard":
+            from .dashboard import launch
+
+            launch(foreground=getattr(args, "watch", False))
 
         case "onboard":
             from dotenv import set_key as dotenv_set_key
