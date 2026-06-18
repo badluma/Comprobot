@@ -19,7 +19,7 @@ jobs:
         run: sudo apt-get install -y devscripts
 
       - name: Update PKGBUILD, debian/control, and debian/changelog
-        run: python3 scripts/sync_packaging.py
+        run: python3 scripts/syncing.py
 
       - name: Commit if changed
         run: |
