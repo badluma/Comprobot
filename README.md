@@ -7,6 +7,8 @@ You can add new commands, customize outputs, or change the behaviour of existing
 
 The bot also comes with built-in AI capabilities when pinging the bot, with Ollama, Groq and Gemini as available providers.
 
+![Dashboard](Assets/dashboard.png)
+
 ## Install
 
 **pipx** (All platforms)
