@@ -2,7 +2,6 @@ import os
 from typing import Any, Dict, List
 
 import appdirs
-import json
 import tomlkit
 import tomlkit.exceptions
 
@@ -36,27 +35,18 @@ def save_toml(data: dict, file_path: str) -> None:
 
 
 def _cleanup(file_path: str, template: dict, order=ORDER) -> dict:
+    loaded = _load_or_create(file_path, template)
 
-    result = _load_or_create(file_path, template)
-    template = json.loads(json.dumps(template))
-
-    for category in list(result.keys()):
-        if category not in template:
-            del result[category]
-            continue
-        if not isinstance(template[category], dict):
-            continue
-        for key in list(result[category].keys()):
-            if template[category] and key not in template[category]:
-                del result[category][key]
-
-    for category, cat_template in template.items():
-        if category not in result:
-            result[category] = cat_template if not isinstance(cat_template, dict) else {}
-        if isinstance(cat_template, dict):
-            for key, value in cat_template.items():
-                if key not in result[category]:
-                    result[category][key] = value
+    result: dict = {}
+    for key, default in template.items():
+        if isinstance(default, dict):
+            loaded_section = loaded[key] if key in loaded and isinstance(loaded[key], dict) else {}
+            result[key] = {
+                k: loaded_section[k] if k in loaded_section else v
+                for k, v in default.items()
+            }
+        else:
+            result[key] = loaded[key] if key in loaded else default
 
     result = {k: result[k] for k in order if k in result} | {k: v for k, v in result.items() if k not in order}
 
