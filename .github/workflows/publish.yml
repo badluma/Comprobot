@@ -1,42 +1,13 @@
 name: Publishing
 
 "on":
-  workflow_run:
-    workflows: ["Running Tests"]
-    types: [completed]
-    branches: [main]
-  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
 
 jobs:
-  check:
-    name: "Check if version changed"
-    if: github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    outputs:
-      changed: ${{ steps.check.outputs.changed }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-
-      - id: check
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "changed=true" >> $GITHUB_OUTPUT
-          else
-            OLD=$(git show HEAD~1:pyproject.toml 2>/dev/null | grep '^version' | sed 's/version = "\(.*\)"/\1/' || echo "")
-            NEW=$(grep '^version' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
-            if [ "$OLD" != "$NEW" ] && [ -n "$NEW" ]; then
-              echo "changed=true" >> $GITHUB_OUTPUT
-            else
-              echo "changed=false" >> $GITHUB_OUTPUT
-            fi
-          fi
-
   release:
     name: "Create GitHub Release"
-    needs: check
-    if: needs.check.outputs.changed == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -48,20 +19,13 @@ jobs:
       - name: Extract version
         id: version
         run: |
-          VERSION=$(grep '^version' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
+          VERSION="${GITHUB_REF_NAME#v}"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-
-      - name: Create and push tag
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag "v${{ steps.version.outputs.version }}"
-          git push origin "v${{ steps.version.outputs.version }}"
 
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ steps.version.outputs.version }}
+          tag_name: ${{ github.ref_name }}
           make_latest: true
           generate_release_notes: true
 
@@ -432,7 +396,8 @@ jobs:
         uses: anthropics/claude-code-action@beta
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          prompt: |
+          mode: agent
+          direct_prompt: |
             Update the Comprobot documentation for the new release v${{ needs.release.outputs.version }}.
 
             Release notes:
